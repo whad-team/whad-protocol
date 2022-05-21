@@ -1,0 +1,16 @@
+/* Generic messages. */
+
+syntax = "proto3";
+
+enum ResultCode {
+    SUCCESS = 0;
+    ERROR = 1;
+    PARAMETER_ERROR = 2;
+    DISCONNECTED = 3;
+    WRONG_MODE = 4;
+    UNSUPPORTED_DOMAIN = 5;
+}
+
+message CmdResult {
+    ResultCode result = 1;
+}

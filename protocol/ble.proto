@@ -1,0 +1,173 @@
+/* Bluetooth Low Energy interface messages. */
+syntax = "proto3";
+
+package ble;
+
+/**
+ * Supported commands for BLE domain.
+ *
+ * This enumeration specifies the commands a device may
+ * support, allowing a host computer to determine what
+ * features a device provides and the supported commands.
+ *
+ * These constants SHALL be used to generate the commands
+ * bitmap for BLE domain in DeviceDomainInfoResp message.
+ **/
+
+enum BleCommand {
+    /**
+     * Low-level commands
+     **/
+    
+    /* Sniff advertisements. */
+    SniffAdv            = 0x00;
+
+    /* Jam advertisements. */
+    JamAdv              = 0x01;
+
+    /* Sniff CONN_REQ PDUs and sync with connection. */
+    SniffConnReq        = 0x02;
+
+    /* Sniff active connection. */
+    SniffAccessAddress  = 0x03;
+    SniffActiveConn     = 0x04;
+
+    /* Connection jamming. */
+    JamConn             = 0x05;
+
+
+    /**
+     * High-level commands.
+     **/
+
+    /* Scanner mode. */
+    ScanMode            = 0x06;
+
+    /* Advertiser mode. */
+    AdvMode             = 0x07;
+    SetAdvData          = 0x08;
+    SetScanRspData      = 0x09;
+
+    /* Central mode. */
+    CentralMode             = 0x0A;
+    ConnectTo               = 0x0B;
+    DiscoverServices        = 0x11;
+    DiscoverCharacteristics = 0x12;
+    ReadHandle              = 0x13;
+    WriteHandle             = 0x14;
+    WriteCmdHandle          = 0x15;
+    SendPDU                 = 0x16;
+    Disconnect              = 0x17;
+
+    /* Peripheral mode. */
+    PeripheralMode          = 0x18;
+    // SetAdvData and SetScanRspData are shared accross
+    // Peripheral and Advertiser modes
+    AddService              = 0x19;
+    AddCharacteristic       = 0x1A;
+    Listen                  = 0x1B;
+    // SendPDU is shared with Central mode
+    SetCharacteristicValue  = 0x1C;
+    NotifyCharacteristic    = 0x1D;
+    IndicateCharacteristic  = 0x1E;
+    // Disconnect is shared with Central mode
+}
+
+/**
+ * BLE command messages
+ **/
+
+/**
+ * SniffAdvCmd
+ *
+ * Sniff BLE advertisements sent on advertising channels,
+ * or a single channel if `channel` is set. 
+ *
+ * BlePacketRaw messages will be sent each time an advertisement
+ * is captured, containing raw data.
+ **/
+
+message SniffAdvCmd {
+    /* Extended advertisements (BLE 5). */
+    bool use_extended_adv = 1;
+
+    /* Channel can be specified, the device will only
+       listen on this specific channel. */
+    optional uint32 channel = 2;
+}
+
+/**
+ * BleJamAdv
+ *
+ * Jam advertisements on all channels, or on a single channel
+ * if `channel` is provided.
+ **/
+
+message JamAdvCmd {
+    optional uint32 channel = 1;
+}
+
+/**
+ * SniffConnReq
+ *
+ * Listening on advertising channels for CONN_REQ PDUs,
+ * start following connection if BD address matches (if
+ * `bd_address` is provided) or any connection if not
+ * provided.
+ **/
+
+message SniffConnReqCmd {
+    optional bytes bd_address = 1;
+}
+
+
+/**
+ * SniffAccessAddressCmd
+ *
+ * Sniff Access Addresses sent over BLE.
+ *
+ * Will send AccessAddressDiscovered notifications each
+ * time an AccessAddress has been found.
+ **/
+message SniffAccessAddressCmd {
+}
+
+/**
+ * SniffActiveConnCmd
+ *
+ * Sniff an active connection identified by its Access Address.
+ **/
+
+message SniffActiveConnCmd {
+    uint32 access_address = 1;
+}
+
+/**
+ * JamConnCmd
+ *
+ * Jams a connection based on its access address.
+ **/
+
+message JamConnCmd {
+    uint32 access_address = 1;
+}
+
+/**
+ * Notifications
+ **/
+
+message PacketRaw {
+    uint32 access_address = 1;
+    bytes payload = 2;
+}
+
+message Packet {
+    uint32 access_address = 1;
+    bytes pdu = 2;
+}
+
+message DeviceDiscovered {
+    bytes bd_address = 1;
+    bytes adv_data = 2;
+    bytes scanrsp_data = 3;
+}
