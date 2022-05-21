@@ -1,5 +1,4 @@
 
-===============================================
 Protocole ouvert pour tools de hacking wireless
 ===============================================
 
@@ -7,7 +6,7 @@ Ce document est un draft sujet à modification et commentaires.
 
 
 Objectifs du protocole
-======================
+----------------------
 
 Ce protocole a pour objectif de permettre l'interopérabilité des équipements et des outils de hack wireless,
 idéalement indépendamment du ou des technologies supportées. Il vise notamment à:
@@ -18,11 +17,8 @@ idéalement indépendamment du ou des technologies supportées. Il vise notammen
 
 
 Draft de solution
-=================
+-----------------
 
-
-Layer physique
---------------
 
 L'utilisation de Protocol Buffers pour la sérialisation/désérialisation semble être adaptée:
 
@@ -33,9 +29,6 @@ L'utilisation de Protocol Buffers pour la sérialisation/désérialisation sembl
 Néanmoins, il pourrait être judicieux d'avoir une surcouche permettant d'envoyer et recevoir des chunks de données
 gérant la fragmentation. 
 
-
-Domaines, capacités et messages
--------------------------------
 
 ### Domaines
 
