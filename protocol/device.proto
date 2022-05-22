@@ -42,6 +42,7 @@ enum Capability {
     Hook        = 0x20;
     MasterRole  = 0x40;
     SlaveRole   = 0x80;
+    DependStack = 0x100;
 }
 
 

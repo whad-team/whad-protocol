@@ -19,21 +19,24 @@ enum BleCommand {
      * Low-level commands
      **/
     
+    /* Set BD address. */
+    SetBdAddress        = 0x00;
+
     /* Sniff advertisements. */
-    SniffAdv            = 0x00;
+    SniffAdv            = 0x01;
 
     /* Jam advertisements. */
-    JamAdv              = 0x01;
+    JamAdv              = 0x02;
 
     /* Sniff CONN_REQ PDUs and sync with connection. */
-    SniffConnReq        = 0x02;
+    SniffConnReq        = 0x03;
 
     /* Sniff active connection. */
-    SniffAccessAddress  = 0x03;
-    SniffActiveConn     = 0x04;
+    SniffAccessAddress  = 0x04;
+    SniffActiveConn     = 0x05;
 
     /* Connection jamming. */
-    JamConn             = 0x05;
+    JamConn             = 0x06;
 
 
     /**
@@ -41,41 +44,34 @@ enum BleCommand {
      **/
 
     /* Scanner mode. */
-    ScanMode            = 0x06;
+    ScanMode            = 0x07;
 
     /* Advertiser mode. */
-    AdvMode             = 0x07;
-    SetAdvData          = 0x08;
-    SetScanRspData      = 0x09;
+    AdvMode             = 0x08;
+    SetAdvData          = 0x09;
 
     /* Central mode. */
     CentralMode             = 0x0A;
+    //SetAdvData shared with Advertiser mode.
     ConnectTo               = 0x0B;
-    DiscoverServices        = 0x11;
-    DiscoverCharacteristics = 0x12;
-    ReadHandle              = 0x13;
-    WriteHandle             = 0x14;
-    WriteCmdHandle          = 0x15;
-    SendPDU                 = 0x16;
-    Disconnect              = 0x17;
+    SendPDU                 = 0x0C;
+    Disconnect              = 0x0D;
 
     /* Peripheral mode. */
-    PeripheralMode          = 0x18;
+    PeripheralMode          = 0x0E;
     // SetAdvData and SetScanRspData are shared accross
     // Peripheral and Advertiser modes
-    AddService              = 0x19;
-    AddCharacteristic       = 0x1A;
-    Listen                  = 0x1B;
+    Start                   = 0x0F;
+    Stop                    = 0x10;
     // SendPDU is shared with Central mode
-    SetCharacteristicValue  = 0x1C;
-    NotifyCharacteristic    = 0x1D;
-    IndicateCharacteristic  = 0x1E;
     // Disconnect is shared with Central mode
 }
 
-/**
+/**************************************************
+ **************************************************
  * BLE command messages
- **/
+ **************************************************
+ *************************************************/
 
 /**
  * SniffAdvCmd
@@ -153,17 +149,112 @@ message JamConnCmd {
 }
 
 /**
- * Notifications
+ * ScanModeCmd
+ *
+ * Enable scan mode.
+ *
+ * `active_scan` enables scan requests if set to `true`.
  **/
 
-message PacketRaw {
-    uint32 access_address = 1;
-    bytes payload = 2;
+message ScanModeCmd {
+    optional bool active_scan = 1;
 }
 
-message Packet {
+/**
+ * AdvModeCmd
+ *
+ * Enable Advertiser mode. In this mode, the device only
+ * advertises and is not connectable.
+ **/
+
+message AdvModeCmd {
+    optional bytes scan_data = 1;
+    optional bytes scanrsp_data = 2;
+}
+
+/**
+ * SetAdvDataCmd
+ *
+ * Set advertisement data and scan response (if provided)
+ **/
+
+message SetAdvDataCmd {
+    bytes scan_data = 1;
+    optional bytes scanrsp_data = 2;
+}
+
+/**
+ * CentralModeCmd
+ *
+ * Enable central mode.
+ **/
+message CentralModeCmd {
+}
+
+/**
+ * ConnectToCmd
+ * 
+ * Connect to a specific target device. 
+ **/
+message ConnectToCmd {
+    bytes bd_address = 1;
+}
+
+/**
+ * SendPDUCmd
+ *
+ * Sends a raw PDU (to peripheral if in central mode, to central
+ * if in peripheral mode).
+ *
+ * `pdu`: raw pdu to send
+ **/
+message SendPDUCmd {
+    bytes pdu = 1;
+}
+
+/**
+ * DisconnectCmd
+ **/
+message DisconnectCmd {
+    optional int32 conn_handle = 1;
+}
+
+/**
+ * PeripheralModeCmd
+ *
+ * Enable peripheral mode.
+ **/
+message PeripheralModeCmd {
+ optional bytes scan_data = 1;
+ optional bytes scanrsp_data = 2;
+}
+
+/**
+ * StartCmd
+ *
+ * Enable peripheral advertising and accept connections.
+ **/
+message StartCmd {
+}
+
+/**
+ * StopCmd
+ *
+ * Terminate active connection and stop peripheral.
+ **/
+message StopCmd {
+}
+
+
+/*******************************************
+ *******************************************
+ * Ble Notification messages
+ *******************************************
+ *******************************************/
+
+message PduReceived {
     uint32 access_address = 1;
-    bytes pdu = 2;
+    bytes payload = 2;
 }
 
 message DeviceDiscovered {
