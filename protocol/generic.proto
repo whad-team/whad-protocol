@@ -2,6 +2,8 @@
 
 syntax = "proto3";
 
+package generic;
+
 enum ResultCode {
     SUCCESS = 0;
     ERROR = 1;
@@ -26,4 +28,14 @@ message DebugMsg {
 
 message VerboseMsg {
     bytes data = 1;
+}
+
+message Message {
+    oneof msg {
+        ResultCode result = 1;
+        CmdResult cmd_result = 2;
+        Progress progress = 3;
+        DebugMsg debug = 4;
+        VerboseMsg verbose = 5;
+    }
 }

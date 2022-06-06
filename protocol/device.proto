@@ -4,6 +4,8 @@
 
 syntax = "proto3";
 
+package discovery;
+
 /* Domains definition. */
 enum Domain {
     _DomainNone         = 0x00000000;
@@ -46,7 +48,6 @@ enum Capability {
     SlaveRole   = 0x80;
     NoRawData   = 0x100;
 }
-
 
 /**
     * DeviceInfoResp message contains information about the device, its firmware,
@@ -116,4 +117,14 @@ message DeviceInfoQuery {
 
 message DeviceDomainInfoQuery {
     uint32 domain = 1;
+}
+
+
+message Message {
+    oneof msg {
+        DeviceInfoQuery info_query = 1;
+        DeviceInfoResp info_resp = 2;
+        DeviceDomainInfoQuery domain_query = 3;
+        DeviceDomainInfoResp domain_resp = 4;
+    }
 }

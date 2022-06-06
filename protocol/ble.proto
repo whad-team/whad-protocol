@@ -394,3 +394,45 @@ message PduReceived {
     bytes pdu = 2;
     uint32 crc = 3;
 }
+
+
+/**
+ * Message
+ *
+ * Encapsulates any BLE message.
+ **/
+
+ message Message {
+
+    oneof msg {
+        /* Messages */
+        SetBdAddressCmd set_bd_addr = 1;
+        SniffAdvCmd sniff_adv = 2;
+        JamAdvCmd jam_adv = 3;
+        JamAdvOnChannelCmd jam_adv_chan = 4;
+        SniffConnReqCmd sniff_connreq = 5;
+        SniffAccessAddressCmd sniff_aa = 6;
+        SniffActiveConnCmd sniff_conn = 7;
+        JamConnCmd jam_conn = 8;
+        ScanModeCmd scan_mode = 9;
+        AdvModeCmd adv_mode = 10;
+        SetAdvDataCmd set_adv_data = 11;
+        CentralModeCmd central_mode = 12;
+        ConnectToCmd connect = 13;
+        SendPDUCmd send_pdu = 14;
+        DisconnectCmd disconnect = 15;
+        PeripheralModeCmd periph_mode = 16;
+        StartCmd start = 17;
+        StopCmd stop = 18;
+        HijackCmd hijack = 19;
+
+        /* Notifications */
+        AccessAddressDiscovered aa_disc = 20;
+        DeviceDiscovered device_disc = 21;
+        Connected connected = 22;
+        Disconnected disconnected = 23;
+        Synchronized synchronized = 24;
+        Hijacked hijacked = 25;
+        PduReceived pdu_received = 26;
+    }
+ }
