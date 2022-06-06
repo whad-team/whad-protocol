@@ -20,6 +20,7 @@ enum Domain {
     ANT_FS              = 0x0B000000;
 }
 
+
 /**
 * DeviceType specifies the supported devices.
 **/
@@ -28,6 +29,7 @@ enum DeviceType {
     Butterfly = 1;
     BtleJack = 2;
 }    
+
 
 /**
  * Capability specifies a device capability.
@@ -42,7 +44,7 @@ enum Capability {
     Hook        = 0x20;
     MasterRole  = 0x40;
     SlaveRole   = 0x80;
-    DependStack = 0x100;
+    NoRawData   = 0x100;
 }
 
 
@@ -104,6 +106,7 @@ message DeviceDomainInfoResp {
 message DeviceInfoQuery {
     uint32 proto_ver = 1;
 }
+
 
 /**
     * Query remote device domain information.

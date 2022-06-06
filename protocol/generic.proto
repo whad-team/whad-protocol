@@ -14,3 +14,16 @@ enum ResultCode {
 message CmdResult {
     ResultCode result = 1;
 }
+
+message Progress {
+    uint32 value = 1;
+}
+
+message DebugMsg {
+    uint32 level = 1;
+    bytes data = 2;
+}
+
+message VerboseMsg {
+    bytes data = 1;
+}
