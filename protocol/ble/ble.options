@@ -1,0 +1,5 @@
+# Notifications
+
+ble.DeviceDiscovered.bd_address max_size:6, fixed_length: true
+ble.DeviceDiscovered.adv_data max_size:31
+ble.DeviceDiscovered.scanrsp_data max_size:31

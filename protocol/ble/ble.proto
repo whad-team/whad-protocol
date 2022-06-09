@@ -1,0 +1,461 @@
+/******************************************************
+ * Bluetooth Low Energy messages and notifications
+ *
+ * This file defines a set of messages used to communicate
+ * with a Bluetooth Low Energy hacking device in order to:
+ *
+ * - advertisement sniffing
+ * - advertisement jamming
+ * - sniff connections (initiating or already initiated)
+ * - connection jamming
+ * - raw packet injection into an existing connection
+ * - act as a peripheral device
+ * - act as a central device
+ * - act as a scanner device
+ * - act as an observer device
+ * - perform man-in-the-middle attack against master or slave
+ * - take control of an existing connection
+ **/
+
+
+syntax = "proto3";
+
+package ble;
+
+/**
+ * Supported commands for BLE domain.
+ *
+ * This enumeration specifies the commands a device may
+ * support, allowing a host computer to determine what
+ * features a device provides and the supported commands.
+ *
+ * These constants SHALL be used to generate the commands
+ * bitmap for BLE domain in DeviceDomainInfoResp message.
+ *
+ **/
+
+enum BleCommand {
+    /**
+     * Low-level commands
+     **/
+    
+    /* Set BD address. */
+    SetBdAddress        = 0x00;
+
+    /* Sniff advertisements. */
+    SniffAdv            = 0x01;
+
+    /* Jam advertisements. */
+    JamAdv              = 0x02;
+
+    /* Sniff CONN_REQ PDUs and sync with connection. */
+    SniffConnReq        = 0x03;
+
+    /* Sniff active connection. */
+    SniffAccessAddress  = 0x04;
+    SniffActiveConn     = 0x05;
+
+    /* Connection jamming. */
+    JamConn             = 0x06;
+
+
+    /**
+     * High-level commands.
+     **/
+
+    /* Scanner mode. */
+    ScanMode            = 0x07;
+
+    /* Advertiser mode. */
+    AdvMode             = 0x08;
+    SetAdvData          = 0x09;
+
+    /* Central mode. */
+    CentralMode             = 0x0A;
+    //SetAdvData shared with Advertiser mode.
+    ConnectTo               = 0x0B;
+    SendPDU                 = 0x0C;
+    Disconnect              = 0x0D;
+
+    /* Peripheral mode. */
+    PeripheralMode          = 0x0E;
+    // SetAdvData and SetScanRspData are shared accross
+    // Peripheral and Advertiser modes
+    Start                   = 0x0F;
+    Stop                    = 0x10;
+    // SendPDU is shared with Central mode
+    // Disconnect is shared with Central mode
+
+    /* Hijack mode */
+    Hijack                  = 0x11;
+}
+
+enum BleAdvType {
+    ADV_IND = 0;
+    ADV_DIRECT_IND = 1;
+    ADV_NONCONN_IND = 2;
+    ADV_SCAN_IND = 3;
+}
+
+/**************************************************
+ **************************************************
+ * BLE command messages
+ **************************************************
+ *************************************************/
+
+message SetBdAddressCmd {
+    bytes bd_address = 1;
+}
+
+
+/**
+ * SniffAdvCmd
+ *
+ * Sniff BLE advertisements sent on advertising channels,
+ * or a single channel if `channel` is set. 
+ *
+ * BlePacketRaw messages will be sent each time an advertisement
+ * is captured, containing raw data.
+ **/
+
+message SniffAdvCmd {
+    /* Extended advertisements (BLE 5). */
+    bool use_extended_adv = 1;
+
+    /* Channel can be specified, the device will only
+       listen on this specific channel. */
+    optional uint32 channel = 2;
+}
+
+/**
+ * JamAdvCmd
+ *
+ * Jam advertisements PDU on all channels.
+ **/
+
+message JamAdvCmd {
+}
+
+
+/**
+ * JamAdvOnChannelCmd
+ *
+ * Jam advertisements PDU on specific channel.
+ **/
+
+message JamAdvOnChannelCmd {
+    uint32 channel = 1;
+}
+
+/**
+ * SniffConnReq
+ *
+ * Listening on advertising channels for CONN_REQ PDUs,
+ * start following connection if BD address matches or
+ * any connection if BD address is FF:FF:FF:FF:FF:FF.
+ **/
+
+message SniffConnReqCmd {
+    bytes bd_address = 1;
+}
+
+
+/**
+ * SniffAccessAddressCmd
+ *
+ * Sniff Access Addresses sent over BLE.
+ *
+ * Will send AccessAddressDiscovered notifications each
+ * time an AccessAddress has been found.
+ **/
+message SniffAccessAddressCmd {
+}
+
+/**
+ * SniffActiveConnCmd
+ *
+ * Sniff an active connection identified by its Access Address.
+ **/
+
+message SniffActiveConnCmd {
+    uint32 access_address = 1;
+}
+
+/**
+ * JamConnCmd
+ *
+ * Jams a connection based on its access address.
+ **/
+
+message JamConnCmd {
+    uint32 access_address = 1;
+}
+
+/**
+ * ScanModeCmd
+ *
+ * Enable scan mode.
+ *
+ * `active_scan` enables scan requests if set to `true`.
+ **/
+
+message ScanModeCmd {
+    bool active_scan = 1;
+}
+
+/**
+ * AdvModeCmd
+ *
+ * Enable Advertiser mode. In this mode, the device only
+ * advertises and is not connectable.
+ **/
+
+message AdvModeCmd {
+    bytes scan_data = 1;
+    bytes scanrsp_data = 2;
+}
+
+/**
+ * SetAdvDataCmd
+ *
+ * Set advertisement data and scan response (if provided).
+ * If `scanrsp_data` is empty, device won't answer to scan
+ * requests.
+ **/
+
+message SetAdvDataCmd {
+    bytes scan_data = 1;
+    bytes scanrsp_data = 2;
+}
+
+/**
+ * CentralModeCmd
+ *
+ * Enable central mode.
+ **/
+message CentralModeCmd {
+}
+
+/**
+ * ConnectToCmd
+ * 
+ * Connect to a specific target device. 
+ **/
+message ConnectToCmd {
+    bytes bd_address = 1;
+}
+
+/**
+ * SendPDUCmd
+ *
+ * Sends a raw PDU (to peripheral if in central mode, to central
+ * if in peripheral mode).
+ *
+ * If device is able to send raw packets, `access_address` and
+ * `crc` can be provided.
+ **/
+message SendPDUCmd {
+    uint32 access_address = 1;
+    bytes pdu = 2;
+    uint32 crc = 3;
+}
+
+/**
+ * DisconnectCmd
+ * 
+ * `conn_handle` specifies the connection handle to disconnect. Set it to
+ * 0 for the current connection.
+ **/
+
+ message DisconnectCmd {
+    int32 conn_handle = 1;
+}
+
+/**
+ * PeripheralModeCmd
+ *
+ * Enable peripheral mode.
+ **/
+message PeripheralModeCmd {
+    bytes scan_data = 1;
+    bytes scanrsp_data = 2;
+}
+
+/**
+ * StartCmd
+ *
+ * Enable peripheral advertising and accept connections.
+ **/
+message StartCmd {
+}
+
+/**
+ * StopCmd
+ *
+ * Terminate active connection and stop peripheral.
+ **/
+message StopCmd {
+}
+
+
+/**
+ * HijackCmd
+ *
+ * Initiate an existing connection hijacking, targeting
+ * its master or slave device.
+ *
+ * `access_address` specifies the target Access Address
+ *    of the connection to hijack.
+ *
+ * `target_master` indicates to target the master device
+ *    if true, or the slave device otherwise.
+ **/
+
+message HijackCmd {
+    uint32 access_address = 1;
+    bool target_master = 2;
+}
+
+
+/*******************************************
+ *******************************************
+ * Ble Notification messages
+ *******************************************
+ *******************************************/
+
+
+message AccessAddressDiscovered {
+    uint32 access_address = 1;
+}
+
+/**
+ * DeviceDiscovered
+ *
+ * This message is sent when a device has been
+ * discovered and provide the following information:
+ * - adv_type: advertisement type, as specified in the PDU
+ * - rssi: signal level as a positive value
+ * - bd_address: advertiser BD address (6 bytes)
+ * - adv_data: advertisement data (2-31 bytes)
+ * - scanrsp_data: scan response data (2-31 bytes)
+ *
+ * By default, adv_type value is considered to be ADV_IND.
+ **/
+
+message DeviceDiscovered {
+    BleAdvType adv_type = 1;
+    int32 rssi = 2;
+    bytes bd_address = 3;
+    bytes adv_data = 4;
+    bytes scanrsp_data = 5;
+}
+
+/**
+ * Connected
+ *
+ * This message is sent when a connection has successfully
+ * been initiated in Sniffer, Peripheral or Central mode.
+ * 
+ * It contains the following fields:
+ *  - `initiator`: BD address of the initiating device
+ *  - `access_address` (optional): 32-bit Access Address associated
+ *    with this connection
+ *  - `advertiser` (optional): BD address of the advertiser device
+ **/
+
+message Connected {
+    bytes initiator = 1;
+    bytes advertiser = 3;
+    uint32 access_address = 2;
+}
+
+/**
+ * Disconnected
+ **/
+ message Disconnected {
+     uint32 reason = 1;
+ }
+
+/**
+ * Synchronized
+ *
+ * This message is sent once the firmware has synchronized
+ * with an existing BLE connection. It provides:
+ *
+ * - `access_address`: the target access address
+ * - `crc_init`: the recovered value of CRCInit
+ * - `hop_interval`: the interval value used in FHSS
+ * - `hop_increment`: the increment value used in FHSS
+ * - `channel_map`: the channel map (5 bytes) used in FHSS
+ **/
+ 
+ message Synchronized {
+     uint32 access_address = 1;
+     uint32 crc_init = 2;
+     uint32 hop_interval = 3;
+     uint32 hop_increment = 4;
+     bytes channel_map = 5;
+ }
+
+/**
+ * Hijacked
+ **/
+
+message Hijacked {
+    uint32 access_address = 1;
+}
+
+/**
+ * PduReceived 
+ * 
+ * Notifies reception of a PDU. `access_address` and `crc` may not
+ * be provided depending on the device capabilities.
+ **/
+
+message PduReceived {
+    uint32 access_address = 1;
+    bytes pdu = 2;
+    uint32 crc = 3;
+}
+
+
+/**
+ * Message
+ *
+ * Encapsulates any BLE message.
+ **/
+
+ message Message {
+
+    oneof msg {
+        /* Messages */
+        SetBdAddressCmd set_bd_addr = 1;
+        SniffAdvCmd sniff_adv = 2;
+        JamAdvCmd jam_adv = 3;
+        JamAdvOnChannelCmd jam_adv_chan = 4;
+        SniffConnReqCmd sniff_connreq = 5;
+        SniffAccessAddressCmd sniff_aa = 6;
+        SniffActiveConnCmd sniff_conn = 7;
+        JamConnCmd jam_conn = 8;
+        ScanModeCmd scan_mode = 9;
+        AdvModeCmd adv_mode = 10;
+        SetAdvDataCmd set_adv_data = 11;
+        CentralModeCmd central_mode = 12;
+        ConnectToCmd connect = 13;
+        SendPDUCmd send_pdu = 14;
+        DisconnectCmd disconnect = 15;
+        PeripheralModeCmd periph_mode = 16;
+        StartCmd start = 17;
+        StopCmd stop = 18;
+        HijackCmd hijack = 19;
+
+        /* Notifications */
+        AccessAddressDiscovered aa_disc = 20;
+        DeviceDiscovered device_disc = 21;
+        Connected connected = 22;
+        Disconnected disconnected = 23;
+        Synchronized synchronized = 24;
+        Hijacked hijacked = 25;
+        PduReceived pdu_received = 26;
+    }
+ }
