@@ -2,7 +2,7 @@ syntax = "proto2";
 
 import "protocol/device.proto";
 import "protocol/generic.proto";
-import "protocol/ble.proto";
+import "protocol/ble/ble.proto";
 
 
 message Message {
