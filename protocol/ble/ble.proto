@@ -97,6 +97,11 @@ enum BleAdvType {
     ADV_SCAN_IND = 3;
 }
 
+enum BleDirection {
+    MASTER_TO_SLAVE = 0;
+    SLAVE_TO_MASTER = 1;
+}
+
 /**************************************************
  **************************************************
  * BLE command messages
@@ -124,7 +129,7 @@ message SniffAdvCmd {
 
     /* Channel can be specified, the device will only
        listen on this specific channel. */
-    optional uint32 channel = 2;
+    uint32 channel = 2;
 }
 
 /**
@@ -329,26 +334,25 @@ message AccessAddressDiscovered {
 }
 
 /**
- * DeviceDiscovered
+ * AdvPduReceived
  *
- * This message is sent when a device has been
- * discovered and provide the following information:
+ * This message is sent when an advertising PDU has been
+ * received and provides the following information:
  * - adv_type: advertisement type, as specified in the PDU
  * - rssi: signal level as a positive value
  * - bd_address: advertiser BD address (6 bytes)
  * - adv_data: advertisement data (2-31 bytes)
  * - scanrsp_data: scan response data (2-31 bytes)
- *
- * By default, adv_type value is considered to be ADV_IND.
  **/
 
-message DeviceDiscovered {
+message AdvPduReceived {
     BleAdvType adv_type = 1;
     int32 rssi = 2;
     bytes bd_address = 3;
     bytes adv_data = 4;
     bytes scanrsp_data = 5;
 }
+
 
 /**
  * Connected
@@ -406,18 +410,37 @@ message Hijacked {
 }
 
 /**
- * PduReceived 
+ * RawPduReceived 
  * 
- * Notifies reception of a PDU. `access_address` and `crc` may not
- * be provided depending on the device capabilities.
+ * Notifies reception of a raw PDU. This message must be used by devices
+ * that do have access to raw PDU data (access address and crc).
+ *
+ * This message can hold Control and Data PDU sent over data channels.
  **/
 
-message PduReceived {
-    uint32 access_address = 1;
-    bytes pdu = 2;
-    uint32 crc = 3;
+message RawPduReceived {
+    BleDirection direction = 1;
+    uint32 access_address = 2;
+    uint32 channel = 3;
+    bytes pdu = 4;
+    uint32 crc = 5;
 }
 
+/**
+ * PduReceived 
+ * 
+ * Notifies reception of a PDU. This message must be used by devices
+ * that do not have access to raw PDU data (thus exposing the NoRawData
+ * capability).
+ *
+ * This message can hold Control and Data PDU sent over data channels.
+ *
+ **/
+
+ message PduReceived {
+    BleDirection direction = 1;
+    bytes pdu = 2;
+}
 
 /**
  * Message
@@ -451,11 +474,12 @@ message PduReceived {
 
         /* Notifications */
         AccessAddressDiscovered aa_disc = 20;
-        DeviceDiscovered device_disc = 21;
+        AdvPduReceived adv_pdu = 21;
         Connected connected = 22;
         Disconnected disconnected = 23;
         Synchronized synchronized = 24;
         Hijacked hijacked = 25;
-        PduReceived pdu_received = 26;
+        PduReceived pdu = 26;
+        RawPduReceived raw_pdu = 27;
     }
  }
