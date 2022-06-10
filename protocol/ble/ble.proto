@@ -91,10 +91,12 @@ enum BleCommand {
 }
 
 enum BleAdvType {
-    ADV_IND = 0;
-    ADV_DIRECT_IND = 1;
-    ADV_NONCONN_IND = 2;
-    ADV_SCAN_IND = 3;
+    ADV_UNKNOWN = 0;
+    ADV_IND = 1;
+    ADV_DIRECT_IND = 2;
+    ADV_NONCONN_IND = 3;
+    ADV_SCAN_IND = 4;
+    ADV_SCAN_RSP = 5;
 }
 
 enum BleDirection {

@@ -39,6 +39,7 @@ enum DeviceType {
 
 enum Capability {
     _CapNone    = 0x00;
+    Scan        = 0x01;
     Sniff       = 0x02;
     Inject      = 0x04;
     Jam         = 0x08;
