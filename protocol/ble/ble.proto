@@ -100,8 +100,9 @@ enum BleAdvType {
 }
 
 enum BleDirection {
-    MASTER_TO_SLAVE = 0;
-    SLAVE_TO_MASTER = 1;
+    UNKNOWN = 0;
+    MASTER_TO_SLAVE = 1;
+    SLAVE_TO_MASTER = 2;
 }
 
 /**************************************************
@@ -422,10 +423,14 @@ message Hijacked {
 
 message RawPduReceived {
     BleDirection direction = 1;
-    uint32 access_address = 2;
-    uint32 channel = 3;
-    bytes pdu = 4;
-    uint32 crc = 5;
+    uint32 channel = 2;
+    optional int32 rssi = 3;
+    optional uint32 absolute_timestamp = 4;
+    optional uint32 relative_timestamp = 5;
+    optional bool crc_validity = 6;
+    uint32 access_address = 7;
+    bytes pdu = 8;
+    uint32 crc = 9;
 }
 
 /**
