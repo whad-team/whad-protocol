@@ -424,10 +424,10 @@ message Hijacked {
 message RawPduReceived {
     BleDirection direction = 1;
     uint32 channel = 2;
-    optional int32 rssi = 3;
-    optional uint32 absolute_timestamp = 4;
-    optional uint32 relative_timestamp = 5;
-    optional bool crc_validity = 6;
+    int32 rssi = 3;
+    uint32 timestamp = 4;
+    uint32 relative_timestamp = 5;
+    bool crc_validity = 6;
     uint32 access_address = 7;
     bytes pdu = 8;
     uint32 crc = 9;
