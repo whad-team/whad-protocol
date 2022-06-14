@@ -165,6 +165,7 @@ message JamAdvOnChannelCmd {
 
 message SniffConnReqCmd {
     bytes bd_address = 1;
+    uint32 channel = 2;
 }
 
 
