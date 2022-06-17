@@ -31,9 +31,9 @@ clean_nanopb:
 
 python: clean_python
 	@mkdir -p $(PYTHON_OUTDIR)
-	protoc --python_out=$(PYTHON_OUTDIR) $(PROTO_SOURCES)
+	protoc --experimental_allow_proto3_optional --python_out=$(PYTHON_OUTDIR) $(PROTO_SOURCES)
 
 nanopb: clean_nanopb
 	@mkdir -p $(NANOPB_OUTDIR)
-	./nanopb/generator/protoc --nanopb_out=$(NANOPB_OUTDIR) $(PROTO_SOURCES)
+	./nanopb/generator/protoc --experimental_allow_proto3_optional --nanopb_out=$(NANOPB_OUTDIR) $(PROTO_SOURCES)
 

@@ -133,6 +133,7 @@ message SniffAdvCmd {
     /* Channel can be specified, the device will only
        listen on this specific channel. */
     uint32 channel = 2;
+    bytes bd_address = 3;
 }
 
 /**
@@ -164,8 +165,10 @@ message JamAdvOnChannelCmd {
  **/
 
 message SniffConnReqCmd {
-    bytes bd_address = 1;
-    uint32 channel = 2;
+    bool show_empty_packets = 1;
+    bool show_advertisements = 2;
+    uint32 channel = 3;
+    bytes bd_address = 4;
 }
 
 
@@ -257,16 +260,21 @@ message ConnectToCmd {
 /**
  * SendPDUCmd
  *
- * Sends a raw PDU (to peripheral if in central mode, to central
- * if in peripheral mode).
- *
+ * Sends a raw PDU
+ * If no direction is provided, the following rules are applied:
+ * - send to peripheral if in central mode
+ * - send to central if in peripheral mode
+ * - inject into the synchronized connection if in sniffer mode
+ * If a direction is provided, use the direction.
+ *  
  * If device is able to send raw packets, `access_address` and
  * `crc` can be provided.
  **/
 message SendPDUCmd {
-    uint32 access_address = 1;
-    bytes pdu = 2;
-    uint32 crc = 3;
+    BleDirection direction = 1;
+    uint32 access_address = 2;
+    bytes pdu = 3;
+    uint32 crc = 4;
 }
 
 /**
@@ -373,8 +381,14 @@ message AdvPduReceived {
 
 message Connected {
     bytes initiator = 1;
-    bytes advertiser = 3;
-    uint32 access_address = 2;
+    bytes advertiser = 2;
+    uint32 access_address = 3;
+    /*
+    uint32 crc_init = 4;
+    uint32 hop_interval = 5;
+    uint32 hop_increment = 6;
+    bytes channel_map = 7;
+    */
 }
 
 /**
@@ -425,10 +439,10 @@ message Hijacked {
 message RawPduReceived {
     BleDirection direction = 1;
     uint32 channel = 2;
-    int32 rssi = 3;
-    uint32 timestamp = 4;
-    uint32 relative_timestamp = 5;
-    bool crc_validity = 6;
+    optional int32 rssi = 3;
+    optional uint32 timestamp = 4;
+    optional uint32 relative_timestamp = 5;
+    optional bool crc_validity = 6;
     uint32 access_address = 7;
     bytes pdu = 8;
     uint32 crc = 9;
