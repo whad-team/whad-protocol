@@ -420,11 +420,26 @@ message Connected {
  }
 
 /**
+* Desynchronized
+**/
+message Desynchronized {
+    uint32 access_address = 1;    
+}
+
+/**
  * Hijacked
  **/
 
 message Hijacked {
     uint32 access_address = 1;
+}
+
+/**
+* Injected
+**/
+message Injected {
+    bool success = 1;
+    uint32 injection_attempts = 2;
 }
 
 /**
@@ -503,5 +518,7 @@ message RawPduReceived {
         Hijacked hijacked = 25;
         PduReceived pdu = 26;
         RawPduReceived raw_pdu = 27;
+        Injected injected = 28;
+        Desynchronized desynchronized = 29;
     }
  }
