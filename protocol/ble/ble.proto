@@ -254,6 +254,22 @@ message ConnectToCmd {
 }
 
 /**
+ * SendRawPDUCmd
+ *
+ * Sends a raw PDU (to peripheral if in central mode, to central
+ * if in peripheral mode).
+ *
+ * If device is able to send raw packets, `access_address` and
+ * `crc` can be provided.
+ **/
+message SendRawPDUCmd {
+    BleDirection direction = 1;
+    uint32 access_address = 2;
+    bytes pdu = 3;
+    uint32 crc = 4;
+}
+
+/**
  * SendPDUCmd
  *
  * Sends a raw PDU (to peripheral if in central mode, to central
@@ -262,10 +278,9 @@ message ConnectToCmd {
  * If device is able to send raw packets, `access_address` and
  * `crc` can be provided.
  **/
-message SendPDUCmd {
-    uint32 access_address = 1;
+ message SendPDUCmd {
+    BleDirection direction = 1;
     bytes pdu = 2;
-    uint32 crc = 3;
 }
 
 /**
@@ -368,12 +383,14 @@ message AdvPduReceived {
  *  - `access_address` (optional): 32-bit Access Address associated
  *    with this connection
  *  - `advertiser` (optional): BD address of the advertiser device
+ *  - `conn_handle` (optional): connection handle that identifies this connection
  **/
 
 message Connected {
     bytes initiator = 1;
     bytes advertiser = 3;
     uint32 access_address = 2;
+    uint32 conn_handle = 4;
 }
 
 /**
@@ -381,6 +398,7 @@ message Connected {
  **/
  message Disconnected {
      uint32 reason = 1;
+     uint32 conn_handle = 2;
  }
 
 /**
@@ -431,6 +449,7 @@ message RawPduReceived {
     uint32 access_address = 7;
     bytes pdu = 8;
     uint32 crc = 9;
+    uint32 conn_handle = 10;
 }
 
 /**
@@ -447,6 +466,7 @@ message RawPduReceived {
  message PduReceived {
     BleDirection direction = 1;
     bytes pdu = 2;
+    uint32 conn_handle = 3;
 }
 
 /**
@@ -472,21 +492,22 @@ message RawPduReceived {
         SetAdvDataCmd set_adv_data = 11;
         CentralModeCmd central_mode = 12;
         ConnectToCmd connect = 13;
-        SendPDUCmd send_pdu = 14;
-        DisconnectCmd disconnect = 15;
-        PeripheralModeCmd periph_mode = 16;
-        StartCmd start = 17;
-        StopCmd stop = 18;
-        HijackCmd hijack = 19;
+        SendRawPDUCmd send_raw_pdu = 14;
+        SendPDUCmd send_pdu = 15;
+        DisconnectCmd disconnect = 16;
+        PeripheralModeCmd periph_mode = 17;
+        StartCmd start = 18;
+        StopCmd stop = 19;
+        HijackCmd hijack = 20;
 
         /* Notifications */
-        AccessAddressDiscovered aa_disc = 20;
-        AdvPduReceived adv_pdu = 21;
-        Connected connected = 22;
-        Disconnected disconnected = 23;
-        Synchronized synchronized = 24;
-        Hijacked hijacked = 25;
-        PduReceived pdu = 26;
-        RawPduReceived raw_pdu = 27;
+        AccessAddressDiscovered aa_disc = 21;
+        AdvPduReceived adv_pdu = 22;
+        Connected connected = 23;
+        Disconnected disconnected = 24;
+        Synchronized synchronized = 25;
+        Hijacked hijacked = 26;
+        PduReceived pdu = 27;
+        RawPduReceived raw_pdu = 28;
     }
  }

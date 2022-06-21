@@ -1,8 +1,16 @@
 # Notifications
 
+ble.ConnectToCmd.bd_address max_size:6, fixed_length: true
+
 ble.AdvPduReceived.bd_address max_size:6, fixed_length: true
 ble.AdvPduReceived.adv_data max_size:31
 ble.AdvPduReceived.scanrsp_data max_size:31
 
 ble.PduReceived.pdu max_size:300
 ble.RawPduReceived.pdu max_size:255
+
+ble.SendPDUCmd.pdu max_size:300
+ble.SendRawPDUCmd.pdu max_size:300
+
+ble.Connected.advertiser max_size:6, fixed_length: true
+ble.Connected.initiator max_size:6, fixed_length: true
