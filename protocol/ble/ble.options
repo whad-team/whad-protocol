@@ -1,3 +1,10 @@
+# Commands
+
+ble.SniffAdvCmd.bd_address max_size:6, fixed_length: true
+ble.SniffConnReqCmd.bd_address max_size:6, fixed_length: true
+
+ble.SendPDUCmd.pdu max_size:255
+
 # Notifications
 
 ble.ConnectToCmd.bd_address max_size:6, fixed_length: true
@@ -12,5 +19,7 @@ ble.RawPduReceived.pdu max_size:255
 ble.SendPDUCmd.pdu max_size:300
 ble.SendRawPDUCmd.pdu max_size:300
 
-ble.Connected.advertiser max_size:6, fixed_length: true
 ble.Connected.initiator max_size:6, fixed_length: true
+ble.Connected.advertiser max_size:6, fixed_length: true
+
+ble.Synchronized.channel_map max_size:5, fixed_length: true
