@@ -87,7 +87,8 @@ enum BleCommand {
     // Disconnect is shared with Central mode
 
     /* Hijack mode */
-    Hijack                  = 0x11;
+    HijackMaster                  = 0x11;
+    HijackSlave                   = 0x12;
 }
 
 enum BleAdvType {
@@ -316,23 +317,33 @@ message StopCmd {
 
 
 /**
- * HijackCmd
+ * HijackMasterCmd
  *
  * Initiate an existing connection hijacking, targeting
- * its master or slave device.
+ * its master device.
  *
  * `access_address` specifies the target Access Address
  *    of the connection to hijack.
  *
- * `target_master` indicates to target the master device
- *    if true, or the slave device otherwise.
  **/
 
-message HijackCmd {
+message HijackMasterCmd {
     uint32 access_address = 1;
-    bool target_master = 2;
 }
 
+/**
+ * HijackSlaveCmd
+ *
+ * Initiate an existing connection hijacking, targeting
+ * its slave device.
+ *
+ * `access_address` specifies the target Access Address
+ *    of the connection to hijack.
+ *
+ **/
+message HijackSlaveCmd {
+    uint32 access_address = 1;
+}
 
 /*******************************************
  *******************************************
@@ -431,7 +442,8 @@ message Desynchronized {
  **/
 
 message Hijacked {
-    uint32 access_address = 1;
+    bool success = 1;
+    uint32 access_address = 2;
 }
 
 /**
@@ -439,7 +451,8 @@ message Hijacked {
 **/
 message Injected {
     bool success = 1;
-    uint32 injection_attempts = 2;
+    uint32 access_address = 2;
+    uint32 injection_attempts = 3;
 }
 
 /**
@@ -507,18 +520,19 @@ message RawPduReceived {
         PeripheralModeCmd periph_mode = 16;
         StartCmd start = 17;
         StopCmd stop = 18;
-        HijackCmd hijack = 19;
-
+        HijackMasterCmd hijack_master = 19;
+        HijackSlaveCmd hijack_slave = 20;
+        
         /* Notifications */
-        AccessAddressDiscovered aa_disc = 20;
-        AdvPduReceived adv_pdu = 21;
-        Connected connected = 22;
-        Disconnected disconnected = 23;
-        Synchronized synchronized = 24;
-        Hijacked hijacked = 25;
-        PduReceived pdu = 26;
-        RawPduReceived raw_pdu = 27;
-        Injected injected = 28;
-        Desynchronized desynchronized = 29;
+        AccessAddressDiscovered aa_disc = 21;
+        AdvPduReceived adv_pdu = 22;
+        Connected connected = 23;
+        Disconnected disconnected = 24;
+        Synchronized synchronized = 25;
+        Hijacked hijacked = 26;
+        PduReceived pdu = 27;
+        RawPduReceived raw_pdu = 28;
+        Injected injected = 29;
+        Desynchronized desynchronized = 30;
     }
  }
