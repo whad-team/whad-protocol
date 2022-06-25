@@ -89,6 +89,7 @@ enum BleCommand {
     /* Hijack mode */
     HijackMaster                  = 0x11;
     HijackSlave                   = 0x12;
+    HijackBoth                    = 0x13;
 }
 
 enum BleAdvType {
@@ -345,6 +346,20 @@ message HijackSlaveCmd {
     uint32 access_address = 1;
 }
 
+/**
+ * HijackBothCommand
+ *
+ * Initiate an existing connection hijacking, targeting
+ * both devices (establish a Man-in-the-Middle in an existing connection).
+ *
+ * `access_address` specifies the target Access Address
+ *    of the connection to hijack.
+ *
+ **/
+message HijackBothCommand {
+    uint32 access_address = 1;
+}
+
 /*******************************************
  *******************************************
  * Ble Notification messages
@@ -522,17 +537,18 @@ message RawPduReceived {
         StopCmd stop = 18;
         HijackMasterCmd hijack_master = 19;
         HijackSlaveCmd hijack_slave = 20;
+        HijackBothCommand hijack_both = 21;
         
         /* Notifications */
-        AccessAddressDiscovered aa_disc = 21;
-        AdvPduReceived adv_pdu = 22;
-        Connected connected = 23;
-        Disconnected disconnected = 24;
-        Synchronized synchronized = 25;
-        Hijacked hijacked = 26;
-        PduReceived pdu = 27;
-        RawPduReceived raw_pdu = 28;
-        Injected injected = 29;
-        Desynchronized desynchronized = 30;
+        AccessAddressDiscovered aa_disc = 22;
+        AdvPduReceived adv_pdu = 23;
+        Connected connected = 24;
+        Disconnected disconnected = 25;
+        Synchronized synchronized = 26;
+        Hijacked hijacked = 27;
+        PduReceived pdu = 28;
+        RawPduReceived raw_pdu = 29;
+        Injected injected = 30;
+        Desynchronized desynchronized = 31;
     }
  }

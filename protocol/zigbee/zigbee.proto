@@ -1,0 +1,255 @@
+/******************************************************
+ * Zigbee messages and notifications
+ *
+ * This file defines a set of messages used to communicate
+ * with a Zigbee hacking device in order to:
+ *
+ * - packet sniffing
+ * - packet jamming
+ * - raw packet injection
+ * - act as a end device
+ * - act as a coordinator device
+ * - act as a router device
+ * - perform man-in-the-middle attack
+ **/
+
+
+syntax = "proto3";
+
+package zigbee;
+
+/**
+ * Supported commands for Zigbee domain.
+ *
+ * This enumeration specifies the commands a device may
+ * support, allowing a host computer to determine what
+ * features a device provides and the supported commands.
+ *
+ * These constants SHALL be used to generate the commands
+ * bitmap for Zigbee domain in DeviceDomainInfoResp message.
+ *
+ **/
+ 
+enum ZigbeeCommand {
+    /**
+     * Low-level commands
+     **/
+    
+    /* Set Node address. */
+    SetNodeAddress       = 0x00;
+
+    /* Sniff packets. */
+    Sniff                = 0x01;
+
+    /* Jam packets. */
+    Jam                  = 0x02;
+
+    /* Send packets. */
+    Send                 = 0x03;
+
+    /**
+     * High-level commands.
+     **/
+
+    /* End Device mode. */
+    EndDeviceMode        = 0x04;
+
+    /* Coordinator mode. */
+    CoordinatorMode      = 0x05;
+    
+    /* Router mode. */
+    RouterMode           = 0x06;
+
+    /* Start and Stop commands shared with node-related mode. */
+    Start                   = 0x07;
+    Stop                    = 0x08;
+
+    /* Man-in-the-Middle mode */
+    ManInTheMiddle          = 0x09;
+}
+
+enum ZigbeeMitmRole {
+    REACTIVE_JAMMER = 0;
+    CORRECTOR       = 1;
+}
+
+/**************************************************
+ **************************************************
+ * Zigbee command messages
+ **************************************************
+ *************************************************/
+
+message SetNodeAddressCmd {
+    bytes address = 1;
+}
+
+
+/**
+ * SniffCmd
+ *
+ * Sniff Zigbee packets sent on a given channel.
+ *
+ * ZigbeePacketRaw messages will be sent each time a packet
+ * is captured, containing raw data.
+ **/
+
+message SniffCmd {
+    /* Channel must be specified, the device will only
+       listen on this specific channel. */
+    uint32 channel = 1;
+}
+
+/**
+ * JamCmd
+ *
+ * Jam Zigbee packets sent on a given channel.
+ *
+ * Jammed messages will be sent each time a packet
+ * is jammed.
+ **/
+
+message JamCmd {
+    uint32 channel = 1;
+}
+
+/**
+ * SendCmd
+ *
+ * Transmit Zigbee packets on a single channel.
+ *
+ * If device is able to send raw packets, `fcs` can be provided.
+ *
+ **/
+message SendCmd {
+    uint32 channel = 1;
+    bytes pdu = 2;
+    uint32 crc = 3;
+} 
+
+/**
+ * EndDeviceCmd
+ *
+ * Enable End Device mode.
+ *
+ **/
+message EndDeviceCmd {
+    // not implemented yet   
+}
+
+/**
+ * RouterCmd
+ *
+ * Enable Router mode.
+ *
+ **/
+message RouterCmd {
+    // not implemented yet   
+}
+
+/**
+ * CoordinatorCmd
+ *
+ * Enable Coordinator mode.
+ *
+ **/
+message CoordinatorCmd {
+    // not implemented yet   
+}
+
+
+/**
+ * StartCmd
+ *
+ * Enable node-related modes.
+ **/
+message StartCmd {
+}
+
+/**
+ * StopCmd
+ *
+ * Disable node-related modes.
+ **/
+message StopCmd {
+}
+
+
+/**
+ * ManInTheMiddleCmd
+ *
+ * Enable Zigbee Man-in-the-Middle based on reactive jamming and correction.
+ * 
+ * ``
+ **/
+ 
+message ManInTheMiddleCmd {
+    ZigbeeMitmRole role = 1;
+}
+
+
+message Jammed {
+    uint32 timestamp = 1;
+}
+
+/**
+ * RawPduReceived 
+ * 
+ * Notifies reception of a raw PDU. This message must be used by devices
+ * that do have access to raw PDU data (FCS).
+ *
+ **/
+
+message RawPduReceived {
+    uint32 channel = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    optional bool fcs_validity = 4;
+    bytes pdu = 5;
+    uint32 fcs = 6;
+}
+
+/**
+ * PduReceived 
+ * 
+ * Notifies reception of a PDU. This message must be used by devices
+ * that do not have access to raw PDU data (thus exposing the NoRawData
+ * capability).
+ *
+ **/
+
+ message PduReceived {
+    uint32 channel = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    optional bool fcs_validity = 4;
+    bytes pdu = 5;
+}
+
+
+/**
+ * Message
+ *
+ * Encapsulates any BLE message.
+ **/
+
+ message Message {
+
+    oneof msg {
+        /* Messages */
+        SetNodeAddressCmd set_node_addr = 1;
+        SniffCmd sniff = 2;
+        JamCmd jam = 3;
+        SendCmd send = 4;
+        EndDeviceCmd end_device = 5;
+        RouterCmd router = 6;
+        CoordinatorCmd coordinator = 7;
+        StartCmd start = 8;
+        StopCmd stop = 9;
+        ManInTheMiddleCmd mitm = 10;
+        
+        /* Notifications */
+        Jammed jammed = 11;
+        RawPduReceived raw_pdu = 12;
+        PduReceived pdu = 13;
+    }
+ }
