@@ -50,6 +50,12 @@ enum Capability {
     NoRawData   = 0x100;
 }
 
+message DeviceResetQuery {
+}
+
+message DeviceReadyResp {
+}
+
 /**
     * DeviceInfoResp message contains information about the device, its firmware,
     * its supported domains and associated capabilities.
@@ -60,13 +66,16 @@ message DeviceInfoResp {
     /* Device type. */
     uint32 type = 1;
 
+    /* Device ID */
+    bytes devid = 2;
+
     /* Supported minimal protocol version. */
-    uint32 proto_min_ver = 2;
+    uint32 proto_min_ver = 3;
 
     /* Device firmware version. */
-    uint32 fw_version_major = 3;
-    uint32 fw_version_minor = 4;
-    uint32 fw_version_rev = 5;
+    uint32 fw_version_major = 4;
+    uint32 fw_version_minor = 5;
+    uint32 fw_version_rev = 6;
 
     /**
         * Information about capabilities for each supported domain.
@@ -75,7 +84,7 @@ message DeviceInfoResp {
         * capability = (domain << 24) | (capabilities & 0xFFFFFF)
         **/
 
-    repeated uint32 capabilities = 6 [packed = true];
+    repeated uint32 capabilities = 7 [packed = true];
 }
 
 
@@ -123,9 +132,11 @@ message DeviceDomainInfoQuery {
 
 message Message {
     oneof msg {
-        DeviceInfoQuery info_query = 1;
-        DeviceInfoResp info_resp = 2;
-        DeviceDomainInfoQuery domain_query = 3;
-        DeviceDomainInfoResp domain_resp = 4;
+        DeviceResetQuery reset_query = 1;
+        DeviceReadyResp ready_resp = 2;
+        DeviceInfoQuery info_query = 3;
+        DeviceInfoResp info_resp = 4;
+        DeviceDomainInfoQuery domain_query = 5;
+        DeviceDomainInfoResp domain_resp = 6;
     }
 }

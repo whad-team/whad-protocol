@@ -288,7 +288,8 @@ message SendRawPDUCmd {
  **/
  message SendPDUCmd {
     BleDirection direction = 1;
-    bytes pdu = 2;
+    uint32 conn_handle = 2;
+    bytes pdu = 3;
 }
 
 /**
@@ -479,6 +480,7 @@ message RawPduReceived {
     bytes pdu = 8;
     uint32 crc = 9;
     uint32 conn_handle = 10;
+    bool processed = 11;
 }
 
 /**
@@ -496,6 +498,7 @@ message RawPduReceived {
     BleDirection direction = 1;
     bytes pdu = 2;
     uint32 conn_handle = 3;
+    bool processed = 4;
 }
 
 /**

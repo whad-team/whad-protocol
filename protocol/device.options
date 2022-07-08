@@ -1,0 +1,1 @@
+discovery.DeviceInfoResp.devid max_size:16, fixed_length: true

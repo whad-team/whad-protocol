@@ -23,3 +23,5 @@ ble.Connected.initiator max_size:6, fixed_length: true
 ble.Connected.advertiser max_size:6, fixed_length: true
 
 ble.Synchronized.channel_map max_size:5, fixed_length: true
+
+ble.SetBdAddressCmd.bd_address max_size:6, fixed_length: true
