@@ -34,63 +34,71 @@ package ble;
  *
  **/
 
+
 enum BleCommand {
     /**
      * Low-level commands
      **/
-    
+
     /* Set BD address. */
-    SetBdAddress        = 0x00;
+    SetBdAddress            = 0x00;
 
     /* Sniff advertisements. */
-    SniffAdv            = 0x01;
+    SniffAdv                = 0x01;
 
     /* Jam advertisements. */
-    JamAdv              = 0x02;
+    JamAdv                  = 0x02;
+
+    /* Jam advertisements on a single channel. */
+    JamAdvOnChannel         = 0x03;
 
     /* Sniff CONN_REQ PDUs and sync with connection. */
-    SniffConnReq        = 0x03;
+    SniffConnReq            = 0x04;
 
     /* Sniff active connection. */
-    SniffAccessAddress  = 0x04;
-    SniffActiveConn     = 0x05;
+    SniffAccessAddress      = 0x05;
+    SniffActiveConn         = 0x06;
 
     /* Connection jamming. */
-    JamConn             = 0x06;
+    JamConn                 = 0x07;
 
 
     /**
      * High-level commands.
      **/
 
-    /* Scanner mode. */
-    ScanMode            = 0x07;
+     /* Scanner mode. */
+    ScanMode                = 0x08;
 
     /* Advertiser mode. */
-    AdvMode             = 0x08;
-    SetAdvData          = 0x09;
+    AdvMode                 = 0x09;
+    SetAdvData              = 0x0a;
+    //SetAdvData shared with Peripheral mode.
 
     /* Central mode. */
-    CentralMode             = 0x0A;
-    //SetAdvData shared with Advertiser mode.
-    ConnectTo               = 0x0B;
-    SendPDU                 = 0x0C;
-    Disconnect              = 0x0D;
+    CentralMode             = 0x0b;
+    ConnectTo               = 0x0c;
+    SendRawPDU              = 0x0d;
+    SendPDU                 = 0x0e;
+    Disconnect              = 0x0f;
 
     /* Peripheral mode. */
-    PeripheralMode          = 0x0E;
+    PeripheralMode          = 0x10;
     // SetAdvData and SetScanRspData are shared accross
     // Peripheral and Advertiser modes
-    Start                   = 0x0F;
-    Stop                    = 0x10;
     // SendPDU is shared with Central mode
     // Disconnect is shared with Central mode
 
-    /* Hijack mode */
-    HijackMaster                  = 0x11;
-    HijackSlave                   = 0x12;
-    HijackBoth                    = 0x13;
+    /* Common to multiple modes. */
+    Start                   = 0x11;
+    Stop                    = 0x12;
+
+    /* Hijack mode. */
+    HijackMaster            = 0x13;
+    HijackSlave             = 0x14;
+    HijackBoth              = 0x15;
 }
+
 
 enum BleAdvType {
     ADV_UNKNOWN = 0;
@@ -122,7 +130,7 @@ message SetBdAddressCmd {
  * SniffAdvCmd
  *
  * Sniff BLE advertisements sent on advertising channels,
- * or a single channel if `channel` is set. 
+ * or a single channel if `channel` is set.
  *
  * BlePacketRaw messages will be sent each time an advertisement
  * is captured, containing raw data.
@@ -252,8 +260,8 @@ message CentralModeCmd {
 
 /**
  * ConnectToCmd
- * 
- * Connect to a specific target device. 
+ *
+ * Connect to a specific target device.
  **/
 message ConnectToCmd {
     bytes bd_address = 1;
@@ -270,9 +278,10 @@ message ConnectToCmd {
  **/
 message SendRawPDUCmd {
     BleDirection direction = 1;
-    uint32 access_address = 2;
-    bytes pdu = 3;
-    uint32 crc = 4;
+    uint32 conn_handle = 2;
+    uint32 access_address = 3;
+    bytes pdu = 4;
+    uint32 crc = 5;
 }
 
 /**
@@ -284,7 +293,7 @@ message SendRawPDUCmd {
  * - send to central if in peripheral mode
  * - inject into the synchronized connection if in sniffer mode
  * If a direction is provided, use the direction.
- *  
+ *
  * If device is able to send raw packets, `access_address` and
  * `crc` can be provided.
  **/
@@ -296,7 +305,7 @@ message SendRawPDUCmd {
 
 /**
  * DisconnectCmd
- * 
+ *
  * `conn_handle` specifies the connection handle to disconnect. Set it to
  * 0 for the current connection.
  **/
@@ -362,7 +371,7 @@ message HijackSlaveCmd {
 }
 
 /**
- * HijackBothCommand
+ * HijackBothCmd
  *
  * Initiate an existing connection hijacking, targeting
  * both devices (establish a Man-in-the-Middle in an existing connection).
@@ -371,7 +380,7 @@ message HijackSlaveCmd {
  *    of the connection to hijack.
  *
  **/
-message HijackBothCommand {
+message HijackBothCmd {
     uint32 access_address = 1;
 }
 
@@ -412,7 +421,7 @@ message AdvPduReceived {
  *
  * This message is sent when a connection has successfully
  * been initiated in Sniffer, Peripheral or Central mode.
- * 
+ *
  * It contains the following fields:
  *  - `initiator`: BD address of the initiating device
  *  - `access_address` (optional): 32-bit Access Address associated
@@ -454,7 +463,7 @@ message Connected {
  * - `hop_increment`: the increment value used in FHSS
  * - `channel_map`: the channel map (5 bytes) used in FHSS
  **/
- 
+
  message Synchronized {
      uint32 access_address = 1;
      uint32 crc_init = 2;
@@ -467,7 +476,7 @@ message Connected {
 * Desynchronized
 **/
 message Desynchronized {
-    uint32 access_address = 1;    
+    uint32 access_address = 1;
 }
 
 /**
@@ -489,8 +498,8 @@ message Injected {
 }
 
 /**
- * RawPduReceived 
- * 
+ * RawPduReceived
+ *
  * Notifies reception of a raw PDU. This message must be used by devices
  * that do have access to raw PDU data (access address and crc).
  *
@@ -512,8 +521,8 @@ message RawPduReceived {
 }
 
 /**
- * PduReceived 
- * 
+ * PduReceived
+ *
  * Notifies reception of a PDU. This message must be used by devices
  * that do not have access to raw PDU data (thus exposing the NoRawData
  * capability).
@@ -560,7 +569,7 @@ message RawPduReceived {
         StopCmd stop = 19;
         HijackMasterCmd hijack_master = 20;
         HijackSlaveCmd hijack_slave = 21;
-        HijackBothCommand hijack_both = 22;
+        HijackBothCmd hijack_both = 22;
 
         /* Notifications */
         AccessAddressDiscovered aa_disc = 23;
