@@ -113,8 +113,8 @@ enum BleDirection {
     UNKNOWN = 0;
     MASTER_TO_SLAVE = 1;
     SLAVE_TO_MASTER = 2;
-    INJECTION_FROM_MASTER = 3;
-    INJECTION_FROM_SLAVE = 4;
+    INJECTION_TO_SLAVE = 3;
+    INJECTION_TO_MASTER = 4;
 }
 
 /**************************************************
