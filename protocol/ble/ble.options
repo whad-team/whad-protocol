@@ -25,3 +25,9 @@ ble.Connected.advertiser max_size:6, fixed_length: true
 ble.Synchronized.channel_map max_size:5, fixed_length: true
 
 ble.SetBdAddressCmd.bd_address max_size:6, fixed_length: true
+
+ble.AdvModeCmd.scan_data max_size:31
+ble.AdvModeCmd.scanrsp_data max_size:31
+
+ble.PeripheralModeCmd.scan_data max_size:31
+ble.PeripheralModeCmd.scanrsp_data max_size:31

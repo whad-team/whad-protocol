@@ -6,7 +6,8 @@ PROTO_SOURCES = $(shell find protocol -name "*.proto")
 PYTHON_TARGETS = python/protocol/whad_pb2.py \
 		 python/protocol/device_pb2.py \
 		 python/protocol/generic_pb2.py \
-		 python/protocol/ble/ble.py
+		 python/protocol/ble/ble_pb2.py \
+		 python/protocol/zigbee/zigbee_pb2.py
 
 NANOPB_TARGETS = nanopb/protocol/whad.pb.c \
 		 nanopb/protocol/whad.pb.h \
@@ -15,7 +16,9 @@ NANOPB_TARGETS = nanopb/protocol/whad.pb.c \
 		 nanopb/protocol/device.pb.c \
 		 nanopb/protocol/device.pb.h \
 		 nanopb/protocol/ble/ble.pb.c \
-		 nanopb/protocol/ble/ble.pb.h
+		 nanopb/protocol/ble/ble.pb.h \
+		 nanopb/protocol/zigbee/zigbee.pb.h \
+		 nanopb/protocol/zigbee/zigbee.pb.c
 
 all: python nanopb 
 
