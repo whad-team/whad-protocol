@@ -59,6 +59,10 @@ message DeviceResetQuery {
 message DeviceReadyResp {
 }
 
+message SetTransportSpeed {
+    uint32 speed = 1;
+}
+
 /**
     * DeviceInfoResp message contains information about the device, its firmware,
     * its supported domains and associated capabilities.
@@ -75,10 +79,15 @@ message DeviceInfoResp {
     /* Supported minimal protocol version. */
     uint32 proto_min_ver = 3;
 
-    /* Device firmware version. */
-    uint32 fw_version_major = 4;
-    uint32 fw_version_minor = 5;
-    uint32 fw_version_rev = 6;
+    /* Maximum supported speed (if useful). */
+    uint32 max_speed = 4;
+
+    /* Device firmware info. */
+    bytes fw_author = 5;
+    bytes fw_url = 6;
+    uint32 fw_version_major = 7;
+    uint32 fw_version_minor = 8;
+    uint32 fw_version_rev = 9;
 
     /**
         * Information about capabilities for each supported domain.
@@ -87,7 +96,7 @@ message DeviceInfoResp {
         * capability = (domain << 24) | (capabilities & 0xFFFFFF)
         **/
 
-    repeated uint32 capabilities = 7 [packed = true];
+    repeated uint32 capabilities = 10 [packed = true];
 }
 
 
@@ -141,5 +150,6 @@ message Message {
         DeviceInfoResp info_resp = 4;
         DeviceDomainInfoQuery domain_query = 5;
         DeviceDomainInfoResp domain_resp = 6;
+        SetTransportSpeed set_speed = 7;
     }
 }

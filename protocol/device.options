@@ -1,1 +1,3 @@
 discovery.DeviceInfoResp.devid max_size:16, fixed_length: true
+discovery.DeviceInfoResp.fw_author max_size:64
+discovery.DeviceInfoResp.fw_url max_size:256
