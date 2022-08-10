@@ -47,25 +47,27 @@ enum ZigbeeCommand {
     /* Send packets. */
     Send                 = 0x03;
 
+    SendRaw              = 0x04;
+
     /**
      * High-level commands.
      **/
 
     /* End Device mode. */
-    EndDeviceMode        = 0x04;
+    EndDeviceMode        = 0x05;
 
     /* Coordinator mode. */
-    CoordinatorMode      = 0x05;
+    CoordinatorMode      = 0x06;
 
     /* Router mode. */
-    RouterMode           = 0x06;
+    RouterMode           = 0x07;
 
     /* Start and Stop commands shared with node-related mode. */
-    Start                   = 0x07;
-    Stop                    = 0x08;
+    Start                   = 0x08;
+    Stop                    = 0x09;
 
     /* Man-in-the-Middle mode */
-    ManInTheMiddle          = 0x09;
+    ManInTheMiddle          = 0x0a;
 }
 
 enum ZigbeeMitmRole {
@@ -117,13 +119,16 @@ message JamCmd {
  *
  * Transmit Zigbee packets on a single channel.
  *
- * If device is able to send raw packets, `fcs` can be provided.
- *
  **/
 message SendCmd {
     uint32 channel = 1;
     bytes pdu = 2;
-    uint32 fcs = 3;
+}
+
+message SendRawCmd {
+   uint32 channel = 1;
+   bytes pdu = 2;
+   uint32 fcs = 3;
 }
 
 /**
@@ -240,16 +245,18 @@ message RawPduReceived {
         SniffCmd sniff = 2;
         JamCmd jam = 3;
         SendCmd send = 4;
-        EndDeviceCmd end_device = 5;
-        RouterCmd router = 6;
-        CoordinatorCmd coordinator = 7;
-        StartCmd start = 8;
-        StopCmd stop = 9;
-        ManInTheMiddleCmd mitm = 10;
+        SendRawCmd send_raw = 5;
+
+        EndDeviceCmd end_device = 6;
+        RouterCmd router = 7;
+        CoordinatorCmd coordinator = 8;
+        StartCmd start = 9;
+        StopCmd stop = 10;
+        ManInTheMiddleCmd mitm = 11;
 
         /* Notifications */
-        Jammed jammed = 11;
-        RawPduReceived raw_pdu = 12;
-        PduReceived pdu = 13;
+        Jammed jammed = 12;
+        RawPduReceived raw_pdu = 13;
+        PduReceived pdu = 14;
     }
  }
