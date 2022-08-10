@@ -1,5 +1,7 @@
+# Commands
+zigbee.SendCmd.pdu max_size:255
+
 # Notifications
 
 zigbee.PduReceived.pdu max_size:255
 zigbee.RawPduReceived.pdu max_size:255
-

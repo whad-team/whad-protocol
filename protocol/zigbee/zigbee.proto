@@ -29,12 +29,12 @@ package zigbee;
  * bitmap for Zigbee domain in DeviceDomainInfoResp message.
  *
  **/
- 
+
 enum ZigbeeCommand {
     /**
      * Low-level commands
      **/
-    
+
     /* Set Node address. */
     SetNodeAddress       = 0x00;
 
@@ -56,7 +56,7 @@ enum ZigbeeCommand {
 
     /* Coordinator mode. */
     CoordinatorMode      = 0x05;
-    
+
     /* Router mode. */
     RouterMode           = 0x06;
 
@@ -123,8 +123,8 @@ message JamCmd {
 message SendCmd {
     uint32 channel = 1;
     bytes pdu = 2;
-    uint32 crc = 3;
-} 
+    uint32 fcs = 3;
+}
 
 /**
  * EndDeviceCmd
@@ -133,7 +133,7 @@ message SendCmd {
  *
  **/
 message EndDeviceCmd {
-    // not implemented yet   
+    // not implemented yet
 }
 
 /**
@@ -143,7 +143,7 @@ message EndDeviceCmd {
  *
  **/
 message RouterCmd {
-    // not implemented yet   
+    // not implemented yet
 }
 
 /**
@@ -153,7 +153,7 @@ message RouterCmd {
  *
  **/
 message CoordinatorCmd {
-    // not implemented yet   
+    // not implemented yet
 }
 
 
@@ -178,10 +178,10 @@ message StopCmd {
  * ManInTheMiddleCmd
  *
  * Enable Zigbee Man-in-the-Middle based on reactive jamming and correction.
- * 
+ *
  * ``
  **/
- 
+
 message ManInTheMiddleCmd {
     ZigbeeMitmRole role = 1;
 }
@@ -192,8 +192,8 @@ message Jammed {
 }
 
 /**
- * RawPduReceived 
- * 
+ * RawPduReceived
+ *
  * Notifies reception of a raw PDU. This message must be used by devices
  * that do have access to raw PDU data (FCS).
  *
@@ -209,8 +209,8 @@ message RawPduReceived {
 }
 
 /**
- * PduReceived 
- * 
+ * PduReceived
+ *
  * Notifies reception of a PDU. This message must be used by devices
  * that do not have access to raw PDU data (thus exposing the NoRawData
  * capability).
@@ -246,7 +246,7 @@ message RawPduReceived {
         StartCmd start = 8;
         StopCmd stop = 9;
         ManInTheMiddleCmd mitm = 10;
-        
+
         /* Notifications */
         Jammed jammed = 11;
         RawPduReceived raw_pdu = 12;
