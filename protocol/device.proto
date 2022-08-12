@@ -30,7 +30,8 @@ enum DeviceType {
     Esp32BleFuzzer = 0;
     Butterfly = 1;
     BtleJack = 2;
-}    
+    VirtualDevice = 4;
+}
 
 
 /**
@@ -69,7 +70,7 @@ message SetTransportSpeed {
     **/
 
 message DeviceInfoResp {
-    
+
     /* Device type. */
     uint32 type = 1;
 
