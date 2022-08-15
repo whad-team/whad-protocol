@@ -395,6 +395,8 @@ message HijackBothCmd {
 
 message AccessAddressDiscovered {
     uint32 access_address = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
 }
 
 /**
