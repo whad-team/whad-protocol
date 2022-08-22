@@ -416,7 +416,6 @@ message AdvPduReceived {
     int32 rssi = 2;
     bytes bd_address = 3;
     bytes adv_data = 4;
-    bytes scanrsp_data = 5;
 }
 
 
