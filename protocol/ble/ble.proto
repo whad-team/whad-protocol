@@ -193,6 +193,7 @@ message SniffConnReqCmd {
  * time an AccessAddress has been found.
  **/
 message SniffAccessAddressCmd {
+    bytes monitored_channels = 6;
 }
 
 /**
@@ -203,6 +204,11 @@ message SniffAccessAddressCmd {
 
 message SniffActiveConnCmd {
     uint32 access_address = 1;
+    uint32 crc_init = 2;
+    bytes channel_map = 3;
+    uint32 hop_interval = 4;
+    uint32 hop_increment = 5;
+    bytes monitored_channels = 6;
 }
 
 /**
