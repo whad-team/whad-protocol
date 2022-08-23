@@ -414,7 +414,6 @@ message AccessAddressDiscovered {
  * - rssi: signal level as a positive value
  * - bd_address: advertiser BD address (6 bytes)
  * - adv_data: advertisement data (2-31 bytes)
- * - scanrsp_data: scan response data (2-31 bytes)
  **/
 
 message AdvPduReceived {
