@@ -117,6 +117,11 @@ enum BleDirection {
     INJECTION_TO_MASTER = 4;
 }
 
+enum BleAddrType {
+    PUBLIC = 0;
+    RANDOM = 1;
+}
+
 /**************************************************
  **************************************************
  * BLE command messages
@@ -125,6 +130,7 @@ enum BleDirection {
 
 message SetBdAddressCmd {
     bytes bd_address = 1;
+    BleAddrType addr_type = 2;
 }
 
 
@@ -267,6 +273,7 @@ message CentralModeCmd {
  **/
 message ConnectToCmd {
     bytes bd_address = 1;
+    BleAddrType addr_type = 2;
 }
 
 /**
@@ -284,6 +291,7 @@ message SendRawPDUCmd {
     uint32 access_address = 3;
     bytes pdu = 4;
     uint32 crc = 5;
+    bool encrypt = 6;
 }
 
 /**
@@ -303,6 +311,7 @@ message SendRawPDUCmd {
     BleDirection direction = 1;
     uint32 conn_handle = 2;
     bytes pdu = 3;
+    bool encrypt = 4;
 }
 
 /**
@@ -386,6 +395,24 @@ message HijackBothCmd {
     uint32 access_address = 1;
 }
 
+
+/**
+ * SetEncryptionCmd
+ *
+ * Enable/disable link-layer encryption for the current connection, in Central or
+ * Peripheral mode, providing key and IV.
+ *
+ * `key` specifies the 128-bit encryption key
+ * `iv` specifies the 128-bit initialization vector
+ **/
+
+message SetEncryptionCmd {
+    bool enabled = 1;
+    bytes key = 2;
+    bytes iv = 3;
+}
+
+
 /*******************************************
  *******************************************
  * Ble Notification messages
@@ -416,6 +443,7 @@ message AdvPduReceived {
     int32 rssi = 2;
     bytes bd_address = 3;
     bytes adv_data = 4;
+    BleAddrType addr_type = 5;
 }
 
 
@@ -444,6 +472,8 @@ message Connected {
     bytes channel_map = 7;
     */
     uint32 conn_handle = 8;
+    BleAddrType adv_addr_type = 9;
+    BleAddrType init_addr_type = 10;
 }
 
 /**
@@ -521,6 +551,7 @@ message RawPduReceived {
     uint32 crc = 9;
     uint32 conn_handle = 10;
     bool processed = 11;
+    bool decrypted = 12;
 }
 
 /**
@@ -539,6 +570,7 @@ message RawPduReceived {
     bytes pdu = 2;
     uint32 conn_handle = 3;
     bool processed = 4;
+    bool decrypted = 5;
 }
 
 /**
@@ -573,6 +605,7 @@ message RawPduReceived {
         HijackMasterCmd hijack_master = 20;
         HijackSlaveCmd hijack_slave = 21;
         HijackBothCmd hijack_both = 22;
+        SetEncryptionCmd encryption = 33;
 
         /* Notifications */
         AccessAddressDiscovered aa_disc = 23;
