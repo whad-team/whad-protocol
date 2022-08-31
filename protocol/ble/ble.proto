@@ -199,6 +199,7 @@ message SniffConnReqCmd {
  * time an AccessAddress has been found.
  **/
 message SniffAccessAddressCmd {
+    bytes monitored_channels = 6;
 }
 
 /**
@@ -209,6 +210,11 @@ message SniffAccessAddressCmd {
 
 message SniffActiveConnCmd {
     uint32 access_address = 1;
+    uint32 crc_init = 2;
+    bytes channel_map = 3;
+    uint32 hop_interval = 4;
+    uint32 hop_increment = 5;
+    bytes monitored_channels = 6;
 }
 
 /**
@@ -435,7 +441,6 @@ message AccessAddressDiscovered {
  * - rssi: signal level as a positive value
  * - bd_address: advertiser BD address (6 bytes)
  * - adv_data: advertisement data (2-31 bytes)
- * - scanrsp_data: scan response data (2-31 bytes)
  **/
 
 message AdvPduReceived {
