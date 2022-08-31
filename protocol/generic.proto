@@ -11,6 +11,7 @@ enum ResultCode {
     DISCONNECTED = 3;
     WRONG_MODE = 4;
     UNSUPPORTED_DOMAIN = 5;
+    BUSY = 6;
 }
 
 message CmdResult {
