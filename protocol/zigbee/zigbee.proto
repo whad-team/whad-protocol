@@ -44,30 +44,33 @@ enum ZigbeeCommand {
     /* Jam packets. */
     Jam                  = 0x02;
 
-    /* Send packets. */
-    Send                 = 0x03;
+    /* Energy detection */
+    EnergyDetection      = 0x03;
 
-    SendRaw              = 0x04;
+    /* Send packets. */
+    Send                 = 0x04;
+
+    SendRaw              = 0x05;
 
     /**
      * High-level commands.
      **/
 
     /* End Device mode. */
-    EndDeviceMode        = 0x05;
+    EndDeviceMode        = 0x06;
 
     /* Coordinator mode. */
-    CoordinatorMode      = 0x06;
+    CoordinatorMode      = 0x07;
 
     /* Router mode. */
-    RouterMode           = 0x07;
+    RouterMode           = 0x08;
 
     /* Start and Stop commands shared with node-related mode. */
-    Start                   = 0x08;
-    Stop                    = 0x09;
+    Start                   = 0x09;
+    Stop                    = 0x0a;
 
     /* Man-in-the-Middle mode */
-    ManInTheMiddle          = 0x0a;
+    ManInTheMiddle          = 0x0b;
 }
 
 enum ZigbeeMitmRole {
@@ -99,6 +102,15 @@ message SniffCmd {
     /* Channel must be specified, the device will only
        listen on this specific channel. */
     uint32 channel = 1;
+}
+
+/**
+ * EnergyDetectionCmd
+ *
+ * Enable energy detection mode.
+ **/
+message EnergyDetectionCmd {
+  uint32 channel = 1;
 }
 
 /**
@@ -196,6 +208,10 @@ message Jammed {
     uint32 timestamp = 1;
 }
 
+message EnergyDetectionSample {
+    uint32 sample = 1;
+    uint32 timestamp = 2;
+}
 /**
  * RawPduReceived
  *
@@ -234,7 +250,7 @@ message RawPduReceived {
 /**
  * Message
  *
- * Encapsulates any BLE message.
+ * Encapsulates any Zigbee message.
  **/
 
  message Message {
@@ -244,19 +260,21 @@ message RawPduReceived {
         SetNodeAddressCmd set_node_addr = 1;
         SniffCmd sniff = 2;
         JamCmd jam = 3;
-        SendCmd send = 4;
-        SendRawCmd send_raw = 5;
+        EnergyDetectionCmd ed = 4;
+        SendCmd send = 5;
+        SendRawCmd send_raw = 6;
 
-        EndDeviceCmd end_device = 6;
-        RouterCmd router = 7;
-        CoordinatorCmd coordinator = 8;
-        StartCmd start = 9;
-        StopCmd stop = 10;
-        ManInTheMiddleCmd mitm = 11;
+        EndDeviceCmd end_device = 7;
+        RouterCmd router = 8;
+        CoordinatorCmd coordinator = 9;
+        StartCmd start = 10;
+        StopCmd stop = 11;
+        ManInTheMiddleCmd mitm = 12;
 
         /* Notifications */
-        Jammed jammed = 12;
-        RawPduReceived raw_pdu = 13;
-        PduReceived pdu = 14;
+        Jammed jammed = 13;
+        EnergyDetectionSample ed_sample = 14;
+        RawPduReceived raw_pdu = 15;
+        PduReceived pdu = 16;
     }
  }
