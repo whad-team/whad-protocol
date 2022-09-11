@@ -1,6 +1,6 @@
 # Commands
 zigbee.SendCmd.pdu max_size:255
-
+zigbee.SetNodeAddressCmd.address max_size:8
 zigbee.SendRawCmd.pdu max_size:255
 
 

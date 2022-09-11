@@ -78,6 +78,10 @@ enum ZigbeeMitmRole {
     CORRECTOR       = 1;
 }
 
+enum AddressType {
+    SHORT = 0;
+    EXTENDED = 1;
+}
 /**************************************************
  **************************************************
  * Zigbee command messages
@@ -85,7 +89,8 @@ enum ZigbeeMitmRole {
  *************************************************/
 
 message SetNodeAddressCmd {
-    bytes address = 1;
+    uint64 address = 1;
+    AddressType address_type = 2;
 }
 
 
@@ -150,7 +155,7 @@ message SendRawCmd {
  *
  **/
 message EndDeviceCmd {
-    // not implemented yet
+  uint32 channel = 1;
 }
 
 /**
@@ -160,7 +165,7 @@ message EndDeviceCmd {
  *
  **/
 message RouterCmd {
-    // not implemented yet
+  uint32 channel = 1;
 }
 
 /**
@@ -170,7 +175,7 @@ message RouterCmd {
  *
  **/
 message CoordinatorCmd {
-    // not implemented yet
+  uint32 channel = 1;
 }
 
 
