@@ -232,6 +232,7 @@ message RawPduReceived {
     optional bool fcs_validity = 4;
     bytes pdu = 5;
     uint32 fcs = 6;
+    optional uint32 lqi = 7;
 }
 
 /**
@@ -249,6 +250,7 @@ message RawPduReceived {
     optional uint32 timestamp = 3;
     optional bool fcs_validity = 4;
     bytes pdu = 5;
+    optional uint32 lqi = 6;
 }
 
 
