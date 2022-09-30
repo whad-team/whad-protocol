@@ -1,0 +1,227 @@
+/******************************************************
+ * Enhanced ShockBurst messages and notifications
+ *
+ * This file defines a set of messages used to communicate
+ * with an Enhanced ShockBurst hacking device in order to:
+ *
+ * - packet sniffing
+ * - packet jamming
+ * - raw packet injection
+ * - act as a Primary Transmitter (PTX)
+ * - act as a Primary Receiver (PRX)
+ **/
+
+
+syntax = "proto3";
+
+package esb;
+
+/**
+ * Supported commands for Enhanced ShockBurst domain.
+ *
+ * This enumeration specifies the commands a device may
+ * support, allowing a host computer to determine what
+ * features a device provides and the supported commands.
+ *
+ * These constants SHALL be used to generate the commands
+ * bitmap for Enhanced ShockBurst domain in DeviceDomainInfoResp message.
+ *
+ **/
+
+enum ESBCommand {
+    /**
+     * Low-level commands
+     **/
+
+    /* Set Node address. */
+    SetNodeAddress            = 0x00;
+
+    /* Sniff packets. */
+    Sniff                     = 0x01;
+
+    /* Jam packets. */
+    Jam                       = 0x02;
+
+    /* Send packets. */
+    Send                      = 0x03;
+
+    SendRaw                   = 0x04;
+
+    /**
+     * High-level commands.
+     **/
+
+    /* Primary Receiver (PRX) mode. */
+    PrimaryReceiverMode       = 0x05;
+
+    /* Primary Transmitter (PTX) mode. */
+    PrimaryTransmitterMode    = 0x06;
+
+    /* Start and Stop commands shared with node-related mode. */
+    Start                     = 0x07;
+    Stop                      = 0x08;
+}
+
+/**************************************************
+ **************************************************
+ * Enhanced ShockBurst command messages
+ **************************************************
+ *************************************************/
+
+message SetNodeAddressCmd {
+    bytes address = 1;
+}
+
+
+/**
+ * SniffCmd
+ *
+ * Sniff Enhanced ShockBurst packets sent on a given channel.
+ *
+ * ESBPacketRaw messages will be sent each time a packet
+ * is captured, containing raw data.
+ **/
+
+message SniffCmd {
+    /* Follow target automatically */
+    bool follow = 1;
+
+    /* Channel can be specified, the device will only
+       listen on this specific channel. */
+    uint32 channel = 2;
+    bytes address = 3;
+}
+
+/**
+ * JamCmd
+ *
+ * Jam Enhanced ShockBurst packets sent on a given channel.
+ *
+ * Jammed messages will be sent each time a packet
+ * is jammed.
+ **/
+
+message JamCmd {
+    uint32 channel = 1;
+}
+
+/**
+ * SendCmd
+ *
+ * Transmit Enhanced ShockBurst packets on a single channel.
+ *
+ **/
+message SendCmd {
+    uint32 channel = 1;
+    bytes pdu = 2;
+}
+
+message SendRawCmd {
+   uint32 channel = 1;
+   bytes raw_pdu = 2;
+}
+
+/**
+ * PrimaryReceiverMode
+ *
+ * Enable Primary Receiver (PRX) mode.
+ *
+ **/
+message PrimaryReceiverModeCmd {
+  uint32 channel = 1;
+}
+
+/**
+ * PrimaryTransmitterMode
+ *
+ * Enable Primary Transmitter (PTX) mode.
+ *
+ **/
+message PrimaryTransmitterModeCmd {
+  uint32 channel = 1;
+}
+
+
+/**
+ * StartCmd
+ *
+ * Enable node-related modes.
+ **/
+message StartCmd {
+}
+
+/**
+ * StopCmd
+ *
+ * Disable node-related modes.
+ **/
+message StopCmd {
+}
+
+
+message Jammed {
+    uint32 timestamp = 1;
+}
+
+/**
+ * RawPduReceived
+ *
+ * Notifies reception of a raw PDU. This message must be used by devices
+ * that do have access to raw PDU data.
+ *
+ **/
+
+message RawPduReceived {
+    uint32 channel = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    optional bool crc_validity = 4;
+    bytes raw_pdu = 5;
+}
+
+/**
+ * PduReceived
+ *
+ * Notifies reception of a PDU. This message must be used by devices
+ * that do not have access to raw PDU data (thus exposing the NoRawData
+ * capability).
+ *
+ **/
+
+ message PduReceived {
+    uint32 channel = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    optional bool crc_validity = 4;
+    bytes pdu = 5;
+}
+
+
+/**
+ * Message
+ *
+ * Encapsulates any ESB message.
+ **/
+
+ message Message {
+
+    oneof msg {
+        /* Messages */
+        SetNodeAddressCmd set_node_addr = 1;
+        SniffCmd sniff = 2;
+        JamCmd jam = 3;
+        SendCmd send = 4;
+        SendRawCmd send_raw = 5;
+
+        PrimaryReceiverModeCmd prx = 6;
+        PrimaryTransmitterModeCmd ptx = 7;
+
+        StartCmd start = 8;
+        StopCmd stop = 9;
+
+        /* Notifications */
+        Jammed jammed = 10;
+        RawPduReceived raw_pdu = 11;
+        PduReceived pdu = 12;
+    }
+ }

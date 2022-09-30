@@ -4,6 +4,7 @@ import "protocol/device.proto";
 import "protocol/generic.proto";
 import "protocol/ble/ble.proto";
 import "protocol/zigbee/zigbee.proto";
+import "protocol/esb/esb.proto";
 
 message Message {
     oneof msg {
@@ -11,5 +12,6 @@ message Message {
         discovery.Message discovery = 2;
         ble.Message ble = 3;
         zigbee.Message zigbee = 4;
+        esb.Message esb = 5;
     }
 }

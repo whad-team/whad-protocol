@@ -1,0 +1,10 @@
+# Commands
+esb.SetNodeAddressCmd.address max_size:5
+esb.SniffCmd.address max_size:5
+
+esb.SendCmd.pdu max_size:255
+esb.SendRawCmd.raw_pdu max_size:255
+
+# Notifications
+esb.PduReceived.pdu max_size:255
+esb.RawPduReceived.raw_pdu max_size:255
