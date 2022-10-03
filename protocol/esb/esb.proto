@@ -83,13 +83,12 @@ message SetNodeAddressCmd {
  **/
 
 message SniffCmd {
-    /* Follow target automatically */
-    bool follow = 1;
 
     /* Channel can be specified, the device will only
        listen on this specific channel. */
-    uint32 channel = 2;
-    bytes address = 3;
+    uint32 channel = 1; // special value: 0xFF (autofind)
+    bytes address = 2;
+    bool show_acknowledgements = 3;
 }
 
 /**
@@ -118,7 +117,7 @@ message SendCmd {
 
 message SendRawCmd {
    uint32 channel = 1;
-   bytes raw_pdu = 2;
+   bytes pdu = 2;
 }
 
 /**
@@ -176,7 +175,7 @@ message RawPduReceived {
     optional int32 rssi = 2;
     optional uint32 timestamp = 3;
     optional bool crc_validity = 4;
-    bytes raw_pdu = 5;
+    bytes pdu = 5;
 }
 
 /**
