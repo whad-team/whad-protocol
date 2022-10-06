@@ -175,7 +175,8 @@ message RawPduReceived {
     optional int32 rssi = 2;
     optional uint32 timestamp = 3;
     optional bool crc_validity = 4;
-    bytes pdu = 5;
+    optional bytes address = 5;
+    bytes pdu = 6;
 }
 
 /**
@@ -192,7 +193,8 @@ message RawPduReceived {
     optional int32 rssi = 2;
     optional uint32 timestamp = 3;
     optional bool crc_validity = 4;
-    bytes pdu = 5;
+    optional bytes address = 5;
+    bytes pdu = 6;
 }
 
 

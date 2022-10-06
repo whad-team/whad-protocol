@@ -97,6 +97,8 @@ enum BleCommand {
     HijackMaster            = 0x13;
     HijackSlave             = 0x14;
     HijackBoth              = 0x15;
+
+    ReactiveJam             = 0x16;
 }
 
 
@@ -418,6 +420,11 @@ message SetEncryptionCmd {
     bytes iv = 3;
 }
 
+message ReactiveJamCmd {
+    uint32 channel = 1;
+    bytes pattern = 2;
+    uint32 position = 3;
+}
 
 /*******************************************
  *******************************************
@@ -611,6 +618,7 @@ message RawPduReceived {
         HijackSlaveCmd hijack_slave = 21;
         HijackBothCmd hijack_both = 22;
         SetEncryptionCmd encryption = 33;
+        ReactiveJamCmd reactive_jam = 34;
 
         /* Notifications */
         AccessAddressDiscovered aa_disc = 23;

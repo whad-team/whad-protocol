@@ -8,3 +8,5 @@ esb.SendRawCmd.pdu max_size:255
 # Notifications
 esb.PduReceived.pdu max_size:255
 esb.RawPduReceived.pdu max_size:255
+esb.PduReceived.address max_size:5
+esb.RawPduReceived.address max_size:5

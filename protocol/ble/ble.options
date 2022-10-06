@@ -10,6 +10,8 @@ ble.SniffAccessAddressCmd.monitored_channels max_size:5, fixed_length: true
 ble.SniffActiveConnCmd.channel_map max_size:5, fixed_length: true
 ble.SniffActiveConnCmd.monitored_channels max_size:5, fixed_length: true
 
+ble.ReactiveJamCmd.pattern max_size: 20
+
 # Notifications
 
 ble.ConnectToCmd.bd_address max_size:6, fixed_length: true

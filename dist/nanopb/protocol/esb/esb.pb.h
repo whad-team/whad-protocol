@@ -55,6 +55,7 @@ typedef struct _esb_Jammed {
     uint32_t timestamp;
 } esb_Jammed;
 
+typedef PB_BYTES_ARRAY_T(5) esb_PduReceived_address_t;
 typedef PB_BYTES_ARRAY_T(255) esb_PduReceived_pdu_t;
 typedef struct _esb_PduReceived { 
     uint32_t channel;
@@ -64,6 +65,8 @@ typedef struct _esb_PduReceived {
     uint32_t timestamp;
     bool has_crc_validity;
     bool crc_validity;
+    bool has_address;
+    esb_PduReceived_address_t address;
     esb_PduReceived_pdu_t pdu;
 } esb_PduReceived;
 
@@ -83,6 +86,7 @@ typedef struct _esb_PrimaryTransmitterModeCmd {
     uint32_t channel;
 } esb_PrimaryTransmitterModeCmd;
 
+typedef PB_BYTES_ARRAY_T(5) esb_RawPduReceived_address_t;
 typedef PB_BYTES_ARRAY_T(255) esb_RawPduReceived_pdu_t;
 typedef struct _esb_RawPduReceived { 
     uint32_t channel;
@@ -92,6 +96,8 @@ typedef struct _esb_RawPduReceived {
     uint32_t timestamp;
     bool has_crc_validity;
     bool crc_validity;
+    bool has_address;
+    esb_RawPduReceived_address_t address;
     esb_RawPduReceived_pdu_t pdu;
 } esb_RawPduReceived;
 
@@ -167,8 +173,8 @@ extern "C" {
 #define esb_StartCmd_init_default                {0}
 #define esb_StopCmd_init_default                 {0}
 #define esb_Jammed_init_default                  {0}
-#define esb_RawPduReceived_init_default          {0, false, 0, false, 0, false, 0, {0, {0}}}
-#define esb_PduReceived_init_default             {0, false, 0, false, 0, false, 0, {0, {0}}}
+#define esb_RawPduReceived_init_default          {0, false, 0, false, 0, false, 0, false, {0, {0}}, {0, {0}}}
+#define esb_PduReceived_init_default             {0, false, 0, false, 0, false, 0, false, {0, {0}}, {0, {0}}}
 #define esb_Message_init_default                 {0, {esb_SetNodeAddressCmd_init_default}}
 #define esb_SetNodeAddressCmd_init_zero          {{0, {0}}}
 #define esb_SniffCmd_init_zero                   {0, {0, {0}}, 0}
@@ -180,8 +186,8 @@ extern "C" {
 #define esb_StartCmd_init_zero                   {0}
 #define esb_StopCmd_init_zero                    {0}
 #define esb_Jammed_init_zero                     {0}
-#define esb_RawPduReceived_init_zero             {0, false, 0, false, 0, false, 0, {0, {0}}}
-#define esb_PduReceived_init_zero                {0, false, 0, false, 0, false, 0, {0, {0}}}
+#define esb_RawPduReceived_init_zero             {0, false, 0, false, 0, false, 0, false, {0, {0}}, {0, {0}}}
+#define esb_PduReceived_init_zero                {0, false, 0, false, 0, false, 0, false, {0, {0}}, {0, {0}}}
 #define esb_Message_init_zero                    {0, {esb_SetNodeAddressCmd_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -191,14 +197,16 @@ extern "C" {
 #define esb_PduReceived_rssi_tag                 2
 #define esb_PduReceived_timestamp_tag            3
 #define esb_PduReceived_crc_validity_tag         4
-#define esb_PduReceived_pdu_tag                  5
+#define esb_PduReceived_address_tag              5
+#define esb_PduReceived_pdu_tag                  6
 #define esb_PrimaryReceiverModeCmd_channel_tag   1
 #define esb_PrimaryTransmitterModeCmd_channel_tag 1
 #define esb_RawPduReceived_channel_tag           1
 #define esb_RawPduReceived_rssi_tag              2
 #define esb_RawPduReceived_timestamp_tag         3
 #define esb_RawPduReceived_crc_validity_tag      4
-#define esb_RawPduReceived_pdu_tag               5
+#define esb_RawPduReceived_address_tag           5
+#define esb_RawPduReceived_pdu_tag               6
 #define esb_SendCmd_channel_tag                  1
 #define esb_SendCmd_pdu_tag                      2
 #define esb_SendRawCmd_channel_tag               1
@@ -280,7 +288,8 @@ X(a, STATIC,   SINGULAR, UINT32,   channel,           1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
 X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      4) \
-X(a, STATIC,   SINGULAR, BYTES,    pdu,               5)
+X(a, STATIC,   OPTIONAL, BYTES,    address,           5) \
+X(a, STATIC,   SINGULAR, BYTES,    pdu,               6)
 #define esb_RawPduReceived_CALLBACK NULL
 #define esb_RawPduReceived_DEFAULT NULL
 
@@ -289,7 +298,8 @@ X(a, STATIC,   SINGULAR, UINT32,   channel,           1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
 X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      4) \
-X(a, STATIC,   SINGULAR, BYTES,    pdu,               5)
+X(a, STATIC,   OPTIONAL, BYTES,    address,           5) \
+X(a, STATIC,   SINGULAR, BYTES,    pdu,               6)
 #define esb_PduReceived_CALLBACK NULL
 #define esb_PduReceived_DEFAULT NULL
 
@@ -353,11 +363,11 @@ extern const pb_msgdesc_t esb_Message_msg;
 /* Maximum encoded size of messages (where known) */
 #define esb_JamCmd_size                          6
 #define esb_Jammed_size                          6
-#define esb_Message_size                         286
-#define esb_PduReceived_size                     283
+#define esb_Message_size                         293
+#define esb_PduReceived_size                     290
 #define esb_PrimaryReceiverModeCmd_size          6
 #define esb_PrimaryTransmitterModeCmd_size       6
-#define esb_RawPduReceived_size                  283
+#define esb_RawPduReceived_size                  290
 #define esb_SendCmd_size                         264
 #define esb_SendRawCmd_size                      264
 #define esb_SetNodeAddressCmd_size               7
