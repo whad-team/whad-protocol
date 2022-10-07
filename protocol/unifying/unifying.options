@@ -1,0 +1,12 @@
+# Commands
+unifying.SetNodeAddressCmd.address max_size:5
+unifying.SniffCmd.address max_size:5
+
+unifying.SendCmd.pdu max_size:255
+unifying.SendRawCmd.pdu max_size:255
+
+# Notifications
+unifying.PduReceived.pdu max_size:255
+unifying.RawPduReceived.pdu max_size:255
+unifying.PduReceived.address max_size:5
+unifying.RawPduReceived.address max_size:5

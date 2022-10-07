@@ -1,0 +1,243 @@
+/******************************************************
+ * Logitech Unifying messages and notifications
+ *
+ * This file defines a set of messages used to communicate
+ * with a Logitech Unifying hacking device in order to:
+ *
+ * - packet sniffing
+ * - packet jamming
+ * - raw packet injection
+ * - act as a Logitech Dongle (ESB PRX)
+ * - act as a Logitech Keyboard (ESB PTX)
+ * - act as a Logitech Mouse (ESB PTX)
+ **/
+
+
+syntax = "proto3";
+
+package unifying;
+
+/**
+ * Supported commands for Logitech Unifying domain.
+ *
+ * This enumeration specifies the commands a device may
+ * support, allowing a host computer to determine what
+ * features a device provides and the supported commands.
+ *
+ * These constants SHALL be used to generate the commands
+ * bitmap for Logitech Unifying domain in DeviceDomainInfoResp message.
+ *
+ **/
+
+enum UnifyingCommand {
+    /**
+     * Low-level commands
+     **/
+
+    /* Set Node address. */
+    SetNodeAddress            = 0x00;
+
+    /* Sniff packets. */
+    Sniff                     = 0x01;
+
+    /* Jam packets. */
+    Jam                       = 0x02;
+
+    /* Send packets. */
+    Send                      = 0x03;
+
+    SendRaw                   = 0x04;
+
+    /**
+     * High-level commands.
+     **/
+
+    /* Logitech Dongle (ESB PRX) mode. */
+    LogitechDongleMode       = 0x05;
+
+    /* Logitech Keyboard (PTX) mode. */
+    LogitechKeyboardMode    = 0x06;
+
+    /* Logitech Mouse (PTX) mode. */
+    LogitechMouseMode    = 0x07;
+
+    /* Start and Stop commands shared with node-related mode. */
+    Start                     = 0x08;
+    Stop                      = 0x09;
+}
+
+/**************************************************
+ **************************************************
+ * Logitech Unifying command messages
+ **************************************************
+ *************************************************/
+
+message SetNodeAddressCmd {
+    bytes address = 1;
+}
+
+
+/**
+ * SniffCmd
+ *
+ * Sniff Logitech Unifying packets sent on a given channel.
+ *
+ * UnifyingPacketRaw messages will be sent each time a packet
+ * is captured, containing raw data.
+ **/
+
+message SniffCmd {
+
+    /* Channel can be specified, the device will only
+       listen on this specific channel. */
+    uint32 channel = 1; // special value: 0xFF (autofind)
+    bytes address = 2;
+    bool show_acknowledgements = 3;
+}
+
+/**
+ * JamCmd
+ *
+ * Jam Logitech Unifying packets sent on a given channel.
+ *
+ * Jammed messages will be sent each time a packet
+ * is jammed.
+ **/
+
+message JamCmd {
+    uint32 channel = 1;
+}
+
+/**
+ * SendCmd
+ *
+ * Transmit Logitech Unifying packets on a single channel.
+ *
+ **/
+message SendCmd {
+    uint32 channel = 1;
+    bytes pdu = 2;
+}
+
+message SendRawCmd {
+   uint32 channel = 1;
+   bytes pdu = 2;
+}
+
+/**
+ * LogitechDongleMode
+ *
+ * Enable Logitech Dongle (ESB PRX) mode.
+ *
+ **/
+message LogitechDongleModeCmd {
+  uint32 channel = 1;
+}
+
+/**
+ * LogitechKeyboardMode
+ *
+ * Enable Logitech Keyboard (ESB PTX) mode.
+ *
+ **/
+message LogitechKeyboardModeCmd {
+  uint32 channel = 1;
+}
+
+/**
+ * LogitechMouseMode
+ *
+ * Enable Logitech Mouse (ESB PTX) mode.
+ *
+ **/
+message LogitechMouseModeCmd {
+  uint32 channel = 1;
+}
+
+
+/**
+ * StartCmd
+ *
+ * Enable node-related modes.
+ **/
+message StartCmd {
+}
+
+/**
+ * StopCmd
+ *
+ * Disable node-related modes.
+ **/
+message StopCmd {
+}
+
+
+message Jammed {
+    uint32 timestamp = 1;
+}
+
+/**
+ * RawPduReceived
+ *
+ * Notifies reception of a raw PDU. This message must be used by devices
+ * that do have access to raw PDU data.
+ *
+ **/
+
+message RawPduReceived {
+    uint32 channel = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    optional bool crc_validity = 4;
+    optional bytes address = 5;
+    bytes pdu = 6;
+}
+
+/**
+ * PduReceived
+ *
+ * Notifies reception of a PDU. This message must be used by devices
+ * that do not have access to raw PDU data (thus exposing the NoRawData
+ * capability).
+ *
+ **/
+
+ message PduReceived {
+    uint32 channel = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    optional bool crc_validity = 4;
+    optional bytes address = 5;
+    bytes pdu = 6;
+}
+
+
+/**
+ * Message
+ *
+ * Encapsulates any Logitech Unifying message.
+ **/
+
+ message Message {
+
+    oneof msg {
+        /* Messages */
+        SetNodeAddressCmd set_node_addr = 1;
+        SniffCmd sniff = 2;
+        JamCmd jam = 3;
+        SendCmd send = 4;
+        SendRawCmd send_raw = 5;
+
+        LogitechDongleModeCmd dongle = 6;
+        LogitechKeyboardModeCmd keyboard = 7;
+        LogitechKeyboardModeCmd mouse = 8;
+
+        StartCmd start = 9;
+        StopCmd stop = 10;
+
+        /* Notifications */
+        Jammed jammed = 11;
+        RawPduReceived raw_pdu = 12;
+        PduReceived pdu = 13;
+    }
+ }

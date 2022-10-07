@@ -5,6 +5,7 @@ import "protocol/generic.proto";
 import "protocol/ble/ble.proto";
 import "protocol/zigbee/zigbee.proto";
 import "protocol/esb/esb.proto";
+import "protocol/unifying/unifying.proto";
 
 message Message {
     oneof msg {
@@ -13,5 +14,6 @@ message Message {
         ble.Message ble = 3;
         zigbee.Message zigbee = 4;
         esb.Message esb = 5;
+        unifying.Message unifying = 6;
     }
 }
