@@ -64,6 +64,8 @@ enum UnifyingCommand {
     /* Start and Stop commands shared with node-related mode. */
     Start                     = 0x08;
     Stop                      = 0x09;
+
+    SniffPairing              = 0x0a;
 }
 
 /**************************************************
@@ -171,6 +173,9 @@ message StartCmd {
 message StopCmd {
 }
 
+message SniffPairingCmd {
+}
+
 
 message Jammed {
     uint32 timestamp = 1;
@@ -234,6 +239,8 @@ message RawPduReceived {
 
         StartCmd start = 9;
         StopCmd stop = 10;
+
+        SniffPairingCmd sniff_pairing = 14;
 
         /* Notifications */
         Jammed jammed = 11;
