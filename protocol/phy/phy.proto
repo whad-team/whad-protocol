@@ -209,7 +209,7 @@ message SetDataRateCmd {
  * Configure the endianness to use (little or big endian).
  **/
 message SetEndiannessCmd {
-  Endianness endianess = 1;
+  Endianness endianness = 1;
 }
 
 
