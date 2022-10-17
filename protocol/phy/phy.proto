@@ -1,0 +1,290 @@
+/******************************************************
+ * Phy messages and notifications
+ *
+ * This file defines a set of messages used to communicate
+ * with a Zigbee hacking device in order to:
+ *
+ * - sniff raw data from the physical layer
+ * - inject raw data to the physical layer
+ * - jam communications on a physical layer
+ * - monitor a given channel
+ *
+ **/
+
+
+syntax = "proto3";
+
+package phy;
+
+
+/**
+ * Supported commands for Phy domain.
+ *
+ * This enumeration specifies the commands a device may
+ * support, allowing a host computer to determine what
+ * features a device provides and the supported commands.
+ *
+ * These constants SHALL be used to generate the commands
+ * bitmap for Phy domain in DeviceDomainInfoResp message.
+ *
+ **/
+
+enum PhyCommand {
+  /**
+   * Configuration commands
+   **/
+
+  /* Set modulation */
+  SetASKModulation = 0x00;
+  SetFSKModulation = 0x01;
+  SetGFSKModulation = 0x02;
+  SetBPSKModulation = 0x03;
+  SetQPSKModulation = 0x04;
+
+  /* Set frequency */
+  SetSubGhzFrequency = 0x05;
+  SetTwoDotFourGhzFrequency = 0x06;
+  SetFiveGhzFrequency = 0x07;
+
+  /* Set datarate */
+  SetDataRate = 0x08;
+
+  /* Set endianness */
+  SetEndianness = 0x09;
+
+  /* Set TX power */
+  SetTXPower = 0x0a;
+
+  /* Set maximum packet size */
+  SetPacketSize = 0x0b;
+
+  /* Set Synchronization word */
+  SetSyncWord = 0x0c;
+
+
+  /**
+   * Action commands
+   **/
+
+  /* Sniff data */
+  Sniff = 0x0d;
+
+  /* Send data */
+  Send = 0x0e;
+
+  /* Jam data */
+  Jam = 0x0f;
+
+  /* Monitor channel */
+  Monitor = 0x10;
+
+  /* Start */
+  Start = 0x11;
+
+  /* Stop */
+  Stop = 0x12;
+}
+
+/**************************************************
+ **************************************************
+ * Physical Layer command messages
+ **************************************************
+ *************************************************/
+
+enum Endianness {
+    BIG = 0;
+    LITTLE = 1;
+}
+
+enum TXPower {
+    LOW = 0;
+    MEDIUM = 1;
+    HIGH = 2;
+}
+/**
+ * SetASKModulationCmd
+ *
+ * Configure the transceiver to use Amplitude Shift Keying modulation scheme.
+ * On-off-keying modulation (OOK) can be configured by setting the ook field to true.
+ **/
+message SetASKModulationCmd {
+  bool ook = 1;
+}
+
+/**
+ * SetFSKModulationCmd
+ *
+ * Configure the transceiver to use Frequency Shift Keying modulation scheme.
+ * The deviation of the modulation can be provided.
+ **/
+message SetFSKModulationCmd {
+  uint32 deviation = 1;
+}
+
+
+/**
+ * SetGFSKModulationCmd
+ *
+ * Configure the transceiver to use Gaussian Frequency Shift Keying modulation scheme.
+ * The deviation of the modulation can be provided.
+ **/
+message SetGFSKModulationCmd {
+  uint32 deviation = 1;
+}
+
+
+/**
+ * SetBPSKModulationCmd
+ *
+ * Configure the transceiver to use Binary Phase Shift Keying modulation scheme.
+ **/
+message SetBPSKModulationCmd {
+}
+
+
+/**
+ * SetQPSKModulationCmd
+ *
+ * Configure the transceiver to use Quadrature Phase Shift Keying modulation scheme.
+ **/
+message SetQPSKModulationCmd {
+}
+
+
+/**
+ * SetSubGhzFrequencyCmd
+ *
+ * Configure the frequency to use by the transceiver (1MHz unit) in the Sub GHz band.
+ * f (in MHz) = 0 + frequency_offset
+ * Note: I keep it simple now, but it may be relevant to use a smaller unit (100kHz ? 1 Hz ?)
+ **/
+message SetSubGhzFrequencyCmd {
+  uint32 frequency_offset = 1;
+}
+
+
+/**
+ * SetTwoDotFourGhzFrequencyCmd
+ *
+ * Configure the frequency to use by the transceiver (1MHz unit) in the 2.4 GHz ISM band.
+ * f (in MHz) = 2400 + frequency_offset
+ * Note: I keep it simple now, but it may be relevant to use a smaller unit (100kHz ? 1 Hz ?)
+ **/
+message SetTwoDotFourGhzFrequencyCmd {
+  uint32 frequency_offset = 1;
+}
+
+
+/**
+ * SetFiveGhzFrequencyCmd
+ *
+ * Configure the frequency to use by the transceiver (1MHz unit) in the 5 GHz band.
+ * f (in MHz) = 5000 + frequency_offset
+ * Note: I keep it simple now, but it may be relevant to use a smaller unit (100kHz ? 1 Hz ?)
+**/
+message SetFiveGhzFrequencyCmd {
+  uint32 frequency_offset = 1;
+}
+
+
+/**
+ * SetDataRateCmd
+ *
+ * Configure the data rate to use (in bauds).
+ **/
+message SetDataRateCmd {
+  uint32 rate = 1;
+}
+
+
+/**
+ * SetEndiannessCmd
+ *
+ * Configure the endianness to use (little or big endian).
+ **/
+message SetEndiannessCmd {
+  Endianness endianess = 1;
+}
+
+
+/**
+ * SetTXPowerCmd
+ *
+ * Configure the TX power to use (MIN, MEDIUM, MAX).
+ * Note: I keep it simple now, but it may be relevant to use a fine grained unit.
+ **/
+message SetTXPowerCmd {
+  TXPower tx_power = 1;
+}
+
+
+/**
+ * SetPacketSizeCmd
+ *
+ * Configure the size of data received and transmitted (in number of bytes).
+ * May be limited depending on underlying hardware.
+ **/
+message SetPacketSizeCmd {
+  uint32 size = 1;
+}
+
+/**
+ * SetSyncWordCmd
+ *
+ * Configure synchronization word matching over-the-air patterns.
+ **/
+message SetSyncWordCmd {
+  bytes sync_word = 1;
+}
+
+
+/**
+ * SniffCmd
+ *
+ * Sniff raw packets matching the transceiver configuration.
+ *
+ * PhyPacket messages will be sent each time a packet
+ * is captured, containing raw data.
+ **/
+
+message SniffCmd {
+  optional bool iq_stream = 1;
+}
+
+
+/**
+ * SendCmd
+ *
+ * Send raw packets matching the transceiver configuration.
+ *
+ **/
+
+message SendCmd {
+   bytes pdu = 1;
+}
+
+/**
+ * SendCmd
+ *
+ * Send IQ stream matching the transceiver frequency and data rate configuration.
+ *
+ **/
+message SendRawCmd {
+  bytes iq = 1;
+}
+
+/**
+ * StartCmd
+ *
+ * Enable current mode.
+ **/
+message StartCmd {
+}
+
+/**
+ * StopCmd
+ *
+ * Disable current mode.
+ **/
+message StopCmd {
+}
