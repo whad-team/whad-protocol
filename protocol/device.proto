@@ -9,7 +9,7 @@ package discovery;
 /* Domains definition. */
 enum Domain {
     _DomainNone         = 0x00000000;
-    Generic             = 0x01000000;
+    Phy                 = 0x01000000;
     BtClassic           = 0x02000000;
     BtLE                = 0x03000000;
     Zigbee              = 0x04000000;

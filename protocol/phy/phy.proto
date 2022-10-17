@@ -71,18 +71,19 @@ enum PhyCommand {
 
   /* Send data */
   Send = 0x0e;
+  SendRaw = 0x0f;
 
   /* Jam data */
-  Jam = 0x0f;
+  Jam = 0x10;
 
   /* Monitor channel */
-  Monitor = 0x10;
+  Monitor = 0x11;
 
   /* Start */
-  Start = 0x11;
+  Start = 0x12;
 
   /* Stop */
-  Stop = 0x12;
+  Stop = 0x13;
 }
 
 /**************************************************
@@ -100,6 +101,11 @@ enum TXPower {
     LOW = 0;
     MEDIUM = 1;
     HIGH = 2;
+}
+
+enum JammingMode {
+    CONTINUOUS = 0;
+    REACTIVE = 1;
 }
 /**
  * SetASKModulationCmd
@@ -260,7 +266,7 @@ message SniffCmd {
  **/
 
 message SendCmd {
-   bytes pdu = 1;
+   bytes packet = 1;
 }
 
 /**
@@ -270,7 +276,7 @@ message SendCmd {
  *
  **/
 message SendRawCmd {
-  bytes iq = 1;
+  repeated int32 iq = 1[packed=true];
 }
 
 /**
@@ -288,3 +294,121 @@ message StartCmd {
  **/
 message StopCmd {
 }
+
+/**
+ * JamCmd
+ *
+ * Jam the selected channel.
+ * Mode can be provided, indicating if jamming is continuous or reactive.
+ **/
+message JamCmd {
+  JammingMode mode = 1;
+}
+
+
+/**
+ * MonitorCmd
+ *
+ * Monitor the selected channel.
+ **/
+message MonitorCmd {
+}
+
+
+/**
+ * PacketReceived
+ *
+ * Notifies reception of a Packet. This message must be used by devices
+ * that do not have access to raw IQ Stream (thus exposing the NoRawData
+ * capability).
+ *
+ **/
+
+ message PacketReceived {
+    uint32 frequency = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    bytes packet = 4;
+}
+
+
+/**
+ * RawPacketReceived
+ *
+ * Notifies reception of a Packet and its IQ stream.
+ *
+ **/
+
+ message RawPacketReceived {
+    uint32 frequency = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    bytes packet = 4;
+    repeated int32 iq = 5[packed=true];
+}
+
+
+
+/**
+ * Jammed
+ *
+ * Notifies jamming of a packet.
+ *
+ **/
+message Jammed {
+    uint32 timestamp = 1;
+}
+
+
+/**
+ * MonitoringReport
+ *
+ * Notifies output of monitoring procedure.
+ *
+ **/
+message MonitoringReport {
+    uint32 timestamp = 1;
+    repeated uint32 report = 2[packed=true];
+}
+
+
+/**
+ * Message
+ *
+ * Encapsulates any Physical layer message.
+ **/
+
+ message Message {
+
+    oneof msg {
+        /* Messages */
+        SetASKModulationCmd mod_ask = 1;
+        SetFSKModulationCmd mod_fsk = 2;
+        SetGFSKModulationCmd mod_gfsk = 3;
+        SetBPSKModulationCmd mod_bpsk = 4;
+        SetQPSKModulationCmd mod_qpsk = 5;
+        SetSubGhzFrequencyCmd freq_subghz = 6;
+        SetTwoDotFourGhzFrequencyCmd freq_twodotfourghz = 7;
+        SetFiveGhzFrequencyCmd freq_fiveghz = 8;
+        SetDataRateCmd datarate = 9;
+        SetEndiannessCmd endianness = 10;
+        SetTXPowerCmd tx_power = 11;
+        SetPacketSizeCmd packet_size = 12;
+        SetSyncWordCmd sync_word = 13;
+        SniffCmd sniff = 14;
+        SendCmd send = 15;
+        SendRawCmd send_raw = 16;
+        StartCmd start = 17;
+        StopCmd stop = 18;
+        JamCmd jam = 19;
+        MonitorCmd monitor = 20;
+
+
+        /* Notifications */
+        PacketReceived packet = 21;
+        RawPacketReceived raw_packet = 22;
+        Jammed jammed = 23;
+        MonitoringReport monitor_report = 24;
+
+    }
+ }
