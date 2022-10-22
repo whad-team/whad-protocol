@@ -154,6 +154,7 @@ message SetBPSKModulationCmd {
  * Configure the transceiver to use Quadrature Phase Shift Keying modulation scheme.
  **/
 message SetQPSKModulationCmd {
+  bool offset_qpsk = 1;
 }
 
 
