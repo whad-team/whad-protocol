@@ -99,6 +99,9 @@ enum BleCommand {
     HijackBoth              = 0x15;
 
     ReactiveJam             = 0x16;
+
+    /* Sequence mode */
+    PrepareSequence         = 0x17;
 }
 
 
@@ -426,6 +429,32 @@ message ReactiveJamCmd {
     uint32 position = 3;
 }
 
+message PrepareSequenceCmd {
+  message ReceptionTrigger {
+    bytes pattern = 1;
+    bytes mask = 2;
+    uint32 offset = 3;
+  }
+  message ConnectionEventTrigger {
+    uint32 connection_event = 1;
+  }
+  message ManualTrigger {
+  }
+  message Trigger {
+    oneof trigger {
+      ReceptionTrigger reception = 1;
+      ConnectionEventTrigger connection_event = 2;
+      ManualTrigger manual = 3;
+    }
+  }
+  message PendingPacket {
+    bytes packet = 1;
+  }
+  Trigger trigger = 1;
+  BleDirection direction = 2;
+  repeated PendingPacket sequence = 3;
+
+}
 /*******************************************
  *******************************************
  * Ble Notification messages
@@ -619,7 +648,7 @@ message RawPduReceived {
         HijackBothCmd hijack_both = 22;
         SetEncryptionCmd encryption = 33;
         ReactiveJamCmd reactive_jam = 34;
-
+        PrepareSequenceCmd prepare = 35;
         /* Notifications */
         AccessAddressDiscovered aa_disc = 23;
         AdvPduReceived adv_pdu = 24;
