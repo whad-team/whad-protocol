@@ -11,6 +11,10 @@ ble.SniffActiveConnCmd.channel_map max_size:5, fixed_length: true
 ble.SniffActiveConnCmd.monitored_channels max_size:5, fixed_length: true
 
 ble.ReactiveJamCmd.pattern max_size: 20
+ble.PrepareSequenceCmd.ReceptionTrigger.pattern max_size: 255
+ble.PrepareSequenceCmd.ReceptionTrigger.mask max_size: 255
+ble.PrepareSequenceCmd.PendingPacket.packet max_size: 255
+ble.PrepareSequenceCmd.sequence max_count: 25
 
 # Notifications
 
