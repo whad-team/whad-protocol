@@ -102,7 +102,9 @@ enum BleCommand {
 
     /* Sequence mode */
     PrepareSequence         = 0x17;
-}
+    TriggerSequence         = 0x18;
+  }
+
 
 
 enum BleAdvType {
@@ -127,6 +129,10 @@ enum BleAddrType {
     RANDOM = 1;
 }
 
+enum TriggerState {
+    UNTRIGGERED = 0;
+    TRIGGERED = 1;
+}
 /**************************************************
  **************************************************
  * BLE command messages
@@ -455,12 +461,20 @@ message PrepareSequenceCmd {
   repeated PendingPacket sequence = 3;
 
 }
+
+message TriggerSequenceCmd {
+  uint32 id = 1;
+}
+
 /*******************************************
  *******************************************
  * Ble Notification messages
  *******************************************
  *******************************************/
-
+message TriggerChange {
+  uint32 id = 1;
+  TriggerState state = 2;
+}
 
 message AccessAddressDiscovered {
     uint32 access_address = 1;
@@ -649,6 +663,8 @@ message RawPduReceived {
         SetEncryptionCmd encryption = 33;
         ReactiveJamCmd reactive_jam = 34;
         PrepareSequenceCmd prepare = 35;
+        TriggerSequenceCmd trigger = 36;
+
         /* Notifications */
         AccessAddressDiscovered aa_disc = 23;
         AdvPduReceived adv_pdu = 24;
@@ -660,5 +676,6 @@ message RawPduReceived {
         RawPduReceived raw_pdu = 30;
         Injected injected = 31;
         Desynchronized desynchronized = 32;
+        TriggerChange trigger_change = 37;
     }
  }
