@@ -287,6 +287,11 @@ message CentralModeCmd {
 message ConnectToCmd {
     bytes bd_address = 1;
     BleAddrType addr_type = 2;
+    optional uint32 access_address = 3;
+    optional bytes channel_map = 4;
+    optional uint32 hop_interval = 5;
+    optional uint32 hop_increment = 6;
+    optional uint32 crc_init = 7;
 }
 
 /**

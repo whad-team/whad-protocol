@@ -7,6 +7,9 @@ ble.SendPDUCmd.pdu max_size:255
 
 ble.SniffAccessAddressCmd.monitored_channels max_size:5, fixed_length: true
 
+
+ble.ConnectToCmd.channel_map max_size:5, fixed_length: true
+
 ble.SniffActiveConnCmd.channel_map max_size:5, fixed_length: true
 ble.SniffActiveConnCmd.monitored_channels max_size:5, fixed_length: true
 
