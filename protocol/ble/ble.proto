@@ -103,6 +103,7 @@ enum BleCommand {
     /* Sequence mode */
     PrepareSequence         = 0x17;
     TriggerSequence         = 0x18;
+    DeleteSequence          = 0x19;
   }
 
 
@@ -468,6 +469,9 @@ message TriggerSequenceCmd {
   uint32 id = 1;
 }
 
+message DeleteSequenceCmd {
+  uint32 id = 1;
+}
 /*******************************************
  *******************************************
  * Ble Notification messages
@@ -665,6 +669,7 @@ message RawPduReceived {
         ReactiveJamCmd reactive_jam = 34;
         PrepareSequenceCmd prepare = 35;
         TriggerSequenceCmd trigger = 36;
+        DeleteSequenceCmd delete_seq = 38;
 
         /* Notifications */
         AccessAddressDiscovered aa_disc = 23;
