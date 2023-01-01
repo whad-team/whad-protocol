@@ -112,12 +112,14 @@ message JamCmd {
  **/
 message SendCmd {
     uint32 channel = 1;
-    bytes pdu = 2;
+    uint32 retransmission_count = 2;
+    bytes pdu = 3;
 }
 
 message SendRawCmd {
    uint32 channel = 1;
-   bytes pdu = 2;
+   uint32 retransmission_count = 2;
+   bytes pdu = 3;
 }
 
 /**
