@@ -1,6 +1,7 @@
 # Commands
 esb.SetNodeAddressCmd.address max_size:5
 esb.SniffCmd.address max_size:5
+esb.FollowCmd.monitored_channels max_size:100
 
 esb.SendCmd.pdu max_size:255
 esb.SendRawCmd.pdu max_size:255

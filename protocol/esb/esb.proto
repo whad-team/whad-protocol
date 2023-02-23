@@ -38,28 +38,30 @@ enum ESBCommand {
 
     /* Sniff packets. */
     Sniff                     = 0x01;
+    SniffPromiscuous          = 0x02;
+    Follow                    = 0x03;
 
     /* Jam packets. */
-    Jam                       = 0x02;
+    Jam                       = 0x04;
 
     /* Send packets. */
-    Send                      = 0x03;
+    Send                      = 0x05;
 
-    SendRaw                   = 0x04;
+    SendRaw                   = 0x06;
 
     /**
      * High-level commands.
      **/
 
     /* Primary Receiver (PRX) mode. */
-    PrimaryReceiverMode       = 0x05;
+    PrimaryReceiverMode       = 0x07;
 
     /* Primary Transmitter (PTX) mode. */
-    PrimaryTransmitterMode    = 0x06;
+    PrimaryTransmitterMode    = 0x08;
 
     /* Start and Stop commands shared with node-related mode. */
-    Start                     = 0x07;
-    Stop                      = 0x08;
+    Start                     = 0x09;
+    Stop                      = 0x0a;
 }
 
 /**************************************************
@@ -76,19 +78,50 @@ message SetNodeAddressCmd {
 /**
  * SniffCmd
  *
- * Sniff Enhanced ShockBurst packets sent on a given channel.
+ * Sniff Enhanced ShockBurst packets sent on a given channel with a given address.
  *
  * ESBPacketRaw messages will be sent each time a packet
  * is captured, containing raw data.
  **/
 
 message SniffCmd {
-
     /* Channel can be specified, the device will only
        listen on this specific channel. */
-    uint32 channel = 1; // special value: 0xFF (autofind)
-    bytes address = 2;
-    bool show_acknowledgements = 3;
+    bytes address = 1;
+    bool show_acknowledgements = 2;
+    uint32 channel = 3;
+}
+
+/**
+ * SniffPromiscuousCmd
+ *
+ * Sniff any Enhanced ShockBurst packets sent on a given channel.
+ *
+ * ESBPacketRaw messages will be sent each time a packet
+ * is captured, containing raw data.
+ **/
+
+message SniffPromiscuousCmd {
+    /* Channel can be specified, the device will only
+       listen on this specific channel. */
+    uint32 channel = 1;
+}
+
+/**
+ * FollowCmd
+ *
+ * Actively follow an Enhanced ShockBurst communication on a set of channels.
+ *
+ * ESBPacketRaw messages will be sent each time a packet
+ * is captured, containing raw data.
+ **/
+
+message FollowCmd {
+    bytes address = 1;
+    bool show_acknowledgements = 2;
+    uint32 interval = 3;
+    uint32 timeout = 4;
+    bytes monitored_channels = 5;
 }
 
 /**
@@ -212,19 +245,22 @@ message RawPduReceived {
         /* Messages */
         SetNodeAddressCmd set_node_addr = 1;
         SniffCmd sniff = 2;
-        JamCmd jam = 3;
-        SendCmd send = 4;
-        SendRawCmd send_raw = 5;
+        SniffPromiscuousCmd sniff_promiscuous = 3;
+        FollowCmd follow = 4;
 
-        PrimaryReceiverModeCmd prx = 6;
-        PrimaryTransmitterModeCmd ptx = 7;
+        JamCmd jam = 5;
+        SendCmd send = 6;
+        SendRawCmd send_raw = 7;
 
-        StartCmd start = 8;
-        StopCmd stop = 9;
+        PrimaryReceiverModeCmd prx = 8;
+        PrimaryTransmitterModeCmd ptx = 9;
+
+        StartCmd start = 10;
+        StopCmd stop = 11;
 
         /* Notifications */
-        Jammed jammed = 10;
-        RawPduReceived raw_pdu = 11;
-        PduReceived pdu = 12;
+        Jammed jammed = 12;
+        RawPduReceived raw_pdu = 13;
+        PduReceived pdu = 14;
     }
  }
