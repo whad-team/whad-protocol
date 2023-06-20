@@ -42,24 +42,23 @@ enum PhyCommand {
   SetQPSKModulation = 0x04;
 
   /* Set frequency */
-  SetSubGhzFrequency = 0x05;
-  SetTwoDotFourGhzFrequency = 0x06;
-  SetFiveGhzFrequency = 0x07;
+  GetSupportedFrequencies = 0x05;
+  SetFrequency = 0x06;
 
   /* Set datarate */
-  SetDataRate = 0x08;
+  SetDataRate = 0x07;
 
   /* Set endianness */
-  SetEndianness = 0x09;
+  SetEndianness = 0x08;
 
   /* Set TX power */
-  SetTXPower = 0x0a;
+  SetTXPower = 0x09;
 
   /* Set maximum packet size */
-  SetPacketSize = 0x0b;
+  SetPacketSize = 0x0a;
 
   /* Set Synchronization word */
-  SetSyncWord = 0x0c;
+  SetSyncWord = 0x0b;
 
 
   /**
@@ -67,23 +66,23 @@ enum PhyCommand {
    **/
 
   /* Sniff data */
-  Sniff = 0x0d;
+  Sniff = 0x0c;
 
   /* Send data */
-  Send = 0x0e;
-  SendRaw = 0x0f;
+  Send = 0x0d;
+  SendRaw = 0x0e;
 
   /* Jam data */
-  Jam = 0x10;
+  Jam = 0x0f;
 
   /* Monitor channel */
-  Monitor = 0x11;
+  Monitor = 0x10;
 
   /* Start */
-  Start = 0x12;
+  Start = 0x11;
 
   /* Stop */
-  Stop = 0x13;
+  Stop = 0x12;
 }
 
 /**************************************************
@@ -159,38 +158,23 @@ message SetQPSKModulationCmd {
 
 
 /**
- * SetSubGhzFrequencyCmd
+ * GetSupportedFrequenciesCmd
  *
- * Configure the frequency to use by the transceiver (1MHz unit) in the Sub GHz band.
- * f (in MHz) = 0 + frequency_offset
- * Note: I keep it simple now, but it may be relevant to use a smaller unit (100kHz ? 1 Hz ?)
+ * Get a list of supported frequency range.
+ *
  **/
-message SetSubGhzFrequencyCmd {
-  uint32 frequency_offset = 1;
+message GetSupportedFrequenciesCmd {
 }
 
 
 /**
- * SetTwoDotFourGhzFrequencyCmd
+ * SetFrequencyCmd
  *
- * Configure the frequency to use by the transceiver (1MHz unit) in the 2.4 GHz ISM band.
- * f (in MHz) = 2400 + frequency_offset
- * Note: I keep it simple now, but it may be relevant to use a smaller unit (100kHz ? 1 Hz ?)
+ * Configure the frequency to use by the transceiver (in Hz).
+ *
  **/
-message SetTwoDotFourGhzFrequencyCmd {
-  uint32 frequency_offset = 1;
-}
-
-
-/**
- * SetFiveGhzFrequencyCmd
- *
- * Configure the frequency to use by the transceiver (1MHz unit) in the 5 GHz band.
- * f (in MHz) = 5000 + frequency_offset
- * Note: I keep it simple now, but it may be relevant to use a smaller unit (100kHz ? 1 Hz ?)
-**/
-message SetFiveGhzFrequencyCmd {
-  uint32 frequency_offset = 1;
+message SetFrequencyCmd {
+  uint32 frequency = 1;
 }
 
 
@@ -372,6 +356,19 @@ message MonitoringReport {
     repeated uint32 report = 2[packed=true];
 }
 
+/**
+* SupportedFrequencyRanges
+*
+* Notifies a list of supported frequency range.
+*
+**/
+message SupportedFrequencyRanges {
+  message FrequencyRange {
+    uint32 start = 1;
+    uint32 end = 2;
+  }
+  repeated FrequencyRange frequency_ranges = 1;
+}
 
 /**
  * Message
@@ -388,28 +385,29 @@ message MonitoringReport {
         SetGFSKModulationCmd mod_gfsk = 3;
         SetBPSKModulationCmd mod_bpsk = 4;
         SetQPSKModulationCmd mod_qpsk = 5;
-        SetSubGhzFrequencyCmd freq_subghz = 6;
-        SetTwoDotFourGhzFrequencyCmd freq_twodotfourghz = 7;
-        SetFiveGhzFrequencyCmd freq_fiveghz = 8;
-        SetDataRateCmd datarate = 9;
-        SetEndiannessCmd endianness = 10;
-        SetTXPowerCmd tx_power = 11;
-        SetPacketSizeCmd packet_size = 12;
-        SetSyncWordCmd sync_word = 13;
-        SniffCmd sniff = 14;
-        SendCmd send = 15;
-        SendRawCmd send_raw = 16;
-        StartCmd start = 17;
-        StopCmd stop = 18;
-        JamCmd jam = 19;
-        MonitorCmd monitor = 20;
+
+        GetSupportedFrequenciesCmd get_supported_freq = 6;
+        SetFrequencyCmd set_freq = 7;
+
+        SetDataRateCmd datarate = 8;
+        SetEndiannessCmd endianness = 9;
+        SetTXPowerCmd tx_power = 10;
+        SetPacketSizeCmd packet_size = 11;
+        SetSyncWordCmd sync_word = 12;
+        SniffCmd sniff = 13;
+        SendCmd send = 14;
+        SendRawCmd send_raw = 15;
+        StartCmd start = 16;
+        StopCmd stop = 17;
+        JamCmd jam = 18;
+        MonitorCmd monitor = 19;
 
 
         /* Notifications */
-        PacketReceived packet = 21;
-        RawPacketReceived raw_packet = 22;
-        Jammed jammed = 23;
-        MonitoringReport monitor_report = 24;
-
+        PacketReceived packet = 20;
+        RawPacketReceived raw_packet = 21;
+        Jammed jammed = 22;
+        MonitoringReport monitor_report = 23;
+        SupportedFrequencyRanges supported_freq = 24;
     }
  }
