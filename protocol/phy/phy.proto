@@ -216,7 +216,7 @@ message SetTXPowerCmd {
  * May be limited depending on underlying hardware.
  **/
 message SetPacketSizeCmd {
-  uint32 size = 1;
+  uint32 packet_size = 1;
 }
 
 /**
