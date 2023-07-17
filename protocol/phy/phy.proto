@@ -40,25 +40,26 @@ enum PhyCommand {
   SetGFSKModulation = 0x02;
   SetBPSKModulation = 0x03;
   SetQPSKModulation = 0x04;
-
+  Set4FSKModulation = 0x05;
+  SetMSKModulation  = 0x06;
   /* Set frequency */
-  GetSupportedFrequencies = 0x05;
-  SetFrequency = 0x06;
+  GetSupportedFrequencies = 0x07;
+  SetFrequency = 0x08;
 
   /* Set datarate */
-  SetDataRate = 0x07;
+  SetDataRate = 0x09;
 
   /* Set endianness */
-  SetEndianness = 0x08;
+  SetEndianness = 0x0a;
 
   /* Set TX power */
-  SetTXPower = 0x09;
+  SetTXPower = 0x0b ;
 
   /* Set maximum packet size */
-  SetPacketSize = 0x0a;
+  SetPacketSize = 0x0c ;
 
   /* Set Synchronization word */
-  SetSyncWord = 0x0b;
+  SetSyncWord = 0x0d;
 
 
   /**
@@ -66,23 +67,23 @@ enum PhyCommand {
    **/
 
   /* Sniff data */
-  Sniff = 0x0c;
+  Sniff = 0x0e;
 
   /* Send data */
-  Send = 0x0d;
-  SendRaw = 0x0e;
+  Send = 0x0f;
+  SendRaw = 0x10;
 
   /* Jam data */
-  Jam = 0x0f;
+  Jam = 0x11;
 
   /* Monitor channel */
-  Monitor = 0x10;
+  Monitor = 0x12;
 
   /* Start */
-  Start = 0x11;
+  Start = 0x13;
 
   /* Stop */
-  Stop = 0x12;
+  Stop = 0x13;
 }
 
 /**************************************************
@@ -126,6 +127,16 @@ message SetFSKModulationCmd {
   uint32 deviation = 1;
 }
 
+/**
+ * Set4FSKModulationCmd
+ *
+ * Configure the transceiver to use 4-Frequency Shift Keying modulation scheme.
+ * The deviation of the modulation can be provided.
+ **/
+message Set4FSKModulationCmd {
+  uint32 deviation = 1;
+}
+
 
 /**
  * SetGFSKModulationCmd
@@ -137,7 +148,15 @@ message SetGFSKModulationCmd {
   uint32 deviation = 1;
 }
 
-
+/**
+ * SetMSKModulationCmd
+ *
+ * Configure the transceiver to use Gaussian filter with o=0.5 Frequency Shift Keying modulation scheme.
+ * The deviation of the modulation can be provided.
+ **/
+message SetMSKModulationCmd {
+  uint32 deviation = 1;
+}
 /**
  * SetBPSKModulationCmd
  *
@@ -385,29 +404,31 @@ message SupportedFrequencyRanges {
         SetGFSKModulationCmd mod_gfsk = 3;
         SetBPSKModulationCmd mod_bpsk = 4;
         SetQPSKModulationCmd mod_qpsk = 5;
+        Set4FSKModulationCmd mod_4fsk = 6;
+        SetMSKModulationCmd mod_msk = 7;
 
-        GetSupportedFrequenciesCmd get_supported_freq = 6;
-        SetFrequencyCmd set_freq = 7;
+        GetSupportedFrequenciesCmd get_supported_freq = 8;
+        SetFrequencyCmd set_freq = 9;
 
-        SetDataRateCmd datarate = 8;
-        SetEndiannessCmd endianness = 9;
-        SetTXPowerCmd tx_power = 10;
-        SetPacketSizeCmd packet_size = 11;
-        SetSyncWordCmd sync_word = 12;
-        SniffCmd sniff = 13;
-        SendCmd send = 14;
-        SendRawCmd send_raw = 15;
-        StartCmd start = 16;
-        StopCmd stop = 17;
-        JamCmd jam = 18;
-        MonitorCmd monitor = 19;
+        SetDataRateCmd datarate = 10;
+        SetEndiannessCmd endianness = 11;
+        SetTXPowerCmd tx_power = 12;
+        SetPacketSizeCmd packet_size = 13;
+        SetSyncWordCmd sync_word = 14;
+        SniffCmd sniff = 15;
+        SendCmd send = 16;
+        SendRawCmd send_raw = 17;
+        StartCmd start = 18;
+        StopCmd stop = 19;
+        JamCmd jam = 20;
+        MonitorCmd monitor = 21;
 
 
         /* Notifications */
-        PacketReceived packet = 20;
-        RawPacketReceived raw_packet = 21;
-        Jammed jammed = 22;
-        MonitoringReport monitor_report = 23;
-        SupportedFrequencyRanges supported_freq = 24;
+        PacketReceived packet = 22;
+        RawPacketReceived raw_packet = 23;
+        Jammed jammed = 24;
+        MonitoringReport monitor_report = 25;
+        SupportedFrequencyRanges supported_freq = 26;
     }
  }
