@@ -42,6 +42,7 @@ enum PhyCommand {
   SetQPSKModulation = 0x04;
   Set4FSKModulation = 0x05;
   SetMSKModulation  = 0x06;
+
   /* Set frequency */
   GetSupportedFrequencies = 0x07;
   SetFrequency = 0x08;
@@ -84,6 +85,10 @@ enum PhyCommand {
 
   /* Stop */
   Stop = 0x14;
+
+  /* Additional LoRa modulation. */
+  SetLoRaModulation = 0x15;
+
 }
 
 /**************************************************
@@ -107,6 +112,29 @@ enum JammingMode {
     CONTINUOUS = 0;
     REACTIVE = 1;
 }
+
+enum LoRaSpreadingFactor {
+    SF7 = 0;
+    SF8 = 1;
+    SF9 = 2;
+    SF10 = 3;
+    SF11 = 4;
+    SF12 = 5;
+}
+
+enum LoRaCodingRate {
+    CR45 = 0;
+    CR46 = 1;
+    CR47 = 2;
+    CR48 = 3;
+}
+
+enum LoRaBandwidth {
+    BW125 = 0;
+    BW250 = 1;
+    BW500 = 2;
+}
+
 /**
  * SetASKModulationCmd
  *
@@ -175,6 +203,16 @@ message SetQPSKModulationCmd {
   bool offset_qpsk = 1;
 }
 
+/**
+ * SetLoRaModulationCmd
+ *
+ * Configure the transceiver to use LoRa modulation scheme.
+ **/
+message SetLoRaModulationCmd {
+    LoRaBandwidth bandwidth = 1;
+    LoRaSpreadingFactor spreading_factor = 2;
+    LoRaCodingRate coding_rate = 3;
+}
 
 /**
  * GetSupportedFrequenciesCmd
@@ -430,5 +468,8 @@ message SupportedFrequencyRanges {
         Jammed jammed = 24;
         MonitoringReport monitor_report = 25;
         SupportedFrequencyRanges supported_freq = 26;
+
+        /* Additional LoRa modulation. */
+        SetLoRaModulationCmd mod_lora = 27;
     }
  }
