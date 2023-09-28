@@ -34,77 +34,81 @@ package ble;
  *
  **/
 
-
 enum BleCommand {
-    /**
-     * Low-level commands
-     **/
+  /**
+   * Low-level commands
+   **/
 
-    /* Set BD address. */
-    SetBdAddress            = 0x00;
+  /* Set BD address. */
+  SetBdAddress = 0x00;
 
-    /* Sniff advertisements. */
-    SniffAdv                = 0x01;
+  /* Sniff advertisements. */
+  SniffAdv = 0x01;
 
-    /* Jam advertisements. */
-    JamAdv                  = 0x02;
+  /* Jam advertisements. */
+  JamAdv = 0x02;
 
-    /* Jam advertisements on a single channel. */
-    JamAdvOnChannel         = 0x03;
+  /* Jam advertisements on a single channel. */
+  JamAdvOnChannel = 0x03;
 
-    /* Sniff CONN_REQ PDUs and sync with connection. */
-    SniffConnReq            = 0x04;
+  /* Jam a specific pattern on a single channel. */
+  ReactiveJam = 0x04;
 
-    /* Sniff active connection. */
-    SniffAccessAddress      = 0x05;
-    SniffActiveConn         = 0x06;
-
-    /* Connection jamming. */
-    JamConn                 = 0x07;
+  /* Sniff CONN_REQ PDUs and sync with connection. */    
+  SniffConnReq = 0x05;
 
 
-    /**
-     * High-level commands.
-     **/
+  /* Sniff active connection. */
+  SniffAccessAddress = 0x06;
+  SniffActiveConn = 0x07;
 
-     /* Scanner mode. */
-    ScanMode                = 0x08;
 
-    /* Advertiser mode. */
-    AdvMode                 = 0x09;
-    SetAdvData              = 0x0a;
-    //SetAdvData shared with Peripheral mode.
+  /* Connection jamming. */
+  JamConn = 0x08;
 
-    /* Central mode. */
-    CentralMode             = 0x0b;
-    ConnectTo               = 0x0c;
-    SendRawPDU              = 0x0d;
-    SendPDU                 = 0x0e;
-    Disconnect              = 0x0f;
+  /**
+   * High-level commands.
+   **/
 
-    /* Peripheral mode. */
-    PeripheralMode          = 0x10;
-    // SetAdvData and SetScanRspData are shared accross
-    // Peripheral and Advertiser modes
-    // SendPDU is shared with Central mode
-    // Disconnect is shared with Central mode
+   /* Scanner mode. */
+  ScanMode = 0x09;
 
-    /* Common to multiple modes. */
-    Start                   = 0x11;
-    Stop                    = 0x12;
+  /* Advertiser mode. */
+  AdvMode = 0x0a;
+  SetAdvData = 0x0b;
+   //SetAdvData shared with Peripheral mode.
 
-    /* Hijack mode. */
-    HijackMaster            = 0x13;
-    HijackSlave             = 0x14;
-    HijackBoth              = 0x15;
+  /* Central mode. */
+  CentralMode = 0x0c;
+  ConnectTo = 0x0d;
+  SendRawPDU = 0x0e;
+  SendPDU = 0x0f;
+  Disconnect = 0x10;
 
-    ReactiveJam             = 0x16;
+  /* Peripheral mode. */
+  PeripheralMode = 0x11;
 
-    /* Sequence mode */
-    PrepareSequence         = 0x17;
-    TriggerSequence         = 0x18;
-    DeleteSequence          = 0x19;
-  }
+  // SetAdvData and SetScanRspData are shared accross
+  // Peripheral and Advertiser modes
+  // SendPDU is shared with Central mode
+  // Disconnect is shared with Central mode
+
+  /* Common to multiple modes. */
+  Start = 0x12;
+  Stop = 0x13;
+  SetEncryption = 0x14;
+
+  /* Hijack mode. */
+  HijackMaster = 0x15;
+  HijackSlave = 0x16;
+  HijackBoth = 0x17;
+
+  /* Sequence mode */
+  PrepareSequence = 0x18;
+  TriggerSequence = 0x19;
+  DeleteSequence = 0x1a;
+
+}
 
 
 
@@ -421,14 +425,21 @@ message HijackBothCmd {
  * Enable/disable link-layer encryption for the current connection, in Central or
  * Peripheral mode, providing key and IV.
  *
+ * `ll_key` specifies the 128-bit Link Layer encryption key
+ * `ll_iv` specifies the 128-bit initialization vector
  * `key` specifies the 128-bit encryption key
- * `iv` specifies the 128-bit initialization vector
+ * `rand` specifies the 64-bit random value
+ * `ediv` specifies the 16-bit EDIV value
  **/
 
 message SetEncryptionCmd {
-    bool enabled = 1;
-    bytes key = 2;
-    bytes iv = 3;
+    int32 conn_handle = 1;
+    bool enabled = 2;
+    bytes ll_key = 3;
+    bytes ll_iv = 4;
+    bytes key = 5;
+    bytes rand = 6;
+    bytes ediv = 7;
 }
 
 message ReactiveJamCmd {
