@@ -212,6 +212,9 @@ message SetLoRaModulationCmd {
     LoRaBandwidth bandwidth = 1;
     LoRaSpreadingFactor spreading_factor = 2;
     LoRaCodingRate coding_rate = 3;
+    uint32 preamble_length = 4;
+    bool enable_crc = 5;
+    bool explicit = 6;
 }
 
 /**
