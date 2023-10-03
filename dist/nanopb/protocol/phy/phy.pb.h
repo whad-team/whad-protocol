@@ -45,7 +45,9 @@ typedef enum _phy_PhyCommand { /* *
     /* Start */
     phy_PhyCommand_Start = 19, 
     /* Stop */
-    phy_PhyCommand_Stop = 20 
+    phy_PhyCommand_Stop = 20, 
+    /* Additional LoRa modulation. */
+    phy_PhyCommand_SetLoRaModulation = 21 
 } phy_PhyCommand;
 
 typedef enum _phy_Endianness { 
@@ -63,6 +65,22 @@ typedef enum _phy_JammingMode {
     phy_JammingMode_CONTINUOUS = 0, 
     phy_JammingMode_REACTIVE = 1 
 } phy_JammingMode;
+
+typedef enum _phy_LoRaSpreadingFactor { 
+    phy_LoRaSpreadingFactor_SF7 = 0, 
+    phy_LoRaSpreadingFactor_SF8 = 1, 
+    phy_LoRaSpreadingFactor_SF9 = 2, 
+    phy_LoRaSpreadingFactor_SF10 = 3, 
+    phy_LoRaSpreadingFactor_SF11 = 4, 
+    phy_LoRaSpreadingFactor_SF12 = 5 
+} phy_LoRaSpreadingFactor;
+
+typedef enum _phy_LoRaCodingRate { 
+    phy_LoRaCodingRate_CR45 = 0, 
+    phy_LoRaCodingRate_CR46 = 1, 
+    phy_LoRaCodingRate_CR47 = 2, 
+    phy_LoRaCodingRate_CR48 = 3 
+} phy_LoRaCodingRate;
 
 /* Struct definitions */
 /* *
@@ -234,6 +252,19 @@ typedef struct _phy_SetGFSKModulationCmd {
 } phy_SetGFSKModulationCmd;
 
 /* *
+ SetLoRaModulationCmd
+
+ Configure the transceiver to use LoRa modulation scheme. */
+typedef struct _phy_SetLoRaModulationCmd { 
+    uint32_t bandwidth;
+    phy_LoRaSpreadingFactor spreading_factor;
+    phy_LoRaCodingRate coding_rate;
+    uint32_t preamble_length;
+    bool enable_crc;
+    bool explicit;
+} phy_SetLoRaModulationCmd;
+
+/* *
  SetMSKModulationCmd
 
  Configure the transceiver to use Gaussian filter with o=0.5 Frequency Shift Keying modulation scheme.
@@ -317,14 +348,15 @@ typedef struct _phy_Message {
         phy_Jammed jammed;
         phy_MonitoringReport monitor_report;
         phy_SupportedFrequencyRanges supported_freq;
+        phy_SetLoRaModulationCmd mod_lora;
     } msg;
 } phy_Message;
 
 
 /* Helper constants for enums */
 #define _phy_PhyCommand_MIN phy_PhyCommand_SetASKModulation
-#define _phy_PhyCommand_MAX phy_PhyCommand_Stop
-#define _phy_PhyCommand_ARRAYSIZE ((phy_PhyCommand)(phy_PhyCommand_Stop+1))
+#define _phy_PhyCommand_MAX phy_PhyCommand_SetLoRaModulation
+#define _phy_PhyCommand_ARRAYSIZE ((phy_PhyCommand)(phy_PhyCommand_SetLoRaModulation+1))
 
 #define _phy_Endianness_MIN phy_Endianness_BIG
 #define _phy_Endianness_MAX phy_Endianness_LITTLE
@@ -337,6 +369,14 @@ typedef struct _phy_Message {
 #define _phy_JammingMode_MIN phy_JammingMode_CONTINUOUS
 #define _phy_JammingMode_MAX phy_JammingMode_REACTIVE
 #define _phy_JammingMode_ARRAYSIZE ((phy_JammingMode)(phy_JammingMode_REACTIVE+1))
+
+#define _phy_LoRaSpreadingFactor_MIN phy_LoRaSpreadingFactor_SF7
+#define _phy_LoRaSpreadingFactor_MAX phy_LoRaSpreadingFactor_SF12
+#define _phy_LoRaSpreadingFactor_ARRAYSIZE ((phy_LoRaSpreadingFactor)(phy_LoRaSpreadingFactor_SF12+1))
+
+#define _phy_LoRaCodingRate_MIN phy_LoRaCodingRate_CR45
+#define _phy_LoRaCodingRate_MAX phy_LoRaCodingRate_CR48
+#define _phy_LoRaCodingRate_ARRAYSIZE ((phy_LoRaCodingRate)(phy_LoRaCodingRate_CR48+1))
 
 
 #ifdef __cplusplus
@@ -351,6 +391,7 @@ extern "C" {
 #define phy_SetMSKModulationCmd_init_default     {0}
 #define phy_SetBPSKModulationCmd_init_default    {0}
 #define phy_SetQPSKModulationCmd_init_default    {0}
+#define phy_SetLoRaModulationCmd_init_default    {0, _phy_LoRaSpreadingFactor_MIN, _phy_LoRaCodingRate_MIN, 0, 0, 0}
 #define phy_GetSupportedFrequenciesCmd_init_default {0}
 #define phy_SetFrequencyCmd_init_default         {0}
 #define phy_SetDataRateCmd_init_default          {0}
@@ -379,6 +420,7 @@ extern "C" {
 #define phy_SetMSKModulationCmd_init_zero        {0}
 #define phy_SetBPSKModulationCmd_init_zero       {0}
 #define phy_SetQPSKModulationCmd_init_zero       {0}
+#define phy_SetLoRaModulationCmd_init_zero       {0, _phy_LoRaSpreadingFactor_MIN, _phy_LoRaCodingRate_MIN, 0, 0, 0}
 #define phy_GetSupportedFrequenciesCmd_init_zero {0}
 #define phy_SetFrequencyCmd_init_zero            {0}
 #define phy_SetDataRateCmd_init_zero             {0}
@@ -425,6 +467,12 @@ extern "C" {
 #define phy_SetFSKModulationCmd_deviation_tag    1
 #define phy_SetFrequencyCmd_frequency_tag        1
 #define phy_SetGFSKModulationCmd_deviation_tag   1
+#define phy_SetLoRaModulationCmd_bandwidth_tag   1
+#define phy_SetLoRaModulationCmd_spreading_factor_tag 2
+#define phy_SetLoRaModulationCmd_coding_rate_tag 3
+#define phy_SetLoRaModulationCmd_preamble_length_tag 4
+#define phy_SetLoRaModulationCmd_enable_crc_tag  5
+#define phy_SetLoRaModulationCmd_explicit_tag    6
 #define phy_SetMSKModulationCmd_deviation_tag    1
 #define phy_SetPacketSizeCmd_packet_size_tag     1
 #define phy_SetQPSKModulationCmd_offset_qpsk_tag 1
@@ -459,6 +507,7 @@ extern "C" {
 #define phy_Message_jammed_tag                   24
 #define phy_Message_monitor_report_tag           25
 #define phy_Message_supported_freq_tag           26
+#define phy_Message_mod_lora_tag                 27
 
 /* Struct field encoding specification for nanopb */
 #define phy_SetASKModulationCmd_FIELDLIST(X, a) \
@@ -495,6 +544,16 @@ X(a, STATIC,   SINGULAR, UINT32,   deviation,         1)
 X(a, STATIC,   SINGULAR, BOOL,     offset_qpsk,       1)
 #define phy_SetQPSKModulationCmd_CALLBACK NULL
 #define phy_SetQPSKModulationCmd_DEFAULT NULL
+
+#define phy_SetLoRaModulationCmd_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   bandwidth,         1) \
+X(a, STATIC,   SINGULAR, UENUM,    spreading_factor,   2) \
+X(a, STATIC,   SINGULAR, UENUM,    coding_rate,       3) \
+X(a, STATIC,   SINGULAR, UINT32,   preamble_length,   4) \
+X(a, STATIC,   SINGULAR, BOOL,     enable_crc,        5) \
+X(a, STATIC,   SINGULAR, BOOL,     explicit,          6)
+#define phy_SetLoRaModulationCmd_CALLBACK NULL
+#define phy_SetLoRaModulationCmd_DEFAULT NULL
 
 #define phy_GetSupportedFrequenciesCmd_FIELDLIST(X, a) \
 
@@ -632,7 +691,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,packet,msg.packet),  22) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,raw_packet,msg.raw_packet),  23) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,jammed,msg.jammed),  24) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,monitor_report,msg.monitor_report),  25) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,supported_freq,msg.supported_freq),  26)
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,supported_freq,msg.supported_freq),  26) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,mod_lora,msg.mod_lora),  27)
 #define phy_Message_CALLBACK NULL
 #define phy_Message_DEFAULT NULL
 #define phy_Message_msg_mod_ask_MSGTYPE phy_SetASKModulationCmd
@@ -661,6 +721,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,supported_freq,msg.supported_freq),  26)
 #define phy_Message_msg_jammed_MSGTYPE phy_Jammed
 #define phy_Message_msg_monitor_report_MSGTYPE phy_MonitoringReport
 #define phy_Message_msg_supported_freq_MSGTYPE phy_SupportedFrequencyRanges
+#define phy_Message_msg_mod_lora_MSGTYPE phy_SetLoRaModulationCmd
 
 extern const pb_msgdesc_t phy_SetASKModulationCmd_msg;
 extern const pb_msgdesc_t phy_SetFSKModulationCmd_msg;
@@ -669,6 +730,7 @@ extern const pb_msgdesc_t phy_SetGFSKModulationCmd_msg;
 extern const pb_msgdesc_t phy_SetMSKModulationCmd_msg;
 extern const pb_msgdesc_t phy_SetBPSKModulationCmd_msg;
 extern const pb_msgdesc_t phy_SetQPSKModulationCmd_msg;
+extern const pb_msgdesc_t phy_SetLoRaModulationCmd_msg;
 extern const pb_msgdesc_t phy_GetSupportedFrequenciesCmd_msg;
 extern const pb_msgdesc_t phy_SetFrequencyCmd_msg;
 extern const pb_msgdesc_t phy_SetDataRateCmd_msg;
@@ -699,6 +761,7 @@ extern const pb_msgdesc_t phy_Message_msg;
 #define phy_SetMSKModulationCmd_fields &phy_SetMSKModulationCmd_msg
 #define phy_SetBPSKModulationCmd_fields &phy_SetBPSKModulationCmd_msg
 #define phy_SetQPSKModulationCmd_fields &phy_SetQPSKModulationCmd_msg
+#define phy_SetLoRaModulationCmd_fields &phy_SetLoRaModulationCmd_msg
 #define phy_GetSupportedFrequenciesCmd_fields &phy_GetSupportedFrequenciesCmd_msg
 #define phy_SetFrequencyCmd_fields &phy_SetFrequencyCmd_msg
 #define phy_SetDataRateCmd_fields &phy_SetDataRateCmd_msg
@@ -741,6 +804,7 @@ extern const pb_msgdesc_t phy_Message_msg;
 #define phy_SetFSKModulationCmd_size             6
 #define phy_SetFrequencyCmd_size                 6
 #define phy_SetGFSKModulationCmd_size            6
+#define phy_SetLoRaModulationCmd_size            20
 #define phy_SetMSKModulationCmd_size             6
 #define phy_SetPacketSizeCmd_size                6
 #define phy_SetQPSKModulationCmd_size            2

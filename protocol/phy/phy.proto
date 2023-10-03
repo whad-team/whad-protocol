@@ -129,12 +129,6 @@ enum LoRaCodingRate {
     CR48 = 3;
 }
 
-enum LoRaBandwidth {
-    BW125 = 0;
-    BW250 = 1;
-    BW500 = 2;
-}
-
 /**
  * SetASKModulationCmd
  *
@@ -209,7 +203,7 @@ message SetQPSKModulationCmd {
  * Configure the transceiver to use LoRa modulation scheme.
  **/
 message SetLoRaModulationCmd {
-    LoRaBandwidth bandwidth = 1;
+    uint32 bandwidth = 1;
     LoRaSpreadingFactor spreading_factor = 2;
     LoRaCodingRate coding_rate = 3;
     uint32 preamble_length = 4;
