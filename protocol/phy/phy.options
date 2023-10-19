@@ -1,5 +1,6 @@
 phy.SetSyncWordCmd.sync_word max_size:10
 phy.SendCmd.packet max_size:255
+phy.ScheduleSendCmd.packet max_size:255
 
 phy.PacketReceived.packet max_size:255
 phy.RawPacketReceived.packet max_size:255

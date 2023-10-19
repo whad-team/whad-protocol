@@ -6,6 +6,9 @@
 #error Regenerate this file with the current version of nanopb generator.
 #endif
 
+PB_BIND(phy_timestamp, phy_timestamp, AUTO)
+
+
 PB_BIND(phy_SetASKModulationCmd, phy_SetASKModulationCmd, AUTO)
 
 
@@ -60,6 +63,15 @@ PB_BIND(phy_SendCmd, phy_SendCmd, 2)
 PB_BIND(phy_SendRawCmd, phy_SendRawCmd, AUTO)
 
 
+PB_BIND(phy_ScheduleSendCmd, phy_ScheduleSendCmd, 2)
+
+
+PB_BIND(phy_SchedulePacketResp, phy_SchedulePacketResp, AUTO)
+
+
+PB_BIND(phy_SchedulePacketSent, phy_SchedulePacketSent, AUTO)
+
+
 PB_BIND(phy_StartCmd, phy_StartCmd, AUTO)
 
 
@@ -76,6 +88,9 @@ PB_BIND(phy_PacketReceived, phy_PacketReceived, 2)
 
 
 PB_BIND(phy_RawPacketReceived, phy_RawPacketReceived, 2)
+
+
+PB_BIND(phy_PacketSent, phy_PacketSent, AUTO)
 
 
 PB_BIND(phy_Jammed, phy_Jammed, AUTO)

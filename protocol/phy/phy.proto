@@ -89,6 +89,9 @@ enum PhyCommand {
   /* Additional LoRa modulation. */
   SetLoRaModulation = 0x15;
 
+  /* Scheduled packets */
+  ScheduleSend = 0x16;
+
 }
 
 /**************************************************
@@ -127,6 +130,11 @@ enum LoRaCodingRate {
     CR46 = 1;
     CR47 = 2;
     CR48 = 3;
+}
+
+message timestamp {
+    uint32 sec = 1; /* seconds */
+    uint32 usec = 2; /* micro seconds */
 }
 
 /**
@@ -209,6 +217,7 @@ message SetLoRaModulationCmd {
     uint32 preamble_length = 4;
     bool enable_crc = 5;
     bool explicit = 6;
+    bool invert_iq = 7;
 }
 
 /**
@@ -300,7 +309,7 @@ message SniffCmd {
 /**
  * SendCmd
  *
- * Send raw packets matching the transceiver configuration.
+ * Send raw packet matching the transceiver configuration.
  *
  **/
 
@@ -317,6 +326,36 @@ message SendCmd {
 message SendRawCmd {
   repeated int32 iq = 1[packed=true];
 }
+
+/**
+ * ScheduleSend
+ *
+ * Send a packet at a specified timestamp.
+ */
+message ScheduleSendCmd {
+    bytes packet = 1;
+    timestamp timestamp = 2;
+}
+
+/**
+ * SchedulePacketResp
+ *
+ * Notifies a schedule packet has been added to the send list.
+ **/
+message SchedulePacketResp {
+    int32 id = 1;
+    optional bool full = 2;
+}
+
+/**
+ * SchedulePacketSent
+ *
+ * Notifies when a scheduled packet has been sent.
+ **/
+message SchedulePacketSent {
+    int32 id = 1;
+}
+
 
 /**
  * StartCmd
@@ -366,7 +405,7 @@ message MonitorCmd {
  message PacketReceived {
     uint32 frequency = 1;
     optional int32 rssi = 2;
-    optional uint32 timestamp = 3;
+    optional timestamp timestamp = 3;
     bytes packet = 4;
 }
 
@@ -381,11 +420,22 @@ message MonitorCmd {
  message RawPacketReceived {
     uint32 frequency = 1;
     optional int32 rssi = 2;
-    optional uint32 timestamp = 3;
+    optional timestamp timestamp = 3;
     bytes packet = 4;
     repeated int32 iq = 5[packed=true];
 }
 
+
+/**
+ * PacketSent
+ *
+ * Notifies sending of a packet (because either sending can take some time and
+ * be asynchronous or packet could have been planned).
+ **/
+
+ message PacketSent {
+    timestamp timestamp = 1;
+ }
 
 
 /**
@@ -395,7 +445,7 @@ message MonitorCmd {
  *
  **/
 message Jammed {
-    uint32 timestamp = 1;
+    timestamp timestamp = 1;
 }
 
 
@@ -468,5 +518,10 @@ message SupportedFrequencyRanges {
 
         /* Additional LoRa modulation. */
         SetLoRaModulationCmd mod_lora = 27;
+
+        /* Schedule packet feature */
+        ScheduleSendCmd sched_send = 28;
+        SchedulePacketResp sched_pkt_rsp = 29;
+        SchedulePacketSent sched_pkt_sent = 30;
     }
  }

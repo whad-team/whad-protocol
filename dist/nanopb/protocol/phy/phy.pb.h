@@ -47,7 +47,9 @@ typedef enum _phy_PhyCommand { /* *
     /* Stop */
     phy_PhyCommand_Stop = 20, 
     /* Additional LoRa modulation. */
-    phy_PhyCommand_SetLoRaModulation = 21 
+    phy_PhyCommand_SetLoRaModulation = 21, 
+    /* Scheduled packets */
+    phy_PhyCommand_ScheduleSend = 22 
 } phy_PhyCommand;
 
 typedef enum _phy_Endianness { 
@@ -149,14 +151,6 @@ typedef struct _phy_JamCmd {
 } phy_JamCmd;
 
 /* *
- Jammed
-
- Notifies jamming of a packet. */
-typedef struct _phy_Jammed { 
-    uint32_t timestamp;
-} phy_Jammed;
-
-/* *
  MonitoringReport
 
  Notifies output of monitoring procedure. */
@@ -165,26 +159,23 @@ typedef struct _phy_MonitoringReport {
     pb_callback_t report;
 } phy_MonitoringReport;
 
-typedef PB_BYTES_ARRAY_T(255) phy_PacketReceived_packet_t;
-typedef struct _phy_PacketReceived { 
-    uint32_t frequency;
-    bool has_rssi;
-    int32_t rssi;
-    bool has_timestamp;
-    uint32_t timestamp;
-    phy_PacketReceived_packet_t packet;
-} phy_PacketReceived;
+/* *
+ SchedulePacketResp
 
-typedef PB_BYTES_ARRAY_T(255) phy_RawPacketReceived_packet_t;
-typedef struct _phy_RawPacketReceived { 
-    uint32_t frequency;
-    bool has_rssi;
-    int32_t rssi;
-    bool has_timestamp;
-    uint32_t timestamp;
-    phy_RawPacketReceived_packet_t packet;
-    pb_callback_t iq;
-} phy_RawPacketReceived;
+ Notifies a schedule packet has been added to the send list. */
+typedef struct _phy_SchedulePacketResp { 
+    int32_t id;
+    bool has_full;
+    bool full;
+} phy_SchedulePacketResp;
+
+/* *
+ SchedulePacketSent
+
+ Notifies when a scheduled packet has been sent. */
+typedef struct _phy_SchedulePacketSent { 
+    int32_t id;
+} phy_SchedulePacketSent;
 
 typedef PB_BYTES_ARRAY_T(255) phy_SendCmd_packet_t;
 typedef struct _phy_SendCmd { 
@@ -262,6 +253,7 @@ typedef struct _phy_SetLoRaModulationCmd {
     uint32_t preamble_length;
     bool enable_crc;
     bool explicit;
+    bool invert_iq;
 } phy_SetLoRaModulationCmd;
 
 /* *
@@ -319,6 +311,57 @@ typedef struct _phy_SupportedFrequencyRanges_FrequencyRange {
     uint32_t end;
 } phy_SupportedFrequencyRanges_FrequencyRange;
 
+typedef struct _phy_timestamp { 
+    uint32_t sec; /* seconds */
+    uint32_t usec; /* micro seconds */
+} phy_timestamp;
+
+/* *
+ Jammed
+
+ Notifies jamming of a packet. */
+typedef struct _phy_Jammed { 
+    bool has_timestamp;
+    phy_timestamp timestamp;
+} phy_Jammed;
+
+typedef PB_BYTES_ARRAY_T(255) phy_PacketReceived_packet_t;
+typedef struct _phy_PacketReceived { 
+    uint32_t frequency;
+    bool has_rssi;
+    int32_t rssi;
+    bool has_timestamp;
+    phy_timestamp timestamp;
+    phy_PacketReceived_packet_t packet;
+} phy_PacketReceived;
+
+typedef struct _phy_PacketSent { 
+    bool has_timestamp;
+    phy_timestamp timestamp;
+} phy_PacketSent;
+
+typedef PB_BYTES_ARRAY_T(255) phy_RawPacketReceived_packet_t;
+typedef struct _phy_RawPacketReceived { 
+    uint32_t frequency;
+    bool has_rssi;
+    int32_t rssi;
+    bool has_timestamp;
+    phy_timestamp timestamp;
+    phy_RawPacketReceived_packet_t packet;
+    pb_callback_t iq;
+} phy_RawPacketReceived;
+
+typedef PB_BYTES_ARRAY_T(255) phy_ScheduleSendCmd_packet_t;
+/* *
+ ScheduleSend
+
+ Send a packet at a specified timestamp. */
+typedef struct _phy_ScheduleSendCmd { 
+    phy_ScheduleSendCmd_packet_t packet;
+    bool has_timestamp;
+    phy_timestamp timestamp;
+} phy_ScheduleSendCmd;
+
 typedef struct _phy_Message { 
     pb_size_t which_msg;
     union {
@@ -349,14 +392,17 @@ typedef struct _phy_Message {
         phy_MonitoringReport monitor_report;
         phy_SupportedFrequencyRanges supported_freq;
         phy_SetLoRaModulationCmd mod_lora;
+        phy_ScheduleSendCmd sched_send;
+        phy_SchedulePacketResp sched_pkt_rsp;
+        phy_SchedulePacketSent sched_pkt_sent;
     } msg;
 } phy_Message;
 
 
 /* Helper constants for enums */
 #define _phy_PhyCommand_MIN phy_PhyCommand_SetASKModulation
-#define _phy_PhyCommand_MAX phy_PhyCommand_SetLoRaModulation
-#define _phy_PhyCommand_ARRAYSIZE ((phy_PhyCommand)(phy_PhyCommand_SetLoRaModulation+1))
+#define _phy_PhyCommand_MAX phy_PhyCommand_ScheduleSend
+#define _phy_PhyCommand_ARRAYSIZE ((phy_PhyCommand)(phy_PhyCommand_ScheduleSend+1))
 
 #define _phy_Endianness_MIN phy_Endianness_BIG
 #define _phy_Endianness_MAX phy_Endianness_LITTLE
@@ -384,6 +430,7 @@ extern "C" {
 #endif
 
 /* Initializer values for message structs */
+#define phy_timestamp_init_default               {0, 0}
 #define phy_SetASKModulationCmd_init_default     {0}
 #define phy_SetFSKModulationCmd_init_default     {0}
 #define phy_Set4FSKModulationCmd_init_default    {0}
@@ -391,7 +438,7 @@ extern "C" {
 #define phy_SetMSKModulationCmd_init_default     {0}
 #define phy_SetBPSKModulationCmd_init_default    {0}
 #define phy_SetQPSKModulationCmd_init_default    {0}
-#define phy_SetLoRaModulationCmd_init_default    {0, _phy_LoRaSpreadingFactor_MIN, _phy_LoRaCodingRate_MIN, 0, 0, 0}
+#define phy_SetLoRaModulationCmd_init_default    {0, _phy_LoRaSpreadingFactor_MIN, _phy_LoRaCodingRate_MIN, 0, 0, 0, 0}
 #define phy_GetSupportedFrequenciesCmd_init_default {0}
 #define phy_SetFrequencyCmd_init_default         {0}
 #define phy_SetDataRateCmd_init_default          {0}
@@ -402,17 +449,22 @@ extern "C" {
 #define phy_SniffCmd_init_default                {false, 0}
 #define phy_SendCmd_init_default                 {{0, {0}}}
 #define phy_SendRawCmd_init_default              {{{NULL}, NULL}}
+#define phy_ScheduleSendCmd_init_default         {{0, {0}}, false, phy_timestamp_init_default}
+#define phy_SchedulePacketResp_init_default      {0, false, 0}
+#define phy_SchedulePacketSent_init_default      {0}
 #define phy_StartCmd_init_default                {0}
 #define phy_StopCmd_init_default                 {0}
 #define phy_JamCmd_init_default                  {_phy_JammingMode_MIN}
 #define phy_MonitorCmd_init_default              {0}
-#define phy_PacketReceived_init_default          {0, false, 0, false, 0, {0, {0}}}
-#define phy_RawPacketReceived_init_default       {0, false, 0, false, 0, {0, {0}}, {{NULL}, NULL}}
-#define phy_Jammed_init_default                  {0}
+#define phy_PacketReceived_init_default          {0, false, 0, false, phy_timestamp_init_default, {0, {0}}}
+#define phy_RawPacketReceived_init_default       {0, false, 0, false, phy_timestamp_init_default, {0, {0}}, {{NULL}, NULL}}
+#define phy_PacketSent_init_default              {false, phy_timestamp_init_default}
+#define phy_Jammed_init_default                  {false, phy_timestamp_init_default}
 #define phy_MonitoringReport_init_default        {0, {{NULL}, NULL}}
 #define phy_SupportedFrequencyRanges_init_default {{{NULL}, NULL}}
 #define phy_SupportedFrequencyRanges_FrequencyRange_init_default {0, 0}
 #define phy_Message_init_default                 {0, {phy_SetASKModulationCmd_init_default}}
+#define phy_timestamp_init_zero                  {0, 0}
 #define phy_SetASKModulationCmd_init_zero        {0}
 #define phy_SetFSKModulationCmd_init_zero        {0}
 #define phy_Set4FSKModulationCmd_init_zero       {0}
@@ -420,7 +472,7 @@ extern "C" {
 #define phy_SetMSKModulationCmd_init_zero        {0}
 #define phy_SetBPSKModulationCmd_init_zero       {0}
 #define phy_SetQPSKModulationCmd_init_zero       {0}
-#define phy_SetLoRaModulationCmd_init_zero       {0, _phy_LoRaSpreadingFactor_MIN, _phy_LoRaCodingRate_MIN, 0, 0, 0}
+#define phy_SetLoRaModulationCmd_init_zero       {0, _phy_LoRaSpreadingFactor_MIN, _phy_LoRaCodingRate_MIN, 0, 0, 0, 0}
 #define phy_GetSupportedFrequenciesCmd_init_zero {0}
 #define phy_SetFrequencyCmd_init_zero            {0}
 #define phy_SetDataRateCmd_init_zero             {0}
@@ -431,13 +483,17 @@ extern "C" {
 #define phy_SniffCmd_init_zero                   {false, 0}
 #define phy_SendCmd_init_zero                    {{0, {0}}}
 #define phy_SendRawCmd_init_zero                 {{{NULL}, NULL}}
+#define phy_ScheduleSendCmd_init_zero            {{0, {0}}, false, phy_timestamp_init_zero}
+#define phy_SchedulePacketResp_init_zero         {0, false, 0}
+#define phy_SchedulePacketSent_init_zero         {0}
 #define phy_StartCmd_init_zero                   {0}
 #define phy_StopCmd_init_zero                    {0}
 #define phy_JamCmd_init_zero                     {_phy_JammingMode_MIN}
 #define phy_MonitorCmd_init_zero                 {0}
-#define phy_PacketReceived_init_zero             {0, false, 0, false, 0, {0, {0}}}
-#define phy_RawPacketReceived_init_zero          {0, false, 0, false, 0, {0, {0}}, {{NULL}, NULL}}
-#define phy_Jammed_init_zero                     {0}
+#define phy_PacketReceived_init_zero             {0, false, 0, false, phy_timestamp_init_zero, {0, {0}}}
+#define phy_RawPacketReceived_init_zero          {0, false, 0, false, phy_timestamp_init_zero, {0, {0}}, {{NULL}, NULL}}
+#define phy_PacketSent_init_zero                 {false, phy_timestamp_init_zero}
+#define phy_Jammed_init_zero                     {false, phy_timestamp_init_zero}
 #define phy_MonitoringReport_init_zero           {0, {{NULL}, NULL}}
 #define phy_SupportedFrequencyRanges_init_zero   {{{NULL}, NULL}}
 #define phy_SupportedFrequencyRanges_FrequencyRange_init_zero {0, 0}
@@ -447,18 +503,11 @@ extern "C" {
 #define phy_SendRawCmd_iq_tag                    1
 #define phy_SupportedFrequencyRanges_frequency_ranges_tag 1
 #define phy_JamCmd_mode_tag                      1
-#define phy_Jammed_timestamp_tag                 1
 #define phy_MonitoringReport_timestamp_tag       1
 #define phy_MonitoringReport_report_tag          2
-#define phy_PacketReceived_frequency_tag         1
-#define phy_PacketReceived_rssi_tag              2
-#define phy_PacketReceived_timestamp_tag         3
-#define phy_PacketReceived_packet_tag            4
-#define phy_RawPacketReceived_frequency_tag      1
-#define phy_RawPacketReceived_rssi_tag           2
-#define phy_RawPacketReceived_timestamp_tag      3
-#define phy_RawPacketReceived_packet_tag         4
-#define phy_RawPacketReceived_iq_tag             5
+#define phy_SchedulePacketResp_id_tag            1
+#define phy_SchedulePacketResp_full_tag          2
+#define phy_SchedulePacketSent_id_tag            1
 #define phy_SendCmd_packet_tag                   1
 #define phy_Set4FSKModulationCmd_deviation_tag   1
 #define phy_SetASKModulationCmd_ook_tag          1
@@ -473,6 +522,7 @@ extern "C" {
 #define phy_SetLoRaModulationCmd_preamble_length_tag 4
 #define phy_SetLoRaModulationCmd_enable_crc_tag  5
 #define phy_SetLoRaModulationCmd_explicit_tag    6
+#define phy_SetLoRaModulationCmd_invert_iq_tag   7
 #define phy_SetMSKModulationCmd_deviation_tag    1
 #define phy_SetPacketSizeCmd_packet_size_tag     1
 #define phy_SetQPSKModulationCmd_offset_qpsk_tag 1
@@ -481,6 +531,21 @@ extern "C" {
 #define phy_SniffCmd_iq_stream_tag               1
 #define phy_SupportedFrequencyRanges_FrequencyRange_start_tag 1
 #define phy_SupportedFrequencyRanges_FrequencyRange_end_tag 2
+#define phy_timestamp_sec_tag                    1
+#define phy_timestamp_usec_tag                   2
+#define phy_Jammed_timestamp_tag                 1
+#define phy_PacketReceived_frequency_tag         1
+#define phy_PacketReceived_rssi_tag              2
+#define phy_PacketReceived_timestamp_tag         3
+#define phy_PacketReceived_packet_tag            4
+#define phy_PacketSent_timestamp_tag             1
+#define phy_RawPacketReceived_frequency_tag      1
+#define phy_RawPacketReceived_rssi_tag           2
+#define phy_RawPacketReceived_timestamp_tag      3
+#define phy_RawPacketReceived_packet_tag         4
+#define phy_RawPacketReceived_iq_tag             5
+#define phy_ScheduleSendCmd_packet_tag           1
+#define phy_ScheduleSendCmd_timestamp_tag        2
 #define phy_Message_mod_ask_tag                  1
 #define phy_Message_mod_fsk_tag                  2
 #define phy_Message_mod_gfsk_tag                 3
@@ -508,8 +573,17 @@ extern "C" {
 #define phy_Message_monitor_report_tag           25
 #define phy_Message_supported_freq_tag           26
 #define phy_Message_mod_lora_tag                 27
+#define phy_Message_sched_send_tag               28
+#define phy_Message_sched_pkt_rsp_tag            29
+#define phy_Message_sched_pkt_sent_tag           30
 
 /* Struct field encoding specification for nanopb */
+#define phy_timestamp_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   sec,               1) \
+X(a, STATIC,   SINGULAR, UINT32,   usec,              2)
+#define phy_timestamp_CALLBACK NULL
+#define phy_timestamp_DEFAULT NULL
+
 #define phy_SetASKModulationCmd_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, BOOL,     ook,               1)
 #define phy_SetASKModulationCmd_CALLBACK NULL
@@ -551,7 +625,8 @@ X(a, STATIC,   SINGULAR, UENUM,    spreading_factor,   2) \
 X(a, STATIC,   SINGULAR, UENUM,    coding_rate,       3) \
 X(a, STATIC,   SINGULAR, UINT32,   preamble_length,   4) \
 X(a, STATIC,   SINGULAR, BOOL,     enable_crc,        5) \
-X(a, STATIC,   SINGULAR, BOOL,     explicit,          6)
+X(a, STATIC,   SINGULAR, BOOL,     explicit,          6) \
+X(a, STATIC,   SINGULAR, BOOL,     invert_iq,         7)
 #define phy_SetLoRaModulationCmd_CALLBACK NULL
 #define phy_SetLoRaModulationCmd_DEFAULT NULL
 
@@ -605,6 +680,24 @@ X(a, CALLBACK, REPEATED, INT32,    iq,                1)
 #define phy_SendRawCmd_CALLBACK pb_default_field_callback
 #define phy_SendRawCmd_DEFAULT NULL
 
+#define phy_ScheduleSendCmd_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BYTES,    packet,            1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  timestamp,         2)
+#define phy_ScheduleSendCmd_CALLBACK NULL
+#define phy_ScheduleSendCmd_DEFAULT NULL
+#define phy_ScheduleSendCmd_timestamp_MSGTYPE phy_timestamp
+
+#define phy_SchedulePacketResp_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, INT32,    id,                1) \
+X(a, STATIC,   OPTIONAL, BOOL,     full,              2)
+#define phy_SchedulePacketResp_CALLBACK NULL
+#define phy_SchedulePacketResp_DEFAULT NULL
+
+#define phy_SchedulePacketSent_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, INT32,    id,                1)
+#define phy_SchedulePacketSent_CALLBACK NULL
+#define phy_SchedulePacketSent_DEFAULT NULL
+
 #define phy_StartCmd_FIELDLIST(X, a) \
 
 #define phy_StartCmd_CALLBACK NULL
@@ -628,24 +721,33 @@ X(a, STATIC,   SINGULAR, UENUM,    mode,              1)
 #define phy_PacketReceived_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   frequency,         1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  timestamp,         3) \
 X(a, STATIC,   SINGULAR, BYTES,    packet,            4)
 #define phy_PacketReceived_CALLBACK NULL
 #define phy_PacketReceived_DEFAULT NULL
+#define phy_PacketReceived_timestamp_MSGTYPE phy_timestamp
 
 #define phy_RawPacketReceived_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   frequency,         1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  timestamp,         3) \
 X(a, STATIC,   SINGULAR, BYTES,    packet,            4) \
 X(a, CALLBACK, REPEATED, INT32,    iq,                5)
 #define phy_RawPacketReceived_CALLBACK pb_default_field_callback
 #define phy_RawPacketReceived_DEFAULT NULL
+#define phy_RawPacketReceived_timestamp_MSGTYPE phy_timestamp
+
+#define phy_PacketSent_FIELDLIST(X, a) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  timestamp,         1)
+#define phy_PacketSent_CALLBACK NULL
+#define phy_PacketSent_DEFAULT NULL
+#define phy_PacketSent_timestamp_MSGTYPE phy_timestamp
 
 #define phy_Jammed_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   timestamp,         1)
+X(a, STATIC,   OPTIONAL, MESSAGE,  timestamp,         1)
 #define phy_Jammed_CALLBACK NULL
 #define phy_Jammed_DEFAULT NULL
+#define phy_Jammed_timestamp_MSGTYPE phy_timestamp
 
 #define phy_MonitoringReport_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   timestamp,         1) \
@@ -692,7 +794,10 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,raw_packet,msg.raw_packet),  23) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,jammed,msg.jammed),  24) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,monitor_report,msg.monitor_report),  25) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,supported_freq,msg.supported_freq),  26) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,mod_lora,msg.mod_lora),  27)
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,mod_lora,msg.mod_lora),  27) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,sched_send,msg.sched_send),  28) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,sched_pkt_rsp,msg.sched_pkt_rsp),  29) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,sched_pkt_sent,msg.sched_pkt_sent),  30)
 #define phy_Message_CALLBACK NULL
 #define phy_Message_DEFAULT NULL
 #define phy_Message_msg_mod_ask_MSGTYPE phy_SetASKModulationCmd
@@ -722,7 +827,11 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,mod_lora,msg.mod_lora),  27)
 #define phy_Message_msg_monitor_report_MSGTYPE phy_MonitoringReport
 #define phy_Message_msg_supported_freq_MSGTYPE phy_SupportedFrequencyRanges
 #define phy_Message_msg_mod_lora_MSGTYPE phy_SetLoRaModulationCmd
+#define phy_Message_msg_sched_send_MSGTYPE phy_ScheduleSendCmd
+#define phy_Message_msg_sched_pkt_rsp_MSGTYPE phy_SchedulePacketResp
+#define phy_Message_msg_sched_pkt_sent_MSGTYPE phy_SchedulePacketSent
 
+extern const pb_msgdesc_t phy_timestamp_msg;
 extern const pb_msgdesc_t phy_SetASKModulationCmd_msg;
 extern const pb_msgdesc_t phy_SetFSKModulationCmd_msg;
 extern const pb_msgdesc_t phy_Set4FSKModulationCmd_msg;
@@ -741,12 +850,16 @@ extern const pb_msgdesc_t phy_SetSyncWordCmd_msg;
 extern const pb_msgdesc_t phy_SniffCmd_msg;
 extern const pb_msgdesc_t phy_SendCmd_msg;
 extern const pb_msgdesc_t phy_SendRawCmd_msg;
+extern const pb_msgdesc_t phy_ScheduleSendCmd_msg;
+extern const pb_msgdesc_t phy_SchedulePacketResp_msg;
+extern const pb_msgdesc_t phy_SchedulePacketSent_msg;
 extern const pb_msgdesc_t phy_StartCmd_msg;
 extern const pb_msgdesc_t phy_StopCmd_msg;
 extern const pb_msgdesc_t phy_JamCmd_msg;
 extern const pb_msgdesc_t phy_MonitorCmd_msg;
 extern const pb_msgdesc_t phy_PacketReceived_msg;
 extern const pb_msgdesc_t phy_RawPacketReceived_msg;
+extern const pb_msgdesc_t phy_PacketSent_msg;
 extern const pb_msgdesc_t phy_Jammed_msg;
 extern const pb_msgdesc_t phy_MonitoringReport_msg;
 extern const pb_msgdesc_t phy_SupportedFrequencyRanges_msg;
@@ -754,6 +867,7 @@ extern const pb_msgdesc_t phy_SupportedFrequencyRanges_FrequencyRange_msg;
 extern const pb_msgdesc_t phy_Message_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
+#define phy_timestamp_fields &phy_timestamp_msg
 #define phy_SetASKModulationCmd_fields &phy_SetASKModulationCmd_msg
 #define phy_SetFSKModulationCmd_fields &phy_SetFSKModulationCmd_msg
 #define phy_Set4FSKModulationCmd_fields &phy_Set4FSKModulationCmd_msg
@@ -772,12 +886,16 @@ extern const pb_msgdesc_t phy_Message_msg;
 #define phy_SniffCmd_fields &phy_SniffCmd_msg
 #define phy_SendCmd_fields &phy_SendCmd_msg
 #define phy_SendRawCmd_fields &phy_SendRawCmd_msg
+#define phy_ScheduleSendCmd_fields &phy_ScheduleSendCmd_msg
+#define phy_SchedulePacketResp_fields &phy_SchedulePacketResp_msg
+#define phy_SchedulePacketSent_fields &phy_SchedulePacketSent_msg
 #define phy_StartCmd_fields &phy_StartCmd_msg
 #define phy_StopCmd_fields &phy_StopCmd_msg
 #define phy_JamCmd_fields &phy_JamCmd_msg
 #define phy_MonitorCmd_fields &phy_MonitorCmd_msg
 #define phy_PacketReceived_fields &phy_PacketReceived_msg
 #define phy_RawPacketReceived_fields &phy_RawPacketReceived_msg
+#define phy_PacketSent_fields &phy_PacketSent_msg
 #define phy_Jammed_fields &phy_Jammed_msg
 #define phy_MonitoringReport_fields &phy_MonitoringReport_msg
 #define phy_SupportedFrequencyRanges_fields &phy_SupportedFrequencyRanges_msg
@@ -792,9 +910,13 @@ extern const pb_msgdesc_t phy_Message_msg;
 /* phy_Message_size depends on runtime parameters */
 #define phy_GetSupportedFrequenciesCmd_size      0
 #define phy_JamCmd_size                          2
-#define phy_Jammed_size                          6
+#define phy_Jammed_size                          14
 #define phy_MonitorCmd_size                      0
-#define phy_PacketReceived_size                  281
+#define phy_PacketReceived_size                  289
+#define phy_PacketSent_size                      14
+#define phy_SchedulePacketResp_size              13
+#define phy_SchedulePacketSent_size              11
+#define phy_ScheduleSendCmd_size                 272
 #define phy_SendCmd_size                         258
 #define phy_Set4FSKModulationCmd_size            6
 #define phy_SetASKModulationCmd_size             2
@@ -804,7 +926,7 @@ extern const pb_msgdesc_t phy_Message_msg;
 #define phy_SetFSKModulationCmd_size             6
 #define phy_SetFrequencyCmd_size                 6
 #define phy_SetGFSKModulationCmd_size            6
-#define phy_SetLoRaModulationCmd_size            20
+#define phy_SetLoRaModulationCmd_size            22
 #define phy_SetMSKModulationCmd_size             6
 #define phy_SetPacketSizeCmd_size                6
 #define phy_SetQPSKModulationCmd_size            2
@@ -814,6 +936,7 @@ extern const pb_msgdesc_t phy_Message_msg;
 #define phy_StartCmd_size                        0
 #define phy_StopCmd_size                         0
 #define phy_SupportedFrequencyRanges_FrequencyRange_size 12
+#define phy_timestamp_size                       12
 
 #ifdef __cplusplus
 } /* extern "C" */
