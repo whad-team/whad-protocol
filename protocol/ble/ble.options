@@ -45,5 +45,8 @@ ble.AdvModeCmd.scanrsp_data max_size:31
 ble.PeripheralModeCmd.scan_data max_size:31
 ble.PeripheralModeCmd.scanrsp_data max_size:31
 
+ble.SetEncryptionCmd.ll_key max_size:16, fixed_length: true
+ble.SetEncryptionCmd.ll_iv max_size:8, fixed_length: true
 ble.SetEncryptionCmd.key max_size:16, fixed_length: true
-ble.SetEncryptionCmd.iv max_size:8, fixed_length: true
+ble.SetEncryptionCmd.rand max_size:8, fixed_length: true
+ble.SetEncryptionCmd.ediv max_size:2, fixed_length: true
