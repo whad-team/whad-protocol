@@ -216,7 +216,7 @@ message SetLoRaModulationCmd {
     LoRaCodingRate coding_rate = 3;
     uint32 preamble_length = 4;
     bool enable_crc = 5;
-    bool explicit = 6;
+    bool explicit_mode = 6;
     bool invert_iq = 7;
 }
 
