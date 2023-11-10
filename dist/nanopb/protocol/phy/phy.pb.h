@@ -252,7 +252,7 @@ typedef struct _phy_SetLoRaModulationCmd {
     phy_LoRaCodingRate coding_rate;
     uint32_t preamble_length;
     bool enable_crc;
-    bool explicit;
+    bool explicit_mode;
     bool invert_iq;
 } phy_SetLoRaModulationCmd;
 
@@ -521,7 +521,7 @@ extern "C" {
 #define phy_SetLoRaModulationCmd_coding_rate_tag 3
 #define phy_SetLoRaModulationCmd_preamble_length_tag 4
 #define phy_SetLoRaModulationCmd_enable_crc_tag  5
-#define phy_SetLoRaModulationCmd_explicit_tag    6
+#define phy_SetLoRaModulationCmd_explicit_mode_tag 6
 #define phy_SetLoRaModulationCmd_invert_iq_tag   7
 #define phy_SetMSKModulationCmd_deviation_tag    1
 #define phy_SetPacketSizeCmd_packet_size_tag     1
@@ -625,7 +625,7 @@ X(a, STATIC,   SINGULAR, UENUM,    spreading_factor,   2) \
 X(a, STATIC,   SINGULAR, UENUM,    coding_rate,       3) \
 X(a, STATIC,   SINGULAR, UINT32,   preamble_length,   4) \
 X(a, STATIC,   SINGULAR, BOOL,     enable_crc,        5) \
-X(a, STATIC,   SINGULAR, BOOL,     explicit,          6) \
+X(a, STATIC,   SINGULAR, BOOL,     explicit_mode,     6) \
 X(a, STATIC,   SINGULAR, BOOL,     invert_iq,         7)
 #define phy_SetLoRaModulationCmd_CALLBACK NULL
 #define phy_SetLoRaModulationCmd_DEFAULT NULL
