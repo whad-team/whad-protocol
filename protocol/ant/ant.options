@@ -1,0 +1,2 @@
+ant.SetNetworkKeyCmd.network_key max_size:8
+ant.SniffCmd.network_key max_size:8
