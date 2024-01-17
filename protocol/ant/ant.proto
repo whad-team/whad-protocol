@@ -196,20 +196,38 @@ message UnassignChannelCmd {
  * Open a new channel with channel_number
  *
  **/
-
 message OpenChannelCmd {
     uint32 channel_number = 1;
 }
 
+/**
+ * CloseChannelCmd
+ *
+ * Close an opened channel with channel_number.
+ *
+ **/
 message CloseChannelCmd {
     uint32 channel_number = 1;
 }
-
+/**
+ * SetFrequencyCmd
+ *
+ * Set the frequency and the associated channel numbers
+ *
+ **/
 message SetFrequencyCmd {
     uint32 channel_number = 1;
     uint32 frequency = 2;
 }
 
+/**
+ * SniffCmd
+ *
+ * Enter sniffer mode
+ * It requires the user to provide frequency,
+ * network_key; and optionaly device_number, device_type,
+ * transmission_type
+ **/
 message SniffCmd {
     uint32 frequency = 1;
     bytes network_key = 2;
@@ -233,8 +251,12 @@ message SendCmd {
     uint32 frequency = 1;
     bytes pdu = 2;
 }
-
-message SendRawCmd {
+/**
+ * SendCmd
+ *
+ * Transmit raw ANT packets on a single channel.
+ *
+ **/message SendRawCmd {
      uint32 frequency = 1;
      bytes pdu = 2;
 }
@@ -274,3 +296,81 @@ message StartCmd {
  **/
 message StopCmd {
 }
+
+/**
+ * Jammed
+ *
+ * Indicates that packets have been Jammed.
+ *
+ **/
+
+message Jammed {
+    uint32 timestamp = 1;
+}
+
+/**
+ * RawPduReceived
+ *
+ * Notifies reception of a raw PDU. This message must be used by devices
+ * that do have access to raw PDU data (CRC).
+ *
+ **/
+
+message RawPduReceived {
+    uint32 channel_number = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    optional bool crc_validity = 4;
+    bytes pdu = 5;
+    uint32 crc = 6;
+
+
+}
+/**
+ * PduReceived
+ *
+ * Notifies reception of a normal PDU. This message must be used by devices
+ * that do not have access to raw PDU data (thus exposing the NoRawData
+ * capability).
+ *
+ **/
+
+ message PduReceived {
+    uint32 channel_number = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    optional bool crc_validity = 4;
+    bytes pdu = 5;
+}
+
+ message Message {
+
+    oneof msg {
+        /* Messages */
+        SetDeviceNumberCmd set_device_number          = 1;
+        SetDeviceTypeCmd set_device_type              = 2;
+        SetTransmissionTypeCmd set_transmission_type  = 3;
+        SetChannelPeriodCmd set_channel_period        = 4;
+        SetNetworkKeyCmd set_network_key              = 5;
+        AssignChannelCmd assign_channel               = 6;
+        UnassignChannelCmd unassign_channel           = 7;
+        OpenChannelCmd open_channel                   = 8;
+        CloseChannelCmd close_channel                 = 9;
+        SetFrequencyCmd set_frequency                 = 10;
+        SniffCmd sniff                                = 11;
+        JamCmd jam                                    = 12;
+        SendCmd send                                  = 13;
+        SendRawCmd send_raw                           = 14;
+
+        MasterModeCmd master_mode                     = 15;
+        SlaveModeCmd slave_mode                       = 16;
+
+        StartCmd start                                = 17;
+        StopCmd stop                                  = 18;
+
+        /* Notifications */
+        Jammed jammed                                 = 19;
+        RawPduReceived raw_pdu                        = 20;
+        PduReceived pdu                               = 21;
+    }
+ }

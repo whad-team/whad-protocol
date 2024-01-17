@@ -13,7 +13,7 @@ message Message {
         generic.Message generic = 1;
         discovery.Message discovery = 2;
         ble.Message ble = 3;
-        dot15d4.Message zigbee = 4;
+        zigbee.Message zigbee = 4;
         esb.Message esb = 5;
         unifying.Message unifying = 6;
         phy.Message phy = 7;
