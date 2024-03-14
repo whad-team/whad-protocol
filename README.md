@@ -1,167 +1,117 @@
+Open protocol for wireless hacking tools
+========================================
 
-Protocole ouvert pour tools de hacking wireless
-===============================================
+This project is still a work in progress and could change
+at any time.
 
-Ce document est un draft sujet à modification et commentaires.
+Objectives
+----------
 
+This protocol has the main objective to allow interoperability between hardware RF devices and
+wireless (hacking) tools, independantly of the supported technology. Other objectives include
+but are not limited to:
 
-Objectifs du protocole
-----------------------
+* to provide a protocol that can be implemented in various programming languages
+* to optimize the size of the exchanged data
+* to allow new features/protocols to be easily added (evolutivity)
 
-Ce protocole a pour objectif de permettre l'interopérabilité des équipements et des outils de hack wireless,
-idéalement indépendamment du ou des technologies supportées. Il vise notamment à:
+Design choices
+--------------
 
-* faciliter l'interopérabilité des outils (firmware/cli)
-* être compatible avec un maximum de langages de développement (portabilité)
-* optimiser la taille des échanges tout en permettant l'évolutivité
+This protocol relies on Protocol Buffers because it is supported by a lot of programming
+languages, provides a way to model messages and optimized serialization/deserialization. 
 
+However, we added an overlay to allow fragmented chunks of data to be sent and received
+by devices and host applications.
 
-Draft de solution
------------------
+### Domains
 
+This protocol has been designed to be used with a variety of wireless protocols and therefore
+consider each protocol to be a specific *domain* with associated messages. Using separate
+*domains* will allow easier integration of new protocols in the future without having to
+change the existing messages.
 
-L'utilisation de Protocol Buffers pour la sérialisation/désérialisation semble être adaptée:
+The following domains are currently supported:
 
-* supporté par la grande majorité des langages
-* langage de formalisation des messages
-* sérialisation/désérialisation optimisée (varint, etc.)
-
-Néanmoins, il pourrait être judicieux d'avoir une surcouche permettant d'envoyer et recevoir des chunks de données
-gérant la fragmentation. 
-
-
-### Domaines
-
-Vu que le protocole a vocation à être utilisé pour divers protocoles wireless, il serait intéressant d'y inclure
-la notion de *domaine*. Un *domaine* correspondrait ainsi à un protocole, et serait associé à un ensemble de
-messages.
-
-De cette manière, il sera possible dans le futur d'ajouter de nouveaux protocoles et les messages associés.
-
-*Propositions de Domaines*
-
-* Bluetooth
 * Bluetooth Low Energy
-* 802.15.4
-    - Zigbee
-    - Sixlowpan
-* Enhanced ShockBurst
-    - Logitech Unifying
-* Mosart
-* ANT
-    - ANT+
-    - ANT-FS
-* Generic
+* 802.15.4: used for ZigBee and other derivated protocols such as RF4CE
+* Nordic Semiconductor Enhanced ShockBurst: used for ESB and other derivated protocols
+* Logitech Unifying
+* PHY: support various modulations (*FSK, *PSK, ASK, LoRa)
 
-### Capacités
 
-Chaque device implémentant ce protocole implémente un jeu de messages de base, peu importe les domaines qu'il supporte.
-Ce jeu de messages permet:
+### Capabilities
 
-* d'identifier formellement le device en question: sa version de firmware, la version du protocole supportée
-* de récupérer le ou les domaines supportés
-* de récupérer les capacités par domaine
-* de récupérer les commandes supportées par domaine
+Each device that supports this protocol must support a set of generic messages, independently of the supported
+wireless protocols. These messages allow:
 
-Ce protocole de découverte permet ainsi à un outil exécuté sur un hôte de déterminer si un device connecté peut être utilisé pour réaliser une ou plusieurs actions, sans avoir à se soucier du device ou de son firmware.
+* to identify the device including its firmware version and its supported communication protocol version
+* to query the domains this device supports
+* to query its capabilities per supported domain
+* to retrieve the list of messages/commands it supports
 
-#### Capacités Bluetooth Low Energy
-* Bas niveau
-	* sniffing des advertisements
-	* sniffing de connection (observation de l'initiation)
-	* sniffing de connection (inférence des paramètres)
-	* injection de paquet directe
-	* injection de paquet au sein d'une connection (vers slave)
-	* injection de paquet au sein d'une connection (vers master)
-	* hijacking d'un rôle au sein d'une connection  (slave)
-	* hijacking d'un rôle au sein d'une connection (master)
-	* établissement d'un Man-in-the-Middle (avant initiation)
-	* établissement d'un Man-in-the-Middle (connection établie)
-	* jamming d'une connection
-	* jamming des advertisements
-	* reactive jamming  (?)
-* Haut niveau
-	* simulation d'un Scanner
-	* simulation d'un Advertiser
-	* simulation d'un Central
-	* simulation d'un Peripheral
+This discovery step is part of the communication protocol and allows third-party tools to determine if an
+hardware device can be used to achieve a specific task, no matter its firmware.
 
-#### Capacités 802.15.4 (Zigbee)
+#### Bluetooth Low Energy capabilities
 
-* Bas niveau
-	* Jamming d'un canal
+* Low-level capabilities
+	* Advertisements sniffing
+    * Connection sniffing (capture of connection initiation request)
+    * Connection sniffing (passive monitoring)
+    * direct PDU injection
+    * PDU injection into an existing connection, to the slave device
+    * PDU injection into an existing connection, to the master device
+    * Connection hijacking targeting the master
+    * Connection hijacking targeting the slave 
+	* Connection Man-in-the-Middle targeting initiation requests
+    * Connection Man-in-the-Middle targeting an existing connection
+    * Connection jamming
+    * Advertisements jamming
+    * Reactive jamming
+
+* High-level capabilities
+	* Scanner role: the device can listen for advertisements and report them
+    * Advertiser role: the device can send advertisements
+	* Central role: the device can act as a BLE Central device and initiate a connection
+	* Peripheral role: the device can act as BLE Peripheral device and receive connections
+
+#### 802.15.4 capabilities
+
+* Low-level capabilities
+	* Channel jamming
 	* Reactive jamming
-	* Injection de paquet (avec contrôle du FCS)
-	* Injection de paquet (sans contrôle du FCS)
-	* Sniffing de paquet
-	* établissement d'un Man-in-the-Middle
-* Haut niveau
-	* simulation d'un End Device
-	* simulation d'un Coordinator
-	* simulation d'un Router
+	* Packet injection with control of its FCS
+    * Packet injection without control of its FCS
+    * Packet sniffing
+    * Man-in-the-middle attack
 
-#### Capacités Enhanced ShockBurst
+* High-level capabilities
+	* End device role: device can join a ZigBee network and act as an end device
+	* Coordinator role: device can act as a Coordinator and manages its own ZigBee network
+	* Router role: device can act as a Router and relay packets
 
-* Bas niveau
-	* jamming d'un canal
+#### Enhanced ShockBurst capabilities
+
+* Low-level capabilities
+    * Channel jamming
 	* Reactive jamming
-	* Injection de paquet
-	* Sniffing de paquet (sans connaissance préalable de l'adresse)
-	* Sniffing de paquet (avec connaissance préalable de l'adresse)
-* Haut niveau
-	* simulation d'un PRX
-	* simulation d'un PTX
+	* Packet injection
+	* Packet sniffing (any address)
+    * Packet sniffing (targeting a specific address)
 
-##### Capacités Logitech Unifying
-* sniffing de l'appairage
-* simulation d'un clavier (PTX, traffic chiffré)
-* simulation d'une souris (PTX, traffic non chiffré)
-* simulation d'un dongle (PRX, traffic chiffré)
-* établissement d'un Man-in-the-Middle
+* High-level capabilities
+	* PRX role: the device can listen for packets and send acks
+	* PTX role: the device can send packets
 
-#### Capacités Mosart
-* Bas niveau
-	* jamming d'un canal
-	* Reactive jamming
-	* Injection de paquet
-	* Sniffing de paquet
-* Haut niveau
-	* simulation d'un dongle
-	* simulation d'un clavier
-	* simulation d'une souris
-
-#### Capacités ANT
-* Bas niveau
-	* jamming d'un canal
-	* Reactive jamming
-	* Injection de paquet
-	* Sniffing de paquet
-	* Hijacking d'un master
-	* Hijacking d'un slave
-	* Établissement d'un Man-in-the-Middle
-
-* Haut niveau
-	* simulation d'un Master
-	* simulation d'un Slave
-	
-#### Capacités Generic
-* Bas niveau
-	* sélection d'une fréquence (bande ? )
-	* sélection d'une modulation (type: GFSK, 2-FSK, 4-FSK, QPSK, OQPSK, etc) et ses paramètres (déviation ?)
-	* sélection d'un datarate (250kbps, 500kbps, 1Mbps, 2Mbps)
-	* sélection d'un préambule
-	* sélection d'une taille de paquets
-	* Sniffing de paquet
-	* Injection de paquet
-	* Monitoring de l'activité d'un canal
-
-### Messages
-Pour chaque domaine, un ensemble de messages normalisés est défini en fonction du domaine et des opérations qui peuvent
-être réalisées sur ce dernier. 
-
-Bon, va falloir formaliser tout ça ! 
-	=> C'est franchement le gros du boulot ...
-
-
-
+#### PHY capabilities
+* Low-level capabilities
+	* Frequency selection
+    * Modulation selection
+    * Datarate selection
+    * Preambule selection
+    * Packet size selection
+    * Raw packet sniffing
+    * Raw packet injection
+    * Channel activity monitoring
 
