@@ -16,7 +16,7 @@ typedef enum _discovery_Domain {
     discovery_Domain_Phy = 16777216, 
     discovery_Domain_BtClassic = 33554432, 
     discovery_Domain_BtLE = 50331648, 
-    discovery_Domain_Zigbee = 67108864, 
+    discovery_Domain_Dot15d4 = 67108864, 
     discovery_Domain_SixLowPan = 83886080, 
     discovery_Domain_Esb = 100663296, 
     discovery_Domain_LogitechUnifying = 117440512, 

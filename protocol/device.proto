@@ -12,7 +12,7 @@ enum Domain {
     Phy                 = 0x01000000;
     BtClassic           = 0x02000000;
     BtLE                = 0x03000000;
-    Zigbee              = 0x04000000;
+    Dot15d4             = 0x04000000;
     SixLowPan           = 0x05000000;
     Esb                 = 0x06000000;
     LogitechUnifying    = 0x07000000;

@@ -7,7 +7,7 @@
 #include "protocol/device.pb.h"
 #include "protocol/generic.pb.h"
 #include "protocol/ble/ble.pb.h"
-#include "protocol/zigbee/zigbee.pb.h"
+#include "protocol/dot15d4/dot15d4.pb.h"
 #include "protocol/esb/esb.pb.h"
 #include "protocol/unifying/unifying.pb.h"
 #include "protocol/phy/phy.pb.h"
@@ -23,7 +23,7 @@ typedef struct _Message {
         generic_Message generic;
         discovery_Message discovery;
         ble_Message ble;
-        zigbee_Message zigbee;
+        dot15d4_Message dot15d4;
         esb_Message esb;
         unifying_Message unifying;
         phy_Message phy;
@@ -43,7 +43,7 @@ extern "C" {
 #define Message_generic_tag                      1
 #define Message_discovery_tag                    2
 #define Message_ble_tag                          3
-#define Message_zigbee_tag                       4
+#define Message_dot15d4_tag                      4
 #define Message_esb_tag                          5
 #define Message_unifying_tag                     6
 #define Message_phy_tag                          7
@@ -53,7 +53,7 @@ extern "C" {
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,generic,msg.generic),   1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,discovery,msg.discovery),   2) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,ble,msg.ble),   3) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,zigbee,msg.zigbee),   4) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,dot15d4,msg.dot15d4),   4) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,esb,msg.esb),   5) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,unifying,msg.unifying),   6) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,phy,msg.phy),   7)
@@ -62,7 +62,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,phy,msg.phy),   7)
 #define Message_msg_generic_MSGTYPE generic_Message
 #define Message_msg_discovery_MSGTYPE discovery_Message
 #define Message_msg_ble_MSGTYPE ble_Message
-#define Message_msg_zigbee_MSGTYPE zigbee_Message
+#define Message_msg_dot15d4_MSGTYPE dot15d4_Message
 #define Message_msg_esb_MSGTYPE esb_Message
 #define Message_msg_unifying_MSGTYPE unifying_Message
 #define Message_msg_phy_MSGTYPE phy_Message
