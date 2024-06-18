@@ -1,8 +1,8 @@
 /******************************************************
- * Zigbee messages and notifications
+ * 802.15.4 messages and notifications
  *
  * This file defines a set of messages used to communicate
- * with a Zigbee hacking device in order to:
+ * with a 802.15.4 hacking device in order to:
  *
  * - packet sniffing
  * - packet jamming
@@ -16,21 +16,21 @@
 
 syntax = "proto3";
 
-package zigbee;
+package dot15d4;
 
 /**
- * Supported commands for Zigbee domain.
+ * Supported commands for 802.15.4 domain.
  *
  * This enumeration specifies the commands a device may
  * support, allowing a host computer to determine what
  * features a device provides and the supported commands.
  *
  * These constants SHALL be used to generate the commands
- * bitmap for Zigbee domain in DeviceDomainInfoResp message.
+ * bitmap for 802.15.4 domain in DeviceDomainInfoResp message.
  *
  **/
 
-enum ZigbeeCommand {
+enum Dot15d4Command {
     /**
      * Low-level commands
      **/
@@ -73,7 +73,7 @@ enum ZigbeeCommand {
     ManInTheMiddle          = 0x0b;
 }
 
-enum ZigbeeMitmRole {
+enum Dot15d4MitmRole {
     REACTIVE_JAMMER = 0;
     CORRECTOR       = 1;
 }
@@ -82,9 +82,10 @@ enum AddressType {
     SHORT = 0;
     EXTENDED = 1;
 }
+
 /**************************************************
  **************************************************
- * Zigbee command messages
+ * Dot15d4 command messages
  **************************************************
  *************************************************/
 
@@ -97,9 +98,9 @@ message SetNodeAddressCmd {
 /**
  * SniffCmd
  *
- * Sniff Zigbee packets sent on a given channel.
+ * Sniff 802.15.4 packets sent on a given channel.
  *
- * ZigbeePacketRaw messages will be sent each time a packet
+ * Dot15d4PacketRaw messages will be sent each time a packet
  * is captured, containing raw data.
  **/
 
@@ -121,7 +122,7 @@ message EnergyDetectionCmd {
 /**
  * JamCmd
  *
- * Jam Zigbee packets sent on a given channel.
+ * Jam 802.15.4 packets sent on a given channel.
  *
  * Jammed messages will be sent each time a packet
  * is jammed.
@@ -134,7 +135,7 @@ message JamCmd {
 /**
  * SendCmd
  *
- * Transmit Zigbee packets on a single channel.
+ * Transmit 802.15.4 packets on a single channel.
  *
  **/
 message SendCmd {
@@ -199,23 +200,23 @@ message StopCmd {
 /**
  * ManInTheMiddleCmd
  *
- * Enable Zigbee Man-in-the-Middle based on reactive jamming and correction.
+ * Enable 802.15.4 Man-in-the-Middle based on reactive jamming and correction.
  *
  * ``
  **/
 
 message ManInTheMiddleCmd {
-    ZigbeeMitmRole role = 1;
+    Dot15d4MitmRole role = 1;
 }
 
 
 message Jammed {
-    uint32 timestamp = 1;
+    uint64 timestamp = 1;
 }
 
 message EnergyDetectionSample {
     uint32 sample = 1;
-    uint32 timestamp = 2;
+    uint64 timestamp = 2;
 }
 /**
  * RawPduReceived
@@ -228,7 +229,7 @@ message EnergyDetectionSample {
 message RawPduReceived {
     uint32 channel = 1;
     optional int32 rssi = 2;
-    optional uint32 timestamp = 3;
+    optional uint64 timestamp = 3;
     optional bool fcs_validity = 4;
     bytes pdu = 5;
     uint32 fcs = 6;
@@ -247,7 +248,7 @@ message RawPduReceived {
  message PduReceived {
     uint32 channel = 1;
     optional int32 rssi = 2;
-    optional uint32 timestamp = 3;
+    optional uint64 timestamp = 3;
     optional bool fcs_validity = 4;
     bytes pdu = 5;
     optional uint32 lqi = 6;
@@ -257,7 +258,7 @@ message RawPduReceived {
 /**
  * Message
  *
- * Encapsulates any Zigbee message.
+ * Encapsulates any 802.15.4 message.
  **/
 
  message Message {

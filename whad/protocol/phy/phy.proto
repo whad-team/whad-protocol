@@ -132,11 +132,6 @@ enum LoRaCodingRate {
     CR48 = 3;
 }
 
-message timestamp {
-    uint32 sec = 1; /* seconds */
-    uint32 usec = 2; /* micro seconds */
-}
-
 /**
  * SetASKModulationCmd
  *
@@ -334,7 +329,7 @@ message SendRawCmd {
  */
 message ScheduleSendCmd {
     bytes packet = 1;
-    timestamp timestamp = 2;
+    uint64 timestamp = 2;
 }
 
 /**
@@ -405,7 +400,7 @@ message MonitorCmd {
  message PacketReceived {
     uint32 frequency = 1;
     optional int32 rssi = 2;
-    optional timestamp timestamp = 3;
+    optional uint64 timestamp = 3;
     bytes packet = 4;
 }
 
@@ -420,7 +415,7 @@ message MonitorCmd {
  message RawPacketReceived {
     uint32 frequency = 1;
     optional int32 rssi = 2;
-    optional timestamp timestamp = 3;
+    optional uint64 timestamp = 3;
     bytes packet = 4;
     repeated int32 iq = 5[packed=true];
 }
@@ -434,7 +429,7 @@ message MonitorCmd {
  **/
 
  message PacketSent {
-    timestamp timestamp = 1;
+    uint64 timestamp = 1;
  }
 
 
@@ -445,7 +440,7 @@ message MonitorCmd {
  *
  **/
 message Jammed {
-    timestamp timestamp = 1;
+    uint64 timestamp = 1;
 }
 
 
@@ -456,7 +451,7 @@ message Jammed {
  *
  **/
 message MonitoringReport {
-    uint32 timestamp = 1;
+    uint64 timestamp = 1;
     repeated uint32 report = 2[packed=true];
 }
 

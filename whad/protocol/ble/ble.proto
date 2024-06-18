@@ -495,7 +495,7 @@ message Triggered {
 message AccessAddressDiscovered {
     uint32 access_address = 1;
     optional int32 rssi = 2;
-    optional uint32 timestamp = 3;
+    optional uint64 timestamp = 3;
 }
 
 /**
@@ -614,8 +614,8 @@ message RawPduReceived {
     BleDirection direction = 1;
     uint32 channel = 2;
     optional int32 rssi = 3;
-    optional uint32 timestamp = 4;
-    optional uint32 relative_timestamp = 5;
+    optional uint64 timestamp = 4;
+    optional uint64 relative_timestamp = 5;
     optional bool crc_validity = 6;
     uint32 access_address = 7;
     bytes pdu = 8;

@@ -1,0 +1,9 @@
+# Commands
+dot15d4.SendCmd.pdu max_size:255
+dot15d4.SetNodeAddressCmd.address max_size:8
+dot15d4.SendRawCmd.pdu max_size:255
+
+
+# Notifications
+dot15d4.PduReceived.pdu max_size:255
+dot15d4.RawPduReceived.pdu max_size:255
