@@ -62,6 +62,7 @@ enum ESBCommand {
     Stop                      = 0x08;
 }
 
+
 /**************************************************
  **************************************************
  * Enhanced ShockBurst command messages
@@ -161,7 +162,7 @@ message StopCmd {
 
 
 message Jammed {
-    uint32 timestamp = 1;
+    uint64 timestamp = 1;
 }
 
 /**
@@ -175,7 +176,7 @@ message Jammed {
 message RawPduReceived {
     uint32 channel = 1;
     optional int32 rssi = 2;
-    optional uint32 timestamp = 3;
+    optional uint64 timestamp = 3;
     optional bool crc_validity = 4;
     optional bytes address = 5;
     bytes pdu = 6;
@@ -193,7 +194,7 @@ message RawPduReceived {
  message PduReceived {
     uint32 channel = 1;
     optional int32 rssi = 2;
-    optional uint32 timestamp = 3;
+    optional uint64 timestamp = 3;
     optional bool crc_validity = 4;
     optional bytes address = 5;
     bytes pdu = 6;

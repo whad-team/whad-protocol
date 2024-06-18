@@ -1,7 +1,7 @@
 PYTHON_OUTDIR = dist/python
 NANOPB_OUTDIR = dist/nanopb
 
-PROTO_SOURCES = $(shell find protocol -name "*.proto")
+PROTO_SOURCES = $(shell find whad -name "*.proto")
 
 PYTHON_TARGETS = python/protocol/whad_pb2.py \
 		 python/protocol/device_pb2.py \

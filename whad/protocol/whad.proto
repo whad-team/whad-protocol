@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-import "protocol/device.proto";
-import "protocol/generic.proto";
-import "protocol/ble/ble.proto";
-import "protocol/dot15d4/dot15d4.proto";
-import "protocol/esb/esb.proto";
-import "protocol/unifying/unifying.proto";
-import "protocol/phy/phy.proto";
+import "whad/protocol/device.proto";
+import "whad/protocol/generic.proto";
+import "whad/protocol/ble/ble.proto";
+import "whad/protocol/dot15d4/dot15d4.proto";
+import "whad/protocol/esb/esb.proto";
+import "whad/protocol/unifying/unifying.proto";
+import "whad/protocol/phy/phy.proto";
 
 message Message {
     oneof msg {

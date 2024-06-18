@@ -82,6 +82,7 @@ enum AddressType {
     SHORT = 0;
     EXTENDED = 1;
 }
+
 /**************************************************
  **************************************************
  * Dot15d4 command messages
@@ -210,12 +211,12 @@ message ManInTheMiddleCmd {
 
 
 message Jammed {
-    uint32 timestamp = 1;
+    uint64 timestamp = 1;
 }
 
 message EnergyDetectionSample {
     uint32 sample = 1;
-    uint32 timestamp = 2;
+    uint64 timestamp = 2;
 }
 /**
  * RawPduReceived
@@ -228,7 +229,7 @@ message EnergyDetectionSample {
 message RawPduReceived {
     uint32 channel = 1;
     optional int32 rssi = 2;
-    optional uint32 timestamp = 3;
+    optional uint64 timestamp = 3;
     optional bool fcs_validity = 4;
     bytes pdu = 5;
     uint32 fcs = 6;
@@ -247,7 +248,7 @@ message RawPduReceived {
  message PduReceived {
     uint32 channel = 1;
     optional int32 rssi = 2;
-    optional uint32 timestamp = 3;
+    optional uint64 timestamp = 3;
     optional bool fcs_validity = 4;
     bytes pdu = 5;
     optional uint32 lqi = 6;
