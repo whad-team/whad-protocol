@@ -3,4 +3,6 @@ phy.SendCmd.packet max_size:255
 phy.ScheduleSendCmd.packet max_size:255
 
 phy.PacketReceived.packet max_size:255
+phy.PacketReceived.syncword max_size:8
 phy.RawPacketReceived.packet max_size:255
+phy.RawPacketReceived.syncword max_size:8

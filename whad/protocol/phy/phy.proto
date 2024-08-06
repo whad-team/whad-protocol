@@ -132,6 +132,17 @@ enum LoRaCodingRate {
     CR48 = 3;
 }
 
+enum Modulation {
+    ASK = 0;
+    FSK = 1;
+    FOURFSK = 2;
+    GFSK = 3;
+    MSK = 4;
+    BPSK = 5;
+    QPSK = 6;
+    LORA = 7;
+}
+
 /**
  * SetASKModulationCmd
  *
@@ -402,6 +413,11 @@ message MonitorCmd {
     optional int32 rssi = 2;
     optional uint64 timestamp = 3;
     bytes packet = 4;
+    uint32 deviation = 5;
+    uint32 datarate = 6;
+    Endianness endian = 7;
+    Modulation modulation = 8;
+    bytes syncword = 9;
 }
 
 
@@ -418,6 +434,11 @@ message MonitorCmd {
     optional uint64 timestamp = 3;
     bytes packet = 4;
     repeated int32 iq = 5[packed=true];
+    uint32 deviation = 6;
+    uint32 datarate = 7;
+    Endianness endian = 8;
+    Modulation modulation = 9;
+    bytes syncword = 10;
 }
 
 
