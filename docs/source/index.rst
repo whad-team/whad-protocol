@@ -7,11 +7,16 @@ Welcome to Wireless HAcking Devices Protocol's documentation!
 =============================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    generic.rst
-   domain/ble/index.rst
+   discovery.rst
+   domain/ble.rst
+   domain/esb.rst
+   domain/unifying.rst
+   domain/dot15d4.rst
+   domain/phy.rst
 
 
 Introduction
@@ -49,8 +54,11 @@ WHAD Services
 
 * :ref:`WHAD generic service <generic_service>`
 * :ref:`WHAD discovery service <discovery_service>`
+* :ref:`WHAD PHY Domain service <domain_phy>`
 * :ref:`WHAD Bluetooth Domain service <domain_ble>`
-
+* :ref:`WHAD Enhanced ShockBurst Domain service <domain_esb>`
+* :ref:`WHAD Logitech Unifying Domain service <domain_unifying>`
+* :ref:`WHAD IEEE 802.15.4 Domain service <domain_dot15d4>`
 
 
 Indices and tables

@@ -26,7 +26,7 @@ Progress
 ~~~~~~~~
 
 The `Progress` message should be used to hold the percentage corresponding to the progress of an underlying operation.
-Its `value` **must** be comprised between 0 and 100. 
+Its `value` **must** be between 0 and 100. 
 
 DebugMsg
 ~~~~~~~~
