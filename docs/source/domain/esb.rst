@@ -3,8 +3,148 @@
 Enhanced ShockBurst Domain
 ==========================
 
-Procedures
-----------
+Enhanced ShockBurst procedures
+------------------------------
+
+Sniffing ESB packets
+^^^^^^^^^^^^^^^^^^^^
+
+Sniffing ESB packets is quite simple, we only need to put the WHAD interface
+in sniffing mode on a channel and listen for packets.
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: SniffCmd(channel=5)
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        Host->>+Interface: StartCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        loop
+            Interface->>Host: PduReceived | RawPduReceived
+        end
+        Host->>+Interface: StopCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+
+First, the host sends a :ref:`SniffCmd` message to switch the WHAD interface into
+sniffing mode. The host **must** provide at least a channel number to sniff,
+but can also provide an ESB address that will be used by the WHAD interface to
+only keep packets sent to this address. The ``show_acknowledgements`` boolean
+field can be set to ``true`` to also capture ESB acknowledgements.
+
+Once the WHAD interface configured in sniffing mode on a specific channel, the
+host sends a :ref:`StartCmd` to start sniffing actual packets. The WHAD interface
+will report any packet through a :ref:`PacketReceived` or :ref:`RawPacketReceived`
+message (depending on its capabilities).
+
+When sniffing mode is enabled, packets can also be injected into a specific
+channel through the use of :ref:`SendCmd` message:
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: SendCmd(channel=5, pdu=...)
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+
+Sniffing can be stopped by the host by sending a :ref:`StopCmd` message.
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: StopCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+
+Receiving ESB packets in PRX mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+WHAD interfaces supporting ESB can also, if implemented, behave as an ESB
+device in *primary receiver mode* or *PRX*. In *PRX* mode, the device has an
+ESB address and receives ESB packets. For each received packet, it sends out
+an acknowledgement except if the packet header has the ``no_ack`` flag set.
+
+To put a WHAD interface in *PRX* mode, the host simply has to set the interface
+ESB address and then put it in *PRX* mode:
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: SetNodeAddressCmd(address=00:11:22:33:44)
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        Host->>+Interface: PrimaryReceiverModeCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+
+Once put in *PRX* mode, the host start the interface and waits for received
+packets:
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: StartCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        loop
+            Interface->>Host: PduReceived | RawPduReceived
+        end
+
+
+Sending ESB packets in PTX mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Compatible WHAD interface can also behave as an ESB transmitter in *primary transmitter mode*.
+It is very similar to the *PRX* mode except that the WHAD interface will send packets to
+a specified address.
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: SetNodeAddressCmd(address=00:11:22:33:44)
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        Host->>+Interface: PrimaryTransmitterModeCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        Host->>+Interface: StartCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        loop
+            Host->>Interface: SendCmd(channel=5, pdu=...)
+        end
+
+First, the host sends a :ref:`SetNodeAddressCmd` to set the WHAD interface ESB
+address. Then, the hosts sets the WHAD interface into *PTX* mode by sending a
+:ref:`PrimaryTransmitterModeCmd` and activates the interface by sending a
+:ref:`StartCmd`. Once started, it can send packets on various channels through
+:ref:`SendCmd` or :ref:`SendRawCmd` messages.
+
+
+Jamming an ESB channel
+^^^^^^^^^^^^^^^^^^^^^^
+
+The host can put the WHAD interface in ESB jamming mode targeting a specific
+channel and start jamming it:
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: JamCmd(channel=5)
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        Host->>+Interface: StartCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        loop
+            Host->>Interface: Jammed
+        end
+        Host->>+Interface: StopCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)        
+
 
 Enumerations
 ------------
@@ -81,10 +221,10 @@ channel               uint32     Channel on which PDUs must be received
 ``channel`` specifies the channel number the WHAD interface must listen.
 
 
-.. _PrimaryTransmitterMode:
+.. _PrimaryTransmitterModeCmd:
 
-PrimaryTransmitterMode
-^^^^^^^^^^^^^^^^^^^^^^
+PrimaryTransmitterModeCmd
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This messages sets the WHAD interface into primary transmit mode (PTX).
 In this mode, the WHAD interface will send ESB PDUs and look back for

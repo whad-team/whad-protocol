@@ -9,6 +9,35 @@ messages allowing to interact with BLE devices and connections.
 Bluetooth Low Energy procedures
 -------------------------------
 
+Discovering access addresses
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If the WHAD interface implements the :ref:`SniffAccessAddressCmd` command then
+it is able to discover access addresses.
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: SniffAccessAddressCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        Host->>+Interface: StartCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        loop
+            Interface->>Host: AccessAddressDiscovered
+        end
+        Host->>+Interface: StopCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+
+
+The host sends a :ref:`SniffAccessAddressCmd` command to switch the WHAD
+interface into access address sniffing mode and then starts the WHAD interface
+with a :ref:`StartCmd`. Discovered access addresses are reported to the host
+by the WHAD interface through a series of :ref:`AccessAddressDiscovered`
+messages.
+
+
 Scanning devices
 ^^^^^^^^^^^^^^^^
 
@@ -23,14 +52,14 @@ each advertisement it receives in order to get more information from devices.
         participant Host
         participant Interface
         Host->>+Interface: ScanModeCmd
-        Interface->>-Host: CommandResult(result=SUCCESS)
+        Interface-->>-Host: CommandResult(result=SUCCESS)
         Host->>+Interface: StartCmd
-        Interface->>-Host: CommandResult(result=SUCCESS)
+        Interface-->>-Host: CommandResult(result=SUCCESS)
         loop
             Interface->>Host: PduReceived
         end
         Host->>+Interface: StopCmd
-        Interface->>-Host: CommandResult(result=SUCCESS)
+        Interface-->>-Host: CommandResult(result=SUCCESS)
 
 First, the host sends a :ref:`ScanModeCmd` message to the WHAD interface. If
 the ``active_scan`` field is set to ``true``, the WHAD interface will send a
@@ -809,10 +838,10 @@ If ``bd_address`` is set, it will be used a filter to target a connection to
 the corresponding BD address. If set to *FF:FF:FF:FF:FF:FF* (6 0xFF bytes) then
 the WHAD interface will not filter connection initiation requests.
 
-.. _Start:
+.. _StartCmd:
 
-Start
-^^^^^
+StartCmd
+^^^^^^^^
 
 This message starts the WHAD interface in the currently selected mode.
 
@@ -820,10 +849,10 @@ This message starts the WHAD interface in the currently selected mode.
 
     This message has no specific field.
 
-.. _Stop:
+.. _StopCmd:
 
-Stop
-^^^^
+StopCmd
+^^^^^^^
 
 This message stops the WHAD interface that then goes idle.
 
