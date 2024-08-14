@@ -3,8 +3,61 @@
 Logitech Unifyin Domain
 =======================
 
-Procedures
-----------
+Logitech Unifying procedures
+----------------------------
+
+Sniffing Unifying packets
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sniffing ESB packets is quite simple, we only need to put the WHAD interface
+in sniffing mode on a channel and listen for packets.
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: SniffCmd(channel=5)
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        Host->>+Interface: StartCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        loop
+            Interface->>Host: PduReceived | RawPduReceived
+        end
+        Host->>+Interface: StopCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+
+First, the host sends a :ref:`SniffCmd` message to switch the WHAD interface into
+sniffing mode. The host **must** provide at least a channel number to sniff,
+but can also provide an ESB address that will be used by the WHAD interface to
+only keep packets sent to this address. The ``show_acknowledgements`` boolean
+field can be set to ``true`` to also capture ESB acknowledgements.
+
+Once the WHAD interface configured in sniffing mode on a specific channel, the
+host sends a :ref:`StartCmd` to start sniffing actual packets. The WHAD interface
+will report any packet through a :ref:`PacketReceived` or :ref:`RawPacketReceived`
+message (depending on its capabilities).
+
+When sniffing mode is enabled, packets can also be injected into a specific
+channel through the use of :ref:`SendCmd` message:
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: SendCmd(channel=5, pdu=...)
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+
+Sniffing can be stopped by the host by sending a :ref:`StopCmd` message.
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: StopCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
 
 Enumerations
 ------------

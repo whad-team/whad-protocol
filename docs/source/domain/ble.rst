@@ -131,6 +131,31 @@ to the host.
 The host can stop this BLE peripheral at any time by sending a :ref:`StopCmd`
 command.
 
+Sending and receiving PDUs
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Once a connection established (in *central* or *peripheral* mode), the host
+can provide the WHAD interface with a PDU to send. If the WHAD interface does
+have the ``NoRawData`` capability (see. :ref:`Capability`), the host must send
+:ref:`SendPduCmd` messages. If the WHAD interface can send raw PDU, it must
+send :ref:`SendRawPduCmd` messages.
+
+A received PDU is notified by the WHAD interface to the host through a
+:ref:`PduReceived` message or :ref:`RawPduReceived` message depending on its
+capabilities.
+
+.. mermaid::
+
+    sequenceDiagram
+        participant Host
+        participant Interface
+        Host->>+Interface: SendPduCmd
+        Interface-->>-Host: CommandResult(result=SUCCESS)
+        Note over Host,Interface: PDU send by host
+        Interface->>Host: PduReceived
+        Note over Host,Interface: Interface sends a received PDU
+
+
 Enumerations
 ------------
 

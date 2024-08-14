@@ -134,6 +134,19 @@ Capability
 This enumeration lists all the capability flags that can be combined in a :ref:`DeviceInfoResp`
 message. 
 
+================ =========================================
+Value            Description
+================ =========================================
+_CapNone         No specific capability
+Scan             Device can scan and detect other devices
+Sniff            Device is able to sniff data
+Inject           Device can inject/send data
+Jam              Device can jam
+Hijack           Device is able to hijack connections
+SimulateRole     Device can act as a specific role
+NoRawData        Device cannot send or receive raw data
+================ =========================================
+
 Messages
 --------
 
