@@ -6,6 +6,22 @@ IEEE 802.15.4 Domain
 Procedures
 ----------
 
+Sniffing 802.15.4 packets
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Receiving 802.1.5.4 packets
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Setting interface in Coordinator mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Setting interface in Router mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Setting interface in EndDevice mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
 Enumerations
 ------------
 

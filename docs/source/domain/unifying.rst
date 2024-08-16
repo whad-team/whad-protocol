@@ -1,7 +1,7 @@
 .. _domain_unifying:
 
-Logitech Unifyin Domain
-=======================
+Logitech Unifying Domain
+========================
 
 Logitech Unifying procedures
 ----------------------------
