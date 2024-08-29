@@ -11,6 +11,7 @@
 #include "protocol/esb/esb.pb.h"
 #include "protocol/unifying/unifying.pb.h"
 #include "protocol/phy/phy.pb.h"
+#include "protocol/ant/ant.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -27,6 +28,7 @@ typedef struct _Message {
         esb_Message esb;
         unifying_Message unifying;
         phy_Message phy;
+        ant_Message ant;
     } msg;
 } Message;
 
@@ -47,6 +49,7 @@ extern "C" {
 #define Message_esb_tag                          5
 #define Message_unifying_tag                     6
 #define Message_phy_tag                          7
+#define Message_ant_tag                          8
 
 /* Struct field encoding specification for nanopb */
 #define Message_FIELDLIST(X, a) \
@@ -56,7 +59,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,ble,msg.ble),   3) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,dot15d4,msg.dot15d4),   4) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,esb,msg.esb),   5) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,unifying,msg.unifying),   6) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,phy,msg.phy),   7)
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,phy,msg.phy),   7) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,ant,msg.ant),   8)
 #define Message_CALLBACK NULL
 #define Message_DEFAULT NULL
 #define Message_msg_generic_MSGTYPE generic_Message
@@ -66,6 +70,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,phy,msg.phy),   7)
 #define Message_msg_esb_MSGTYPE esb_Message
 #define Message_msg_unifying_MSGTYPE unifying_Message
 #define Message_msg_phy_MSGTYPE phy_Message
+#define Message_msg_ant_MSGTYPE ant_Message
 
 extern const pb_msgdesc_t Message_msg;
 

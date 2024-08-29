@@ -1,0 +1,8 @@
+ant.SetNetworkKeyCmd.network_key max_size:8
+ant.SniffCmd.network_key max_size:8
+ant.SendCmd.pdu max_size:255
+ant.SendRawCmd.pdu max_size:255
+
+# Notifications
+ant.PduReceived.pdu max_size:255
+ant.RawPduReceived.pdu max_size:255
