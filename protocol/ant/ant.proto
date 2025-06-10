@@ -183,7 +183,7 @@ message AssignChannelCmd {
 /**
  * UnassignChannelCmd
  *
- * Breaks the link channel number to network_number
+ * Breaks the link between a channel and a network
  *
  **/
 message UnassignChannelCmd {
@@ -193,7 +193,7 @@ message UnassignChannelCmd {
 /**
  * OpenChannelCmd
  *
- * Open a new channel with channel_number
+ * Open a new channel linked to a channel number 
  *
  **/
 message OpenChannelCmd {
@@ -203,7 +203,7 @@ message OpenChannelCmd {
 /**
  * CloseChannelCmd
  *
- * Close an opened channel with channel_number.
+ * Close an opened channel linked to a channel number
  *
  **/
 message CloseChannelCmd {
@@ -225,8 +225,8 @@ message SetFrequencyCmd {
  *
  * Enter sniffer mode
  * It requires the user to provide frequency,
- * network_key; and optionaly device_number, device_type,
- * transmission_type
+ * network key; and optionaly the device number, the device type,
+ * and the transmission type.
  **/
 message SniffCmd {
     uint32 frequency = 1;
