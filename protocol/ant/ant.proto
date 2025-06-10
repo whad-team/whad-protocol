@@ -33,62 +33,62 @@ enum ANTCommand {
      * Low-level commands
      **/
 
-    /* Set Device number. */
-    SetDeviceNumber           = 0x00;
+        /* Set Device number. */
+        SetDeviceNumber           = 0x00;
 
-    /* Set Device Type. */
-    SetDeviceType             = 0x01;
+        /* Set Device Type. */
+        SetDeviceType             = 0x01;
 
-    /* Set Transmission Type. */
-    SetTransmissionType       = 0x02;
+        /* Set Transmission Type. */
+        SetTransmissionType       = 0x02;
 
-    /* Set Channel Period. */
-    SetChannelPeriod          = 0x03;
+        /* Set Channel Period. */
+        SetChannelPeriod          = 0x03;
 
-    /* Set Network Key */
-    SetNetworkKey             = 0x04;
+        /* Set Network Key */
+        SetNetworkKey             = 0x04;
 
-    /* Assign Channel */
-    AssignChannel             = 0x05;
+        /* Assign Channel */
+        AssignChannel             = 0x05;
 
-    /* Unassign Channel */
-    UnassignChannel           = 0x06;
+        /* Unassign Channel */
+        UnassignChannel           = 0x06;
 
-    /* Open Channel */
-    OpenChannel               = 0x07;
+        /* Open Channel */
+        OpenChannel               = 0x07;
 
-    /* Close Channel */
-    CloseChannel              = 0x08;
+        /* Close Channel */
+        CloseChannel              = 0x08;
 
-    /* Set Frequency */
-    SetFrequency              = 0x09;
+        /* Set Frequency */
+        SetFrequency              = 0x09;
 
-    /* Sniff packets. */
-    Sniff                     = 0x0a;
+        /* Sniff packets. */
+        Sniff                     = 0x0a;
 
-    /* Jam packets. */
-    Jam                       = 0x0b;
+        /* Jam packets. */
+        Jam                       = 0x0b;
 
-    /* Send packets. */
-    Send                      = 0x0c;
+        /* Send packets. */
+        Send                      = 0x0c;
 
-    SendRaw                   = 0x0d;
+        SendRaw                   = 0x0d;
 
-    /**
-     * High-level commands.
-     **/
+        /**
+        * High-level commands.
+        **/
 
-    /* Master mode. */
-    MasterMode                = 0x0e;
+        /* Master mode. */
+        MasterMode                = 0x0e;
 
-    /* Slave mode. */
-    SlaveMode                 = 0x0f;
+        /* Slave mode. */
+        SlaveMode                 = 0x0f;
 
 
-    /* Start and Stop commands shared with node-related mode. */
-    Start                     = 0x10;
-    Stop                      = 0x11;
-}
+        /* Start and Stop commands shared with node-related mode. */
+        Start                     = 0x10;
+        Stop                      = 0x11;
+    }
 
 /**************************************************
  **************************************************
@@ -124,7 +124,7 @@ message SetDeviceNumberCmd {
 /**
  * SetDeviceTypeCmd
  *
- * Configure the  ANT device type, for a given frequency
+ * Configure the  ANT device type, for a given channel
  *
  **/
 message SetDeviceTypeCmd {
@@ -134,7 +134,7 @@ message SetDeviceTypeCmd {
 /**
  * SetTransmissionTypeCmd
  *
- * Configure the  ANT transmission_type, for a given frequency
+ * Configure the  ANT transmission type for a given channel
  *
  **/
 message SetTransmissionTypeCmd {
@@ -144,7 +144,7 @@ message SetTransmissionTypeCmd {
 /**
  * SetChannelPeriodCmd
  *
- * Configure the  ANT channel_period to use for the channel period
+ * Configure the  ANT channel period to use for a given channel
  *
  **/
 message SetChannelPeriodCmd {
