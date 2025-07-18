@@ -71,6 +71,26 @@ enum Dot15d4Command {
 
     /* Man-in-the-Middle mode */
     ManInTheMiddle          = 0x0b;
+
+    /* Enable frequency hopping command. */
+    EnableHop               = 0x0c;
+
+    /* Add links commands. */
+    AddLinks                = 0x0d;
+
+    /* Delete link command. */
+    DeleteLink              = 0x0e;
+
+    /* set ChannelMap command. */
+    ChannelMap              = 0x0f;
+
+
+    /* Write/Modify superframe command. */
+    WriteModifySuperframe   = 0x10;
+
+    /* Delete superframe command. */
+    DeleteSuperframe        = 0x11;
+
 }
 
 enum Dot15d4MitmRole {
@@ -214,6 +234,57 @@ message Jammed {
     uint64 timestamp = 1;
 }
 
+/**
+* EnableHopCmd
+*
+* Enable frequency hopping
+*/
+message EnableHopCmd{
+    bool hopping = 1;
+}
+
+/**
+* AddLinksCmd
+* This command adds the links 
+*/
+message AddLinksCmd{
+    uint32 nb_links = 1;
+    bytes links = 2;
+}
+
+/** 
+* Delete the corresponding link
+*/
+message DeleteLinkCmd{
+    uint32 superframeId = 1;
+    uint32 slotNumber = 2;
+    uint32 neighbor = 3;
+}
+
+/**
+* Add/Modify the channel map
+*/
+message ChannelMapCmd{
+    uint32 channelMap = 1;
+}
+
+/**
+* Add new superframe or modify existing one
+ */
+message WriteModifySuperframeCmd{
+    uint32 superframeId = 1;
+    uint32 numberOfSlots = 2;
+    uint32 flags = 3;
+    optional uint64 asn = 4;
+}
+
+/**
+* Delete existing superframe
+*/
+message DeleteSuperframeCmd{
+    uint32 superframeId = 1;
+}
+
 message EnergyDetectionSample {
     uint32 sample = 1;
     uint64 timestamp = 2;
@@ -278,6 +349,12 @@ message RawPduReceived {
         StartCmd start = 10;
         StopCmd stop = 11;
         ManInTheMiddleCmd mitm = 12;
+        EnableHopCmd hopping = 17;
+        AddLinksCmd addLinks = 18;
+        DeleteLinkCmd deleteLink = 19;
+        ChannelMapCmd channelMap = 20;
+        WriteModifySuperframeCmd writeModifySuperframeCmd = 21;
+        DeleteSuperframeCmd deleteSuperframeCmd = 22;
 
         /* Notifications */
         Jammed jammed = 13;
