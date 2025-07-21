@@ -434,7 +434,8 @@ message RawPduReceived {
  **/
 
  message ChannelEvent {
-    AntChannelEvent event = 1;
+    uint32 channel_number = 1;
+    AntChannelEvent event = 2;
 }
 
  message Message {

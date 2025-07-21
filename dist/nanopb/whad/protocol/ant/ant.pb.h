@@ -147,6 +147,7 @@ typedef struct _ant_AvailableNetworks {
 } ant_AvailableNetworks;
 
 typedef struct _ant_ChannelEvent { 
+    uint32_t channel_number;
     ant_AntChannelEvent event;
 } ant_ChannelEvent;
 
@@ -401,7 +402,7 @@ extern "C" {
 #define ant_AvailableNetworks_init_default       {0}
 #define ant_RawPduReceived_init_default          {0, false, 0, false, 0, false, 0, {0, {0}}, 0, 0}
 #define ant_PduReceived_init_default             {0, false, 0, false, 0, false, 0, {0, {0}}, 0}
-#define ant_ChannelEvent_init_default            {_ant_AntChannelEvent_MIN}
+#define ant_ChannelEvent_init_default            {0, _ant_AntChannelEvent_MIN}
 #define ant_Message_init_default                 {0, {ant_SetDeviceNumberCmd_init_default}}
 #define ant_SetDeviceNumberCmd_init_zero         {0, 0}
 #define ant_SetDeviceTypeCmd_init_zero           {0, 0}
@@ -428,7 +429,7 @@ extern "C" {
 #define ant_AvailableNetworks_init_zero          {0}
 #define ant_RawPduReceived_init_zero             {0, false, 0, false, 0, false, 0, {0, {0}}, 0, 0}
 #define ant_PduReceived_init_zero                {0, false, 0, false, 0, false, 0, {0, {0}}, 0}
-#define ant_ChannelEvent_init_zero               {_ant_AntChannelEvent_MIN}
+#define ant_ChannelEvent_init_zero               {0, _ant_AntChannelEvent_MIN}
 #define ant_Message_init_zero                    {0, {ant_SetDeviceNumberCmd_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -441,7 +442,8 @@ extern "C" {
 #define ant_AssignChannelCmd_asynchronous_transmission_tag 7
 #define ant_AvailableChannels_number_of_channels_tag 1
 #define ant_AvailableNetworks_number_of_networks_tag 1
-#define ant_ChannelEvent_event_tag               1
+#define ant_ChannelEvent_channel_number_tag      1
+#define ant_ChannelEvent_event_tag               2
 #define ant_CloseChannelCmd_channel_number_tag   1
 #define ant_JamCmd_rf_channel_tag                1
 #define ant_Jammed_timestamp_tag                 1
@@ -670,7 +672,8 @@ X(a, STATIC,   SINGULAR, UINT32,   rf_channel,        6)
 #define ant_PduReceived_DEFAULT NULL
 
 #define ant_ChannelEvent_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UENUM,    event,             1)
+X(a, STATIC,   SINGULAR, UINT32,   channel_number,    1) \
+X(a, STATIC,   SINGULAR, UENUM,    event,             2)
 #define ant_ChannelEvent_CALLBACK NULL
 #define ant_ChannelEvent_DEFAULT NULL
 
@@ -791,7 +794,7 @@ extern const pb_msgdesc_t ant_Message_msg;
 #define ant_AssignChannelCmd_size                22
 #define ant_AvailableChannels_size               6
 #define ant_AvailableNetworks_size               6
-#define ant_ChannelEvent_size                    2
+#define ant_ChannelEvent_size                    8
 #define ant_CloseChannelCmd_size                 6
 #define ant_JamCmd_size                          6
 #define ant_Jammed_size                          6
