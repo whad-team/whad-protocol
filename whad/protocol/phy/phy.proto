@@ -132,9 +132,15 @@ enum LoRaCodingRate {
     CR48 = 3;
 }
 
-message timestamp {
-    uint32 sec = 1; /* seconds */
-    uint32 usec = 2; /* micro seconds */
+enum Modulation {
+    ASK = 0;
+    FSK = 1;
+    FOURFSK = 2;
+    GFSK = 3;
+    MSK = 4;
+    BPSK = 5;
+    QPSK = 6;
+    LORA = 7;
 }
 
 /**
@@ -334,7 +340,7 @@ message SendRawCmd {
  */
 message ScheduleSendCmd {
     bytes packet = 1;
-    timestamp timestamp = 2;
+    uint64 timestamp = 2;
 }
 
 /**
@@ -405,8 +411,13 @@ message MonitorCmd {
  message PacketReceived {
     uint32 frequency = 1;
     optional int32 rssi = 2;
-    optional timestamp timestamp = 3;
+    optional uint64 timestamp = 3;
     bytes packet = 4;
+    uint32 deviation = 5;
+    uint32 datarate = 6;
+    Endianness endian = 7;
+    Modulation modulation = 8;
+    bytes syncword = 9;
 }
 
 
@@ -420,9 +431,14 @@ message MonitorCmd {
  message RawPacketReceived {
     uint32 frequency = 1;
     optional int32 rssi = 2;
-    optional timestamp timestamp = 3;
+    optional uint64 timestamp = 3;
     bytes packet = 4;
     repeated int32 iq = 5[packed=true];
+    uint32 deviation = 6;
+    uint32 datarate = 7;
+    Endianness endian = 8;
+    Modulation modulation = 9;
+    bytes syncword = 10;
 }
 
 
@@ -434,7 +450,7 @@ message MonitorCmd {
  **/
 
  message PacketSent {
-    timestamp timestamp = 1;
+    uint64 timestamp = 1;
  }
 
 
@@ -445,7 +461,7 @@ message MonitorCmd {
  *
  **/
 message Jammed {
-    timestamp timestamp = 1;
+    uint64 timestamp = 1;
 }
 
 
@@ -456,7 +472,7 @@ message Jammed {
  *
  **/
 message MonitoringReport {
-    uint32 timestamp = 1;
+    uint64 timestamp = 1;
     repeated uint32 report = 2[packed=true];
 }
 

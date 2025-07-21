@@ -30,8 +30,8 @@ typedef enum _ant_ANTCommand { /* *
     ant_ANTCommand_OpenChannel = 7, 
     /* Close Channel */
     ant_ANTCommand_CloseChannel = 8, 
-    /* Set Frequency */
-    ant_ANTCommand_SetFrequency = 9, 
+    /* Set RF Channel */
+    ant_ANTCommand_SetRFChannel = 9, 
     /* Sniff packets. */
     ant_ANTCommand_Sniff = 10, 
     /* Jam packets. */
@@ -45,7 +45,10 @@ typedef enum _ant_ANTCommand { /* *
     ant_ANTCommand_SlaveMode = 15, 
     /* Start and Stop commands shared with node-related mode. */
     ant_ANTCommand_Start = 16, 
-    ant_ANTCommand_Stop = 17 
+    ant_ANTCommand_Stop = 17, 
+    /* Channels and Networks management commands. */
+    ant_ANTCommand_ListChannels = 18, 
+    ant_ANTCommand_ListNetworks = 19 
 } ant_ANTCommand;
 
 /* *
@@ -62,7 +65,49 @@ typedef enum _ant_AntChannelType {
     ant_AntChannelType_TRANSMIT_ONLY_CHANNEL = 5 
 } ant_AntChannelType;
 
+/* *
+ AntChannelEvent
+
+ enum listing the different channel events than can occurs. */
+typedef enum _ant_AntChannelEvent { 
+    ant_AntChannelEvent_EVENT_NO_ERROR = 0, 
+    ant_AntChannelEvent_EVENT_RX_SEARCH_TIMEOUT = 1, 
+    ant_AntChannelEvent_EVENT_RX_FAIL = 2, 
+    ant_AntChannelEvent_EVENT_TX = 3, 
+    ant_AntChannelEvent_EVENT_TRANSFER_RX_FAILED = 4, 
+    ant_AntChannelEvent_EVENT_TRANSFER_TX_COMPLETED = 5, 
+    ant_AntChannelEvent_EVENT_TRANSFER_TX_FAILED = 6, 
+    ant_AntChannelEvent_EVENT_CHANNEL_CLOSED = 7, 
+    ant_AntChannelEvent_EVENT_RX_FAIL_TO_GO_TO_SEARCH = 8, 
+    ant_AntChannelEvent_EVENT_CHANNEL_COLLISION = 9, 
+    ant_AntChannelEvent_EVENT_TRANSFER_TX_START = 10, 
+    ant_AntChannelEvent_EVENT_TRANSFER_NEXT_DATA_BLOCK = 17, 
+    ant_AntChannelEvent_EVENT_CHANNEL_IN_WRONG_STATE = 21, 
+    ant_AntChannelEvent_EVENT_CHANNEL_NOT_OPENED = 22, 
+    ant_AntChannelEvent_EVENT_CHANNEL_ID_NOT_SET = 24, 
+    ant_AntChannelEvent_EVENT_CLOSE_ALL_CHANNELS = 25, 
+    ant_AntChannelEvent_EVENT_TRANSFER_IN_PROGRESS = 31, 
+    ant_AntChannelEvent_EVENT_TRANSFER_SEQUENCE_NUMBER_ERROR = 32, 
+    ant_AntChannelEvent_EVENT_TRANSFER_IN_ERROR = 33 
+} ant_AntChannelEvent;
+
 /* Struct definitions */
+/* *
+ ListChannelsCmd
+
+ List the channels exposed by the device. */
+typedef struct _ant_ListChannelsCmd { 
+    char dummy_field;
+} ant_ListChannelsCmd;
+
+/* *
+ ListNetworksCmd
+
+ List the networks supported by the device. */
+typedef struct _ant_ListNetworksCmd { 
+    char dummy_field;
+} ant_ListNetworksCmd;
+
 /* *
  StartCmd
 
@@ -93,16 +138,28 @@ typedef struct _ant_AssignChannelCmd {
     bool asynchronous_transmission;
 } ant_AssignChannelCmd;
 
+typedef struct _ant_AvailableChannels { 
+    uint32_t number_of_channels;
+} ant_AvailableChannels;
+
+typedef struct _ant_AvailableNetworks { 
+    uint32_t number_of_networks;
+} ant_AvailableNetworks;
+
+typedef struct _ant_ChannelEvent { 
+    ant_AntChannelEvent event;
+} ant_ChannelEvent;
+
 /* *
  CloseChannelCmd
 
- Close an opened channel with channel_number. */
+ Close an opened channel linked to a channel number */
 typedef struct _ant_CloseChannelCmd { 
     uint32_t channel_number;
 } ant_CloseChannelCmd;
 
 typedef struct _ant_JamCmd { 
-    uint32_t frequency;
+    uint32_t rf_channel;
 } ant_JamCmd;
 
 typedef struct _ant_Jammed { 
@@ -120,11 +177,12 @@ typedef struct _ant_MasterModeCmd {
 /* *
  OpenChannelCmd
 
- Open a new channel with channel_number */
+ Open a new channel linked to a channel number */
 typedef struct _ant_OpenChannelCmd { 
     uint32_t channel_number;
 } ant_OpenChannelCmd;
 
+typedef PB_BYTES_ARRAY_T(255) ant_PduReceived_pdu_t;
 typedef struct _ant_PduReceived { 
     uint32_t channel_number;
     bool has_rssi;
@@ -133,9 +191,11 @@ typedef struct _ant_PduReceived {
     uint32_t timestamp;
     bool has_crc_validity;
     bool crc_validity;
-    pb_callback_t pdu;
+    ant_PduReceived_pdu_t pdu;
+    uint32_t rf_channel;
 } ant_PduReceived;
 
+typedef PB_BYTES_ARRAY_T(255) ant_RawPduReceived_pdu_t;
 typedef struct _ant_RawPduReceived { 
     uint32_t channel_number;
     bool has_rssi;
@@ -144,32 +204,39 @@ typedef struct _ant_RawPduReceived {
     uint32_t timestamp;
     bool has_crc_validity;
     bool crc_validity;
-    pb_callback_t pdu;
+    ant_RawPduReceived_pdu_t pdu;
     uint32_t crc;
+    uint32_t rf_channel;
 } ant_RawPduReceived;
 
+typedef PB_BYTES_ARRAY_T(255) ant_SendCmd_pdu_t;
 /* *
  SendCmd
 
  Transmit ANT packets on a single channel. */
 typedef struct _ant_SendCmd { 
-    uint32_t frequency;
-    pb_callback_t pdu;
+    bool has_rf_channel;
+    uint32_t rf_channel;
+    uint32_t channel_number;
+    ant_SendCmd_pdu_t pdu;
 } ant_SendCmd;
 
+typedef PB_BYTES_ARRAY_T(255) ant_SendRawCmd_pdu_t;
 /* *
  SendCmd
 
  Transmit raw ANT packets on a single channel. */
 typedef struct _ant_SendRawCmd { 
-    uint32_t frequency;
-    pb_callback_t pdu;
+    bool has_rf_channel;
+    uint32_t rf_channel;
+    uint32_t channel_number;
+    ant_SendRawCmd_pdu_t pdu;
 } ant_SendRawCmd;
 
 /* *
  SetChannelPeriodCmd
 
- Configure the  ANT channel_period to use for the channel period */
+ Configure the  ANT channel period to use for a given channel */
 typedef struct _ant_SetChannelPeriodCmd { 
     uint32_t channel_number;
     uint32_t channel_period;
@@ -187,20 +254,11 @@ typedef struct _ant_SetDeviceNumberCmd {
 /* *
  SetDeviceTypeCmd
 
- Configure the  ANT device type, for a given frequency */
+ Configure the  ANT device type, for a given channel */
 typedef struct _ant_SetDeviceTypeCmd { 
     uint32_t channel_number;
     uint32_t device_type;
 } ant_SetDeviceTypeCmd;
-
-/* *
- SetFrequencyCmd
-
- Set the frequency and the associated channel numbers */
-typedef struct _ant_SetFrequencyCmd { 
-    uint32_t channel_number;
-    uint32_t frequency;
-} ant_SetFrequencyCmd;
 
 typedef PB_BYTES_ARRAY_T(8) ant_SetNetworkKeyCmd_network_key_t;
 typedef struct _ant_SetNetworkKeyCmd { 
@@ -209,9 +267,18 @@ typedef struct _ant_SetNetworkKeyCmd {
 } ant_SetNetworkKeyCmd;
 
 /* *
+ SetRFChannelCmd
+
+ Set the RF Channel and the associated channel numbers */
+typedef struct _ant_SetRFChannelCmd { 
+    uint32_t channel_number;
+    uint32_t rf_channel;
+} ant_SetRFChannelCmd;
+
+/* *
  SetTransmissionTypeCmd
 
- Configure the  ANT transmission_type, for a given frequency */
+ Configure the  ANT transmission type for a given channel */
 typedef struct _ant_SetTransmissionTypeCmd { 
     uint32_t channel_number;
     uint32_t transmission_type;
@@ -230,11 +297,11 @@ typedef PB_BYTES_ARRAY_T(8) ant_SniffCmd_network_key_t;
  SniffCmd
 
  Enter sniffer mode
- It requires the user to provide frequency,
- network_key; and optionaly device_number, device_type,
- transmission_type */
+ It requires the user to provide the RF channel,
+ network key; and optionaly the device number, the device type,
+ and the transmission type. */
 typedef struct _ant_SniffCmd { 
-    uint32_t frequency;
+    uint32_t rf_channel;
     ant_SniffCmd_network_key_t network_key;
     bool has_device_number;
     uint32_t device_number;
@@ -247,7 +314,7 @@ typedef struct _ant_SniffCmd {
 /* *
  UnassignChannelCmd
 
- Breaks the link channel number to network_number */
+ Breaks the link between a channel and a network */
 typedef struct _ant_UnassignChannelCmd { 
     uint32_t channel_number;
 } ant_UnassignChannelCmd;
@@ -265,7 +332,7 @@ typedef struct _ant_Message {
         ant_UnassignChannelCmd unassign_channel;
         ant_OpenChannelCmd open_channel;
         ant_CloseChannelCmd close_channel;
-        ant_SetFrequencyCmd set_frequency;
+        ant_SetRFChannelCmd set_rf_channel;
         ant_SniffCmd sniff;
         ant_JamCmd jam;
         ant_SendCmd send;
@@ -278,18 +345,30 @@ typedef struct _ant_Message {
         ant_Jammed jammed;
         ant_RawPduReceived raw_pdu;
         ant_PduReceived pdu;
+        /* Management commands */
+        ant_ListChannelsCmd list_channels;
+        ant_ListNetworksCmd list_networks;
+        /* Management notifications */
+        ant_AvailableChannels available_channels;
+        ant_AvailableNetworks available_networks;
+        /* Events */
+        ant_ChannelEvent channel_event;
     } msg;
 } ant_Message;
 
 
 /* Helper constants for enums */
 #define _ant_ANTCommand_MIN ant_ANTCommand_SetDeviceNumber
-#define _ant_ANTCommand_MAX ant_ANTCommand_Stop
-#define _ant_ANTCommand_ARRAYSIZE ((ant_ANTCommand)(ant_ANTCommand_Stop+1))
+#define _ant_ANTCommand_MAX ant_ANTCommand_ListNetworks
+#define _ant_ANTCommand_ARRAYSIZE ((ant_ANTCommand)(ant_ANTCommand_ListNetworks+1))
 
 #define _ant_AntChannelType_MIN ant_AntChannelType_BIDIRECTIONAL_RECEIVE_CHANNEL
 #define _ant_AntChannelType_MAX ant_AntChannelType_TRANSMIT_ONLY_CHANNEL
 #define _ant_AntChannelType_ARRAYSIZE ((ant_AntChannelType)(ant_AntChannelType_TRANSMIT_ONLY_CHANNEL+1))
+
+#define _ant_AntChannelEvent_MIN ant_AntChannelEvent_EVENT_NO_ERROR
+#define _ant_AntChannelEvent_MAX ant_AntChannelEvent_EVENT_TRANSFER_IN_ERROR
+#define _ant_AntChannelEvent_ARRAYSIZE ((ant_AntChannelEvent)(ant_AntChannelEvent_EVENT_TRANSFER_IN_ERROR+1))
 
 
 #ifdef __cplusplus
@@ -306,18 +385,23 @@ extern "C" {
 #define ant_UnassignChannelCmd_init_default      {0}
 #define ant_OpenChannelCmd_init_default          {0}
 #define ant_CloseChannelCmd_init_default         {0}
-#define ant_SetFrequencyCmd_init_default         {0, 0}
+#define ant_SetRFChannelCmd_init_default         {0, 0}
 #define ant_SniffCmd_init_default                {0, {0, {0}}, false, 0, false, 0, false, 0}
 #define ant_JamCmd_init_default                  {0}
-#define ant_SendCmd_init_default                 {0, {{NULL}, NULL}}
-#define ant_SendRawCmd_init_default              {0, {{NULL}, NULL}}
+#define ant_SendCmd_init_default                 {false, 0, 0, {0, {0}}}
+#define ant_SendRawCmd_init_default              {false, 0, 0, {0, {0}}}
 #define ant_MasterModeCmd_init_default           {0}
 #define ant_SlaveModeCmd_init_default            {0}
 #define ant_StartCmd_init_default                {0}
 #define ant_StopCmd_init_default                 {0}
+#define ant_ListChannelsCmd_init_default         {0}
+#define ant_ListNetworksCmd_init_default         {0}
 #define ant_Jammed_init_default                  {0}
-#define ant_RawPduReceived_init_default          {0, false, 0, false, 0, false, 0, {{NULL}, NULL}, 0}
-#define ant_PduReceived_init_default             {0, false, 0, false, 0, false, 0, {{NULL}, NULL}}
+#define ant_AvailableChannels_init_default       {0}
+#define ant_AvailableNetworks_init_default       {0}
+#define ant_RawPduReceived_init_default          {0, false, 0, false, 0, false, 0, {0, {0}}, 0, 0}
+#define ant_PduReceived_init_default             {0, false, 0, false, 0, false, 0, {0, {0}}, 0}
+#define ant_ChannelEvent_init_default            {_ant_AntChannelEvent_MIN}
 #define ant_Message_init_default                 {0, {ant_SetDeviceNumberCmd_init_default}}
 #define ant_SetDeviceNumberCmd_init_zero         {0, 0}
 #define ant_SetDeviceTypeCmd_init_zero           {0, 0}
@@ -328,18 +412,23 @@ extern "C" {
 #define ant_UnassignChannelCmd_init_zero         {0}
 #define ant_OpenChannelCmd_init_zero             {0}
 #define ant_CloseChannelCmd_init_zero            {0}
-#define ant_SetFrequencyCmd_init_zero            {0, 0}
+#define ant_SetRFChannelCmd_init_zero            {0, 0}
 #define ant_SniffCmd_init_zero                   {0, {0, {0}}, false, 0, false, 0, false, 0}
 #define ant_JamCmd_init_zero                     {0}
-#define ant_SendCmd_init_zero                    {0, {{NULL}, NULL}}
-#define ant_SendRawCmd_init_zero                 {0, {{NULL}, NULL}}
+#define ant_SendCmd_init_zero                    {false, 0, 0, {0, {0}}}
+#define ant_SendRawCmd_init_zero                 {false, 0, 0, {0, {0}}}
 #define ant_MasterModeCmd_init_zero              {0}
 #define ant_SlaveModeCmd_init_zero               {0}
 #define ant_StartCmd_init_zero                   {0}
 #define ant_StopCmd_init_zero                    {0}
+#define ant_ListChannelsCmd_init_zero            {0}
+#define ant_ListNetworksCmd_init_zero            {0}
 #define ant_Jammed_init_zero                     {0}
-#define ant_RawPduReceived_init_zero             {0, false, 0, false, 0, false, 0, {{NULL}, NULL}, 0}
-#define ant_PduReceived_init_zero                {0, false, 0, false, 0, false, 0, {{NULL}, NULL}}
+#define ant_AvailableChannels_init_zero          {0}
+#define ant_AvailableNetworks_init_zero          {0}
+#define ant_RawPduReceived_init_zero             {0, false, 0, false, 0, false, 0, {0, {0}}, 0, 0}
+#define ant_PduReceived_init_zero                {0, false, 0, false, 0, false, 0, {0, {0}}, 0}
+#define ant_ChannelEvent_init_zero               {_ant_AntChannelEvent_MIN}
 #define ant_Message_init_zero                    {0, {ant_SetDeviceNumberCmd_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -350,8 +439,11 @@ extern "C" {
 #define ant_AssignChannelCmd_frequency_agility_tag 5
 #define ant_AssignChannelCmd_fast_channel_initiation_tag 6
 #define ant_AssignChannelCmd_asynchronous_transmission_tag 7
+#define ant_AvailableChannels_number_of_channels_tag 1
+#define ant_AvailableNetworks_number_of_networks_tag 1
+#define ant_ChannelEvent_event_tag               1
 #define ant_CloseChannelCmd_channel_number_tag   1
-#define ant_JamCmd_frequency_tag                 1
+#define ant_JamCmd_rf_channel_tag                1
 #define ant_Jammed_timestamp_tag                 1
 #define ant_MasterModeCmd_channel_number_tag     1
 #define ant_OpenChannelCmd_channel_number_tag    1
@@ -360,30 +452,34 @@ extern "C" {
 #define ant_PduReceived_timestamp_tag            3
 #define ant_PduReceived_crc_validity_tag         4
 #define ant_PduReceived_pdu_tag                  5
+#define ant_PduReceived_rf_channel_tag           6
 #define ant_RawPduReceived_channel_number_tag    1
 #define ant_RawPduReceived_rssi_tag              2
 #define ant_RawPduReceived_timestamp_tag         3
 #define ant_RawPduReceived_crc_validity_tag      4
 #define ant_RawPduReceived_pdu_tag               5
 #define ant_RawPduReceived_crc_tag               6
-#define ant_SendCmd_frequency_tag                1
-#define ant_SendCmd_pdu_tag                      2
-#define ant_SendRawCmd_frequency_tag             1
-#define ant_SendRawCmd_pdu_tag                   2
+#define ant_RawPduReceived_rf_channel_tag        7
+#define ant_SendCmd_rf_channel_tag               1
+#define ant_SendCmd_channel_number_tag           2
+#define ant_SendCmd_pdu_tag                      3
+#define ant_SendRawCmd_rf_channel_tag            1
+#define ant_SendRawCmd_channel_number_tag        2
+#define ant_SendRawCmd_pdu_tag                   3
 #define ant_SetChannelPeriodCmd_channel_number_tag 1
 #define ant_SetChannelPeriodCmd_channel_period_tag 2
 #define ant_SetDeviceNumberCmd_channel_number_tag 1
 #define ant_SetDeviceNumberCmd_device_number_tag 2
 #define ant_SetDeviceTypeCmd_channel_number_tag  1
 #define ant_SetDeviceTypeCmd_device_type_tag     2
-#define ant_SetFrequencyCmd_channel_number_tag   1
-#define ant_SetFrequencyCmd_frequency_tag        2
 #define ant_SetNetworkKeyCmd_network_number_tag  1
 #define ant_SetNetworkKeyCmd_network_key_tag     2
+#define ant_SetRFChannelCmd_channel_number_tag   1
+#define ant_SetRFChannelCmd_rf_channel_tag       2
 #define ant_SetTransmissionTypeCmd_channel_number_tag 1
 #define ant_SetTransmissionTypeCmd_transmission_type_tag 2
 #define ant_SlaveModeCmd_channel_number_tag      1
-#define ant_SniffCmd_frequency_tag               1
+#define ant_SniffCmd_rf_channel_tag              1
 #define ant_SniffCmd_network_key_tag             2
 #define ant_SniffCmd_device_number_tag           3
 #define ant_SniffCmd_device_type_tag             4
@@ -398,7 +494,7 @@ extern "C" {
 #define ant_Message_unassign_channel_tag         7
 #define ant_Message_open_channel_tag             8
 #define ant_Message_close_channel_tag            9
-#define ant_Message_set_frequency_tag            10
+#define ant_Message_set_rf_channel_tag           10
 #define ant_Message_sniff_tag                    11
 #define ant_Message_jam_tag                      12
 #define ant_Message_send_tag                     13
@@ -410,6 +506,11 @@ extern "C" {
 #define ant_Message_jammed_tag                   19
 #define ant_Message_raw_pdu_tag                  20
 #define ant_Message_pdu_tag                      21
+#define ant_Message_list_channels_tag            22
+#define ant_Message_list_networks_tag            23
+#define ant_Message_available_channels_tag       24
+#define ant_Message_available_networks_tag       25
+#define ant_Message_channel_event_tag            26
 
 /* Struct field encoding specification for nanopb */
 #define ant_SetDeviceNumberCmd_FIELDLIST(X, a) \
@@ -468,14 +569,14 @@ X(a, STATIC,   SINGULAR, UINT32,   channel_number,    1)
 #define ant_CloseChannelCmd_CALLBACK NULL
 #define ant_CloseChannelCmd_DEFAULT NULL
 
-#define ant_SetFrequencyCmd_FIELDLIST(X, a) \
+#define ant_SetRFChannelCmd_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   channel_number,    1) \
-X(a, STATIC,   SINGULAR, UINT32,   frequency,         2)
-#define ant_SetFrequencyCmd_CALLBACK NULL
-#define ant_SetFrequencyCmd_DEFAULT NULL
+X(a, STATIC,   SINGULAR, UINT32,   rf_channel,        2)
+#define ant_SetRFChannelCmd_CALLBACK NULL
+#define ant_SetRFChannelCmd_DEFAULT NULL
 
 #define ant_SniffCmd_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   frequency,         1) \
+X(a, STATIC,   SINGULAR, UINT32,   rf_channel,        1) \
 X(a, STATIC,   SINGULAR, BYTES,    network_key,       2) \
 X(a, STATIC,   OPTIONAL, UINT32,   device_number,     3) \
 X(a, STATIC,   OPTIONAL, UINT32,   device_type,       4) \
@@ -484,20 +585,22 @@ X(a, STATIC,   OPTIONAL, UINT32,   transmission_type,   5)
 #define ant_SniffCmd_DEFAULT NULL
 
 #define ant_JamCmd_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   frequency,         1)
+X(a, STATIC,   SINGULAR, UINT32,   rf_channel,        1)
 #define ant_JamCmd_CALLBACK NULL
 #define ant_JamCmd_DEFAULT NULL
 
 #define ant_SendCmd_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   frequency,         1) \
-X(a, CALLBACK, SINGULAR, BYTES,    pdu,               2)
-#define ant_SendCmd_CALLBACK pb_default_field_callback
+X(a, STATIC,   OPTIONAL, UINT32,   rf_channel,        1) \
+X(a, STATIC,   SINGULAR, UINT32,   channel_number,    2) \
+X(a, STATIC,   SINGULAR, BYTES,    pdu,               3)
+#define ant_SendCmd_CALLBACK NULL
 #define ant_SendCmd_DEFAULT NULL
 
 #define ant_SendRawCmd_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   frequency,         1) \
-X(a, CALLBACK, SINGULAR, BYTES,    pdu,               2)
-#define ant_SendRawCmd_CALLBACK pb_default_field_callback
+X(a, STATIC,   OPTIONAL, UINT32,   rf_channel,        1) \
+X(a, STATIC,   SINGULAR, UINT32,   channel_number,    2) \
+X(a, STATIC,   SINGULAR, BYTES,    pdu,               3)
+#define ant_SendRawCmd_CALLBACK NULL
 #define ant_SendRawCmd_DEFAULT NULL
 
 #define ant_MasterModeCmd_FIELDLIST(X, a) \
@@ -520,19 +623,40 @@ X(a, STATIC,   SINGULAR, UINT32,   channel_number,    1)
 #define ant_StopCmd_CALLBACK NULL
 #define ant_StopCmd_DEFAULT NULL
 
+#define ant_ListChannelsCmd_FIELDLIST(X, a) \
+
+#define ant_ListChannelsCmd_CALLBACK NULL
+#define ant_ListChannelsCmd_DEFAULT NULL
+
+#define ant_ListNetworksCmd_FIELDLIST(X, a) \
+
+#define ant_ListNetworksCmd_CALLBACK NULL
+#define ant_ListNetworksCmd_DEFAULT NULL
+
 #define ant_Jammed_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   timestamp,         1)
 #define ant_Jammed_CALLBACK NULL
 #define ant_Jammed_DEFAULT NULL
+
+#define ant_AvailableChannels_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   number_of_channels,   1)
+#define ant_AvailableChannels_CALLBACK NULL
+#define ant_AvailableChannels_DEFAULT NULL
+
+#define ant_AvailableNetworks_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   number_of_networks,   1)
+#define ant_AvailableNetworks_CALLBACK NULL
+#define ant_AvailableNetworks_DEFAULT NULL
 
 #define ant_RawPduReceived_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   channel_number,    1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
 X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      4) \
-X(a, CALLBACK, SINGULAR, BYTES,    pdu,               5) \
-X(a, STATIC,   SINGULAR, UINT32,   crc,               6)
-#define ant_RawPduReceived_CALLBACK pb_default_field_callback
+X(a, STATIC,   SINGULAR, BYTES,    pdu,               5) \
+X(a, STATIC,   SINGULAR, UINT32,   crc,               6) \
+X(a, STATIC,   SINGULAR, UINT32,   rf_channel,        7)
+#define ant_RawPduReceived_CALLBACK NULL
 #define ant_RawPduReceived_DEFAULT NULL
 
 #define ant_PduReceived_FIELDLIST(X, a) \
@@ -540,9 +664,15 @@ X(a, STATIC,   SINGULAR, UINT32,   channel_number,    1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
 X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      4) \
-X(a, CALLBACK, SINGULAR, BYTES,    pdu,               5)
-#define ant_PduReceived_CALLBACK pb_default_field_callback
+X(a, STATIC,   SINGULAR, BYTES,    pdu,               5) \
+X(a, STATIC,   SINGULAR, UINT32,   rf_channel,        6)
+#define ant_PduReceived_CALLBACK NULL
 #define ant_PduReceived_DEFAULT NULL
+
+#define ant_ChannelEvent_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UENUM,    event,             1)
+#define ant_ChannelEvent_CALLBACK NULL
+#define ant_ChannelEvent_DEFAULT NULL
 
 #define ant_Message_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,set_device_number,msg.set_device_number),   1) \
@@ -554,7 +684,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,assign_channel,msg.assign_channel),   6)
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,unassign_channel,msg.unassign_channel),   7) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,open_channel,msg.open_channel),   8) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,close_channel,msg.close_channel),   9) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,set_frequency,msg.set_frequency),  10) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,set_rf_channel,msg.set_rf_channel),  10) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,sniff,msg.sniff),  11) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,jam,msg.jam),  12) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,send,msg.send),  13) \
@@ -565,7 +695,12 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,start,msg.start),  17) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,stop,msg.stop),  18) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,jammed,msg.jammed),  19) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (msg,raw_pdu,msg.raw_pdu),  20) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,pdu,msg.pdu),  21)
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,pdu,msg.pdu),  21) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,list_channels,msg.list_channels),  22) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,list_networks,msg.list_networks),  23) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,available_channels,msg.available_channels),  24) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,available_networks,msg.available_networks),  25) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (msg,channel_event,msg.channel_event),  26)
 #define ant_Message_CALLBACK NULL
 #define ant_Message_DEFAULT NULL
 #define ant_Message_msg_set_device_number_MSGTYPE ant_SetDeviceNumberCmd
@@ -577,7 +712,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,pdu,msg.pdu),  21)
 #define ant_Message_msg_unassign_channel_MSGTYPE ant_UnassignChannelCmd
 #define ant_Message_msg_open_channel_MSGTYPE ant_OpenChannelCmd
 #define ant_Message_msg_close_channel_MSGTYPE ant_CloseChannelCmd
-#define ant_Message_msg_set_frequency_MSGTYPE ant_SetFrequencyCmd
+#define ant_Message_msg_set_rf_channel_MSGTYPE ant_SetRFChannelCmd
 #define ant_Message_msg_sniff_MSGTYPE ant_SniffCmd
 #define ant_Message_msg_jam_MSGTYPE ant_JamCmd
 #define ant_Message_msg_send_MSGTYPE ant_SendCmd
@@ -589,6 +724,11 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (msg,pdu,msg.pdu),  21)
 #define ant_Message_msg_jammed_MSGTYPE ant_Jammed
 #define ant_Message_msg_raw_pdu_MSGTYPE ant_RawPduReceived
 #define ant_Message_msg_pdu_MSGTYPE ant_PduReceived
+#define ant_Message_msg_list_channels_MSGTYPE ant_ListChannelsCmd
+#define ant_Message_msg_list_networks_MSGTYPE ant_ListNetworksCmd
+#define ant_Message_msg_available_channels_MSGTYPE ant_AvailableChannels
+#define ant_Message_msg_available_networks_MSGTYPE ant_AvailableNetworks
+#define ant_Message_msg_channel_event_MSGTYPE ant_ChannelEvent
 
 extern const pb_msgdesc_t ant_SetDeviceNumberCmd_msg;
 extern const pb_msgdesc_t ant_SetDeviceTypeCmd_msg;
@@ -599,7 +739,7 @@ extern const pb_msgdesc_t ant_AssignChannelCmd_msg;
 extern const pb_msgdesc_t ant_UnassignChannelCmd_msg;
 extern const pb_msgdesc_t ant_OpenChannelCmd_msg;
 extern const pb_msgdesc_t ant_CloseChannelCmd_msg;
-extern const pb_msgdesc_t ant_SetFrequencyCmd_msg;
+extern const pb_msgdesc_t ant_SetRFChannelCmd_msg;
 extern const pb_msgdesc_t ant_SniffCmd_msg;
 extern const pb_msgdesc_t ant_JamCmd_msg;
 extern const pb_msgdesc_t ant_SendCmd_msg;
@@ -608,9 +748,14 @@ extern const pb_msgdesc_t ant_MasterModeCmd_msg;
 extern const pb_msgdesc_t ant_SlaveModeCmd_msg;
 extern const pb_msgdesc_t ant_StartCmd_msg;
 extern const pb_msgdesc_t ant_StopCmd_msg;
+extern const pb_msgdesc_t ant_ListChannelsCmd_msg;
+extern const pb_msgdesc_t ant_ListNetworksCmd_msg;
 extern const pb_msgdesc_t ant_Jammed_msg;
+extern const pb_msgdesc_t ant_AvailableChannels_msg;
+extern const pb_msgdesc_t ant_AvailableNetworks_msg;
 extern const pb_msgdesc_t ant_RawPduReceived_msg;
 extern const pb_msgdesc_t ant_PduReceived_msg;
+extern const pb_msgdesc_t ant_ChannelEvent_msg;
 extern const pb_msgdesc_t ant_Message_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
@@ -623,7 +768,7 @@ extern const pb_msgdesc_t ant_Message_msg;
 #define ant_UnassignChannelCmd_fields &ant_UnassignChannelCmd_msg
 #define ant_OpenChannelCmd_fields &ant_OpenChannelCmd_msg
 #define ant_CloseChannelCmd_fields &ant_CloseChannelCmd_msg
-#define ant_SetFrequencyCmd_fields &ant_SetFrequencyCmd_msg
+#define ant_SetRFChannelCmd_fields &ant_SetRFChannelCmd_msg
 #define ant_SniffCmd_fields &ant_SniffCmd_msg
 #define ant_JamCmd_fields &ant_JamCmd_msg
 #define ant_SendCmd_fields &ant_SendCmd_msg
@@ -632,28 +777,38 @@ extern const pb_msgdesc_t ant_Message_msg;
 #define ant_SlaveModeCmd_fields &ant_SlaveModeCmd_msg
 #define ant_StartCmd_fields &ant_StartCmd_msg
 #define ant_StopCmd_fields &ant_StopCmd_msg
+#define ant_ListChannelsCmd_fields &ant_ListChannelsCmd_msg
+#define ant_ListNetworksCmd_fields &ant_ListNetworksCmd_msg
 #define ant_Jammed_fields &ant_Jammed_msg
+#define ant_AvailableChannels_fields &ant_AvailableChannels_msg
+#define ant_AvailableNetworks_fields &ant_AvailableNetworks_msg
 #define ant_RawPduReceived_fields &ant_RawPduReceived_msg
 #define ant_PduReceived_fields &ant_PduReceived_msg
+#define ant_ChannelEvent_fields &ant_ChannelEvent_msg
 #define ant_Message_fields &ant_Message_msg
 
 /* Maximum encoded size of messages (where known) */
-/* ant_SendCmd_size depends on runtime parameters */
-/* ant_SendRawCmd_size depends on runtime parameters */
-/* ant_RawPduReceived_size depends on runtime parameters */
-/* ant_PduReceived_size depends on runtime parameters */
-/* ant_Message_size depends on runtime parameters */
 #define ant_AssignChannelCmd_size                22
+#define ant_AvailableChannels_size               6
+#define ant_AvailableNetworks_size               6
+#define ant_ChannelEvent_size                    2
 #define ant_CloseChannelCmd_size                 6
 #define ant_JamCmd_size                          6
 #define ant_Jammed_size                          6
+#define ant_ListChannelsCmd_size                 0
+#define ant_ListNetworksCmd_size                 0
 #define ant_MasterModeCmd_size                   6
+#define ant_Message_size                         299
 #define ant_OpenChannelCmd_size                  6
+#define ant_PduReceived_size                     289
+#define ant_RawPduReceived_size                  295
+#define ant_SendCmd_size                         270
+#define ant_SendRawCmd_size                      270
 #define ant_SetChannelPeriodCmd_size             12
 #define ant_SetDeviceNumberCmd_size              12
 #define ant_SetDeviceTypeCmd_size                12
-#define ant_SetFrequencyCmd_size                 12
 #define ant_SetNetworkKeyCmd_size                16
+#define ant_SetRFChannelCmd_size                 12
 #define ant_SetTransmissionTypeCmd_size          12
 #define ant_SlaveModeCmd_size                    6
 #define ant_SniffCmd_size                        34

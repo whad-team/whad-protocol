@@ -52,7 +52,7 @@ typedef struct _esb_JamCmd {
 } esb_JamCmd;
 
 typedef struct _esb_Jammed { 
-    uint64_t timestamp;
+    uint32_t timestamp;
 } esb_Jammed;
 
 typedef PB_BYTES_ARRAY_T(5) esb_PduReceived_address_t;
@@ -62,7 +62,7 @@ typedef struct _esb_PduReceived {
     bool has_rssi;
     int32_t rssi;
     bool has_timestamp;
-    uint64_t timestamp;
+    uint32_t timestamp;
     bool has_crc_validity;
     bool crc_validity;
     bool has_address;
@@ -93,7 +93,7 @@ typedef struct _esb_RawPduReceived {
     bool has_rssi;
     int32_t rssi;
     bool has_timestamp;
-    uint64_t timestamp;
+    uint32_t timestamp;
     bool has_crc_validity;
     bool crc_validity;
     bool has_address;
@@ -285,14 +285,14 @@ X(a, STATIC,   SINGULAR, UINT32,   channel,           1)
 #define esb_StopCmd_DEFAULT NULL
 
 #define esb_Jammed_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT64,   timestamp,         1)
+X(a, STATIC,   SINGULAR, UINT32,   timestamp,         1)
 #define esb_Jammed_CALLBACK NULL
 #define esb_Jammed_DEFAULT NULL
 
 #define esb_RawPduReceived_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   channel,           1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3) \
+X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      4) \
 X(a, STATIC,   OPTIONAL, BYTES,    address,           5) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               6)
@@ -302,7 +302,7 @@ X(a, STATIC,   SINGULAR, BYTES,    pdu,               6)
 #define esb_PduReceived_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   channel,           1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3) \
+X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      4) \
 X(a, STATIC,   OPTIONAL, BYTES,    address,           5) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               6)
@@ -368,12 +368,12 @@ extern const pb_msgdesc_t esb_Message_msg;
 
 /* Maximum encoded size of messages (where known) */
 #define esb_JamCmd_size                          6
-#define esb_Jammed_size                          11
-#define esb_Message_size                         298
-#define esb_PduReceived_size                     295
+#define esb_Jammed_size                          6
+#define esb_Message_size                         293
+#define esb_PduReceived_size                     290
 #define esb_PrimaryReceiverModeCmd_size          6
 #define esb_PrimaryTransmitterModeCmd_size       6
-#define esb_RawPduReceived_size                  295
+#define esb_RawPduReceived_size                  290
 #define esb_SendCmd_size                         270
 #define esb_SendRawCmd_size                      270
 #define esb_SetNodeAddressCmd_size               7

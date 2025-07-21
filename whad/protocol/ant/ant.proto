@@ -60,8 +60,8 @@ enum ANTCommand {
         /* Close Channel */
         CloseChannel              = 0x08;
 
-        /* Set Frequency */
-        SetFrequency              = 0x09;
+        /* Set RF Channel */
+        SetRFChannel              = 0x09;
 
         /* Sniff packets. */
         Sniff                     = 0x0a;
@@ -84,10 +84,15 @@ enum ANTCommand {
         /* Slave mode. */
         SlaveMode                 = 0x0f;
 
-
         /* Start and Stop commands shared with node-related mode. */
         Start                     = 0x10;
         Stop                      = 0x11;
+
+
+        /* Channels and Networks management commands. */
+        ListChannels                = 0x12;
+        ListNetworks                = 0x13;
+
     }
 
 /**************************************************
@@ -110,6 +115,34 @@ enum AntChannelType {
     RECEIVE_ONLY_CHANNEL = 4;
     TRANSMIT_ONLY_CHANNEL = 5;
 }
+
+/**
+ * AntChannelEvent
+ *
+ * enum listing the different channel events than can occurs.
+ * 
+ **/
+ enum AntChannelEvent {
+    EVENT_NO_ERROR = 0;
+    EVENT_RX_SEARCH_TIMEOUT = 1;
+    EVENT_RX_FAIL = 2;
+    EVENT_TX = 3;
+    EVENT_TRANSFER_RX_FAILED = 4;
+    EVENT_TRANSFER_TX_COMPLETED = 5;
+    EVENT_TRANSFER_TX_FAILED = 6;
+    EVENT_CHANNEL_CLOSED = 7;
+    EVENT_RX_FAIL_TO_GO_TO_SEARCH = 8;
+    EVENT_CHANNEL_COLLISION = 9;
+    EVENT_TRANSFER_TX_START = 10;
+    EVENT_TRANSFER_NEXT_DATA_BLOCK = 17;
+    EVENT_CHANNEL_IN_WRONG_STATE = 21;
+    EVENT_CHANNEL_NOT_OPENED = 22;
+    EVENT_CHANNEL_ID_NOT_SET = 24;
+    EVENT_CLOSE_ALL_CHANNELS = 25;
+    EVENT_TRANSFER_IN_PROGRESS = 31;
+    EVENT_TRANSFER_SEQUENCE_NUMBER_ERROR = 32;
+    EVENT_TRANSFER_IN_ERROR = 33;
+ }
 
 /**
  * SetDeviceNumberCmd
@@ -210,26 +243,26 @@ message CloseChannelCmd {
     uint32 channel_number = 1;
 }
 /**
- * SetFrequencyCmd
+ * SetRFChannelCmd
  *
- * Set the frequency and the associated channel numbers
+ * Set the RF Channel and the associated channel numbers
  *
  **/
-message SetFrequencyCmd {
+message SetRFChannelCmd {
     uint32 channel_number = 1;
-    uint32 frequency = 2;
+    uint32 rf_channel = 2;
 }
 
 /**
  * SniffCmd
  *
  * Enter sniffer mode
- * It requires the user to provide frequency,
+ * It requires the user to provide the RF channel,
  * network key; and optionaly the device number, the device type,
  * and the transmission type.
  **/
 message SniffCmd {
-    uint32 frequency = 1;
+    uint32 rf_channel = 1;
     bytes network_key = 2;
     optional uint32 device_number = 3;
     optional uint32 device_type = 4;
@@ -237,7 +270,7 @@ message SniffCmd {
 }
 
 message JamCmd {
-    uint32 frequency = 1;
+    uint32 rf_channel = 1;
 }
 
 
@@ -248,8 +281,9 @@ message JamCmd {
  *
  **/
 message SendCmd {
-    uint32 frequency = 1;
-    bytes pdu = 2;
+    optional uint32 rf_channel = 1;
+    uint32 channel_number = 2;
+    bytes pdu = 3;
 }
 /**
  * SendCmd
@@ -258,8 +292,9 @@ message SendCmd {
  *
  **/
  message SendRawCmd {
-     uint32 frequency = 1;
-     bytes pdu = 2;
+    optional uint32 rf_channel = 1;
+    uint32 channel_number = 2;
+    bytes pdu = 3;
 }
 
 /**
@@ -299,6 +334,23 @@ message StopCmd {
 }
 
 /**
+ * ListChannelsCmd
+ *
+ * List the channels exposed by the device.
+ **/
+message ListChannelsCmd {
+}
+
+/**
+ * ListNetworksCmd
+ *
+ * List the networks supported by the device.
+ **/
+message ListNetworksCmd {
+}
+
+
+/**
  * Jammed
  *
  * Indicates that packets have been Jammed.
@@ -308,6 +360,33 @@ message StopCmd {
 message Jammed {
     uint32 timestamp = 1;
 }
+
+
+
+/**
+ * AvailableChannels
+ *
+ * Indicates the number of available channels.
+ *
+ **/
+
+message AvailableChannels {
+    uint32 number_of_channels = 1;
+}
+
+
+
+/**
+ * AvailableNetworks
+ *
+ * Indicates the number of available networks.
+ *
+ **/
+
+message AvailableNetworks {
+    uint32 number_of_networks = 1;
+}
+
 
 /**
  * RawPduReceived
@@ -324,6 +403,7 @@ message RawPduReceived {
     optional bool crc_validity = 4;
     bytes pdu = 5;
     uint32 crc = 6;
+    uint32 rf_channel = 7;
 
 
 }
@@ -342,6 +422,19 @@ message RawPduReceived {
     optional uint32 timestamp = 3;
     optional bool crc_validity = 4;
     bytes pdu = 5;
+    uint32 rf_channel = 6;
+}
+
+/**
+ * ChannelEvent
+ *
+ * Notifies an event on the channel. This message must be transmitted to 
+ * inform the host about the current state of the controller.
+ *
+ **/
+
+ message ChannelEvent {
+    AntChannelEvent event = 1;
 }
 
  message Message {
@@ -357,7 +450,7 @@ message RawPduReceived {
         UnassignChannelCmd unassign_channel           = 7;
         OpenChannelCmd open_channel                   = 8;
         CloseChannelCmd close_channel                 = 9;
-        SetFrequencyCmd set_frequency                 = 10;
+        SetRFChannelCmd set_rf_channel                = 10;
         SniffCmd sniff                                = 11;
         JamCmd jam                                    = 12;
         SendCmd send                                  = 13;
@@ -373,5 +466,16 @@ message RawPduReceived {
         Jammed jammed                                 = 19;
         RawPduReceived raw_pdu                        = 20;
         PduReceived pdu                               = 21;
+
+        /* Management commands */
+        ListChannelsCmd list_channels                 = 22;
+        ListNetworksCmd list_networks                 = 23;
+
+        /* Management notifications */
+        AvailableChannels available_channels          = 24;
+        AvailableNetworks available_networks          = 25;
+        
+        /* Events */
+        ChannelEvent channel_event                    = 26;
     }
  }

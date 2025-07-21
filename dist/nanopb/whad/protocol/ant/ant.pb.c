@@ -33,7 +33,7 @@ PB_BIND(ant_OpenChannelCmd, ant_OpenChannelCmd, AUTO)
 PB_BIND(ant_CloseChannelCmd, ant_CloseChannelCmd, AUTO)
 
 
-PB_BIND(ant_SetFrequencyCmd, ant_SetFrequencyCmd, AUTO)
+PB_BIND(ant_SetRFChannelCmd, ant_SetRFChannelCmd, AUTO)
 
 
 PB_BIND(ant_SniffCmd, ant_SniffCmd, AUTO)
@@ -42,10 +42,10 @@ PB_BIND(ant_SniffCmd, ant_SniffCmd, AUTO)
 PB_BIND(ant_JamCmd, ant_JamCmd, AUTO)
 
 
-PB_BIND(ant_SendCmd, ant_SendCmd, AUTO)
+PB_BIND(ant_SendCmd, ant_SendCmd, 2)
 
 
-PB_BIND(ant_SendRawCmd, ant_SendRawCmd, AUTO)
+PB_BIND(ant_SendRawCmd, ant_SendRawCmd, 2)
 
 
 PB_BIND(ant_MasterModeCmd, ant_MasterModeCmd, AUTO)
@@ -60,16 +60,32 @@ PB_BIND(ant_StartCmd, ant_StartCmd, AUTO)
 PB_BIND(ant_StopCmd, ant_StopCmd, AUTO)
 
 
+PB_BIND(ant_ListChannelsCmd, ant_ListChannelsCmd, AUTO)
+
+
+PB_BIND(ant_ListNetworksCmd, ant_ListNetworksCmd, AUTO)
+
+
 PB_BIND(ant_Jammed, ant_Jammed, AUTO)
 
 
-PB_BIND(ant_RawPduReceived, ant_RawPduReceived, AUTO)
+PB_BIND(ant_AvailableChannels, ant_AvailableChannels, AUTO)
 
 
-PB_BIND(ant_PduReceived, ant_PduReceived, AUTO)
+PB_BIND(ant_AvailableNetworks, ant_AvailableNetworks, AUTO)
 
 
-PB_BIND(ant_Message, ant_Message, AUTO)
+PB_BIND(ant_RawPduReceived, ant_RawPduReceived, 2)
+
+
+PB_BIND(ant_PduReceived, ant_PduReceived, 2)
+
+
+PB_BIND(ant_ChannelEvent, ant_ChannelEvent, AUTO)
+
+
+PB_BIND(ant_Message, ant_Message, 2)
+
 
 
 

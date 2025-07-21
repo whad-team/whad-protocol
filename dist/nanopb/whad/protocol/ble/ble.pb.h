@@ -128,7 +128,7 @@ typedef struct _ble_AccessAddressDiscovered {
     bool has_rssi;
     int32_t rssi;
     bool has_timestamp;
-    uint64_t timestamp;
+    uint32_t timestamp;
 } ble_AccessAddressDiscovered;
 
 typedef PB_BYTES_ARRAY_T(31) ble_AdvModeCmd_scan_data_t;
@@ -288,9 +288,9 @@ typedef struct _ble_RawPduReceived {
     bool has_rssi;
     int32_t rssi;
     bool has_timestamp;
-    uint64_t timestamp;
+    uint32_t timestamp;
     bool has_relative_timestamp;
-    uint64_t relative_timestamp;
+    uint32_t relative_timestamp;
     bool has_crc_validity;
     bool crc_validity;
     uint32_t access_address;
@@ -964,7 +964,7 @@ X(a, STATIC,   SINGULAR, UINT32,   id,                1)
 #define ble_AccessAddressDiscovered_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   access_address,    1) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              2) \
-X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         3)
+X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         3)
 #define ble_AccessAddressDiscovered_CALLBACK NULL
 #define ble_AccessAddressDiscovered_DEFAULT NULL
 
@@ -1024,8 +1024,8 @@ X(a, STATIC,   SINGULAR, UINT32,   injection_attempts,   3)
 X(a, STATIC,   SINGULAR, UENUM,    direction,         1) \
 X(a, STATIC,   SINGULAR, UINT32,   channel,           2) \
 X(a, STATIC,   OPTIONAL, INT32,    rssi,              3) \
-X(a, STATIC,   OPTIONAL, UINT64,   timestamp,         4) \
-X(a, STATIC,   OPTIONAL, UINT64,   relative_timestamp,   5) \
+X(a, STATIC,   OPTIONAL, UINT32,   timestamp,         4) \
+X(a, STATIC,   OPTIONAL, UINT32,   relative_timestamp,   5) \
 X(a, STATIC,   OPTIONAL, BOOL,     crc_validity,      6) \
 X(a, STATIC,   SINGULAR, UINT32,   access_address,    7) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               8) \
@@ -1219,7 +1219,7 @@ extern const pb_msgdesc_t ble_Message_msg;
 /* Maximum encoded size of messages (where known) */
 /* ble_SetAdvDataCmd_size depends on runtime parameters */
 /* ble_Message_size depends on runtime parameters */
-#define ble_AccessAddressDiscovered_size         28
+#define ble_AccessAddressDiscovered_size         23
 #define ble_AdvModeCmd_size                      66
 #define ble_AdvPduReceived_size                  56
 #define ble_CentralModeCmd_size                  0
@@ -1245,7 +1245,7 @@ extern const pb_msgdesc_t ble_Message_msg;
 #define ble_PrepareSequenceCmd_ReceptionTrigger_size 522
 #define ble_PrepareSequenceCmd_Trigger_size      525
 #define ble_PrepareSequenceCmd_size              7061
-#define ble_RawPduReceived_size                  323
+#define ble_RawPduReceived_size                  313
 #define ble_ReactiveJamCmd_size                  34
 #define ble_ScanModeCmd_size                     2
 #define ble_SendPDUCmd_size                      313
