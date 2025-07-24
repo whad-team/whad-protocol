@@ -325,6 +325,18 @@ message RawPduReceived {
     optional uint32 lqi = 6;
 }
 
+/**
+* DiscoveredCommunication
+*
+* Notifies the discovery of a communication on an unknown link
+* This message is to be used to discover existing links and add them to the superframes 
+*/
+message DiscoveredCommunication {
+    uint32 src = 1;
+    uint32 dst = 2;
+    uint32 slot = 3;
+    uint32 offset = 4;
+}
 
 /**
  * Message
@@ -361,5 +373,6 @@ message RawPduReceived {
         EnergyDetectionSample ed_sample = 14;
         RawPduReceived raw_pdu = 15;
         PduReceived pdu = 16;
+        DiscoveredCommunication discovered_communication = 23;
     }
  }
