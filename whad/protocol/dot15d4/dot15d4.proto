@@ -52,6 +52,8 @@ enum Dot15d4Command {
 
     SendRaw              = 0x05;
 
+    SendInSlot              = 0x12;
+
     /**
      * High-level commands.
      **/
@@ -167,6 +169,15 @@ message SendRawCmd {
    uint32 channel = 1;
    bytes pdu = 2;
    uint32 fcs = 3;
+}
+
+/**
+* SendInSlotCmd
+* Sends 802.15.4 packets on a single channel on a specified slot corresponding to the wirelessHART protocol..
+*/
+message SendInSlotCmd{
+    uint64 slot = 1;
+    bytes pdu = 2;
 }
 
 /**
@@ -354,6 +365,7 @@ message DiscoveredCommunication {
         EnergyDetectionCmd ed = 4;
         SendCmd send = 5;
         SendRawCmd send_raw = 6;
+        SendInSlotCmd send_in_slot = 24;
 
         EndDeviceCmd end_device = 7;
         RouterCmd router = 8;
