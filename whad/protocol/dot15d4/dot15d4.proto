@@ -343,10 +343,9 @@ message RawPduReceived {
 * This message is to be used to discover existing links and add them to the superframes 
 */
 message DiscoveredCommunication {
-    uint32 src = 1;
-    uint32 dst = 2;
-    uint32 slot = 3;
-    uint32 offset = 4;
+    uint32 slot = 1;
+    uint32 offset = 2;
+    bytes pdu = 3;
 }
 
 /**

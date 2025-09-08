@@ -10,3 +10,4 @@ dot15d4.WriteModifySuperframeCmd.asn max_size : 40
 # Notifications
 dot15d4.PduReceived.pdu max_size:255
 dot15d4.RawPduReceived.pdu max_size:255
+dot15d4.DiscoveredCommunication.pdu max_size:255
