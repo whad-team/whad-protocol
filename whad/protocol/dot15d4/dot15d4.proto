@@ -227,6 +227,16 @@ message StartCmd {
 message StopCmd {
 }
 
+/**
+ * SyncCmd
+ *
+ **/
+ message SyncCmd {
+    uint64 timestamp = 1;
+    uint64 asn = 2;
+ }
+
+
 
 /**
  * ManInTheMiddleCmd
@@ -365,6 +375,7 @@ message DiscoveredCommunication {
         SendCmd send = 5;
         SendRawCmd send_raw = 6;
         SendInSlotCmd send_in_slot = 24;
+        SyncCmd sync = 25;
 
         EndDeviceCmd end_device = 7;
         RouterCmd router = 8;
