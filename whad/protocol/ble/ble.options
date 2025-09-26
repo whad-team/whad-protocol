@@ -46,6 +46,7 @@ ble.AdvModeCmd.channel_map max_size:5, fixed_length: true
 
 ble.PeripheralModeCmd.scan_data max_size:31
 ble.PeripheralModeCmd.scanrsp_data max_size:31
+ble.PeripheralModeCmd.channel_map max_size:5, fixed_length: true
 
 ble.SetEncryptionCmd.ll_key max_size:16, fixed_length: true
 ble.SetEncryptionCmd.ll_iv max_size:8, fixed_length: true
