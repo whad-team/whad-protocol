@@ -259,8 +259,12 @@ message ScanModeCmd {
  **/
 
 message AdvModeCmd {
-    bytes scan_data = 1;
+    bytes adv_data = 1;
     bytes scanrsp_data = 2;
+    bytes channel_map = 3;
+    BleAdvType adv_type = 4;
+    uint32 inter_min = 5;
+    uint32 inter_max = 6;
 }
 
 /**
