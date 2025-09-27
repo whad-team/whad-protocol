@@ -44,6 +44,10 @@ ble.AdvModeCmd.adv_data max_size:31
 ble.AdvModeCmd.scanrsp_data max_size:31
 ble.AdvModeCmd.channel_map max_size:5, fixed_length: true
 
+# SetAdvDataCmd
+ble.SetAdvDataCmd.adv_data max_size:31
+ble.SetAdvDataCmd.scanrsp_data max_size:31
+
 ble.PeripheralModeCmd.adv_data max_size:31
 ble.PeripheralModeCmd.scanrsp_data max_size:31
 ble.PeripheralModeCmd.channel_map max_size:5, fixed_length: true

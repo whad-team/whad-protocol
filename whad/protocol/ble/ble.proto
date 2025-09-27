@@ -276,7 +276,7 @@ message AdvModeCmd {
  **/
 
 message SetAdvDataCmd {
-    bytes scan_data = 1;
+    bytes adv_data = 1;
     bytes scanrsp_data = 2;
 }
 
