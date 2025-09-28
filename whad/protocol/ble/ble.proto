@@ -35,79 +35,81 @@ package ble;
  **/
 
 enum BleCommand {
-  /**
-   * Low-level commands
-   **/
+    /**
+     * Low-level commands
+     **/
 
-  /* Set BD address. */
-  SetBdAddress = 0x00;
+    /* Set BD address. */
+    SetBdAddress = 0x00;
 
-  /* Sniff advertisements. */
-  SniffAdv = 0x01;
+    /* Sniff advertisements. */
+    SniffAdv = 0x01;
 
-  /* Jam advertisements. */
-  JamAdv = 0x02;
+    /* Jam advertisements. */
+    JamAdv = 0x02;
 
-  /* Jam advertisements on a single channel. */
-  JamAdvOnChannel = 0x03;
+    /* Jam advertisements on a single channel. */
+    JamAdvOnChannel = 0x03;
 
-  /* Jam a specific pattern on a single channel. */
-  ReactiveJam = 0x04;
+    /* Jam a specific pattern on a single channel. */
+    ReactiveJam = 0x04;
 
-  /* Sniff CONN_REQ PDUs and sync with connection. */    
-  SniffConnReq = 0x05;
-
-
-  /* Sniff active connection. */
-  SniffAccessAddress = 0x06;
-  SniffActiveConn = 0x07;
+    /* Sniff CONN_REQ PDUs and sync with connection. */    
+    SniffConnReq = 0x05;
 
 
-  /* Connection jamming. */
-  JamConn = 0x08;
+    /* Sniff active connection. */
+    SniffAccessAddress = 0x06;
+    SniffActiveConn = 0x07;
 
-  /**
-   * High-level commands.
-   **/
 
-   /* Scanner mode. */
-  ScanMode = 0x09;
+    /* Connection jamming. */
+    JamConn = 0x08;
 
-  /* Advertiser mode. */
-  AdvMode = 0x0a;
-  SetAdvData = 0x0b;
-   //SetAdvData shared with Peripheral mode.
+    /**
+     * High-level commands.
+     **/
 
-  /* Central mode. */
-  CentralMode = 0x0c;
-  ConnectTo = 0x0d;
-  SendRawPDU = 0x0e;
-  SendPDU = 0x0f;
-  Disconnect = 0x10;
+     /* Scanner mode. */
+    ScanMode = 0x09;
 
-  /* Peripheral mode. */
-  PeripheralMode = 0x11;
+    /* Advertiser mode. */
+    AdvMode = 0x0a;
+    SetAdvData = 0x0b;
+     //SetAdvData shared with Peripheral mode.
 
-  // SetAdvData and SetScanRspData are shared accross
-  // Peripheral and Advertiser modes
-  // SendPDU is shared with Central mode
-  // Disconnect is shared with Central mode
+    /* Central mode. */
+    CentralMode = 0x0c;
+    ConnectTo = 0x0d;
+    SendRawPDU = 0x0e;
+    SendPDU = 0x0f;
+    Disconnect = 0x10;
 
-  /* Common to multiple modes. */
-  Start = 0x12;
-  Stop = 0x13;
-  SetEncryption = 0x14;
+    /* Peripheral mode. */
+    PeripheralMode = 0x11;
 
-  /* Hijack mode. */
-  HijackMaster = 0x15;
-  HijackSlave = 0x16;
-  HijackBoth = 0x17;
+    // SetAdvData and SetScanRspData are shared accross
+    // Peripheral and Advertiser modes
+    // SendPDU is shared with Central mode
+    // Disconnect is shared with Central mode
 
-  /* Sequence mode */
-  PrepareSequence = 0x18;
-  TriggerSequence = 0x19;
-  DeleteSequence = 0x1a;
+    /* Common to multiple modes. */
+    Start = 0x12;
+    Stop = 0x13;
+    SetEncryption = 0x14;
 
+    /* Hijack mode. */
+    HijackMaster = 0x15;
+    HijackSlave = 0x16;
+    HijackBoth = 0x17;
+
+    /* Sequence mode */
+    PrepareSequence = 0x18;
+    TriggerSequence = 0x19;
+    DeleteSequence = 0x1a;
+
+    /* PHY control */
+    SetPhy = 0x1b;
 }
 
 
@@ -132,6 +134,26 @@ enum BleDirection {
 enum BleAddrType {
     PUBLIC = 0;
     RANDOM = 1;
+}
+
+enum BlePhy {
+    LE_1M = 0;          /* Default PHY for BLE 4 */
+    LE_1M_CODED = 1;    /* Introduced in BLE 5 */
+    LE_2M = 2;          /* Introduced in BLE 5 */
+    LE_2M_2BT = 3;      /* Introduced in BLE 6 */
+}
+
+enum BleCSA {
+    CSA1 = 0;           /* Default Channel Selection Algorithm
+                           introduced in BLE 4 */
+    CSA2 = 1;           /* Channel Selection Algorithm #2
+                           introduced in BLE 5 */
+    CSA3a = 2;          /* Channel Selection Algorithm #3a,
+                           introduced in BLE 6 (Vol 6, part H, Section 4.1.3 */
+    CSA3b = 3;          /* Channel Selection Algorithm #3b,
+                           Introduced in BLE 6 (Vol 6, part H, Section 4.1.4.1 */
+    CSA3c = 4;          /* Channel Selection Algorithm #3c,
+                           introduced in BLE 6 (Vol 6, part H, Section 4.1.4.2 */
 }
 
 /**************************************************
@@ -294,13 +316,16 @@ message CentralModeCmd {
  * Connect to a specific target device.
  **/
 message ConnectToCmd {
-    bytes bd_address = 1;
-    BleAddrType addr_type = 2;
-    optional uint32 access_address = 3;
-    optional bytes channel_map = 4;
-    optional uint32 hop_interval = 5;
-    optional uint32 hop_increment = 6;
-    optional uint32 crc_init = 7;
+    bytes bd_address = 1;                   /* Destination BD address */
+    BleAddrType addr_type = 2;              /* Destination address type */
+    optional uint32 access_address = 3;     /* Access address (32-bit link identifier) */
+    optional bytes channel_map = 4;         /* Channel map */
+    optional uint32 hop_interval = 5;       /* Channel hopping interval */
+    optional uint32 hop_increment = 6;      /* Channel hopping increment (CSA1) */
+    optional uint32 crc_init = 7;           /* CRC Initial value (seed) */
+
+    /* Introduced in protocol v4 */
+    BleCSA csa = 8;                         /* Channel Selection Algorithm */
 }
 
 /**
@@ -457,47 +482,52 @@ message ReactiveJamCmd {
 }
 
 message PrepareSequenceCmd {
-  message ReceptionTrigger {
-    bytes pattern = 1;
-    bytes mask = 2;
-    uint32 offset = 3;
-  }
-  message ConnectionEventTrigger {
-    uint32 connection_event = 1;
-  }
-  message ManualTrigger {
-  }
-  message Trigger {
-    oneof trigger {
-      ReceptionTrigger reception = 1;
-      ConnectionEventTrigger connection_event = 2;
-      ManualTrigger manual = 3;
+    message ReceptionTrigger {
+        bytes pattern = 1;
+        bytes mask = 2;
+        uint32 offset = 3;
     }
-  }
-  message PendingPacket {
-    bytes packet = 1;
-  }
-  Trigger trigger = 1;
-  uint32 id = 2;
-  BleDirection direction = 3;
-  repeated PendingPacket sequence = 4;
-
+    message ConnectionEventTrigger {
+        uint32 connection_event = 1;
+    }
+    message ManualTrigger {
+    }
+    message Trigger {
+        oneof trigger {
+            ReceptionTrigger reception = 1;
+            ConnectionEventTrigger connection_event = 2;
+            ManualTrigger manual = 3;
+        }
+    }
+    message PendingPacket {
+        bytes packet = 1;
+    }
+    Trigger trigger = 1;
+    uint32 id = 2;
+    BleDirection direction = 3;
+    repeated PendingPacket sequence = 4;
 }
 
 message TriggerSequenceCmd {
-  uint32 id = 1;
+    uint32 id = 1;
 }
 
 message DeleteSequenceCmd {
-  uint32 id = 1;
+    uint32 id = 1;
 }
+
+message SetPhyCmd {
+    BlePhy phy = 0;
+}
+
+
 /*******************************************
  *******************************************
  * Ble Notification messages
  *******************************************
  *******************************************/
 message Triggered {
-  uint32 id = 1;
+    uint32 id = 1;
 }
 
 message AccessAddressDiscovered {
@@ -644,7 +674,7 @@ message RawPduReceived {
  *
  **/
 
- message PduReceived {
+message PduReceived {
     BleDirection direction = 1;
     bytes pdu = 2;
     uint32 conn_handle = 3;
