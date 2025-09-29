@@ -110,6 +110,7 @@ enum BleCommand {
 
     /* PHY control */
     SetPhy = 0x1b;
+    SetTxPowerLevel = 0x1c;
 }
 
 
@@ -121,6 +122,8 @@ enum BleAdvType {
     ADV_NONCONN_IND = 3;
     ADV_SCAN_IND = 4;
     ADV_SCAN_RSP = 5;
+    ADV_EXT_IND = 6;
+    ADV_DECISION_IND = 7;
 }
 
 enum BleDirection {
@@ -516,8 +519,37 @@ message DeleteSequenceCmd {
     uint32 id = 1;
 }
 
+/********************************************
+* Commands introduced in version 4:
+*
+* - SetPhyCmd
+* - SetTxPowerLevelCmd
+*
+********************************************/
+
+/**
+ * SetPhyCmd
+ *
+ * Set the PHY to use for BLE TX/RX.
+ **/
+
 message SetPhyCmd {
     BlePhy phy = 0;
+}
+
+/**
+ * SetTxPowerLevelCmd
+ *
+ * This message shall be sent to control the
+ * BLE adapter TX power level, if available.
+ * TX Power cannot be set by default but some
+ * vendors or RF hardware peripherals allow
+ * to configure the transmission power level
+ * to a value in dBm.
+ **/
+
+message SetTxPowerLevelCmd {
+    int32 level;
 }
 
 
@@ -526,6 +558,7 @@ message SetPhyCmd {
  * Ble Notification messages
  *******************************************
  *******************************************/
+
 message Triggered {
     uint32 id = 1;
 }
@@ -719,6 +752,8 @@ message PduReceived {
         PrepareSequenceCmd prepare = 35;
         TriggerSequenceCmd trigger = 36;
         DeleteSequenceCmd delete_seq = 38;
+        SetPhyCmd set_phy = 39;
+        SetTxPowerLevel set_tx_pwr = 40;
 
         /* Notifications */
         AccessAddressDiscovered aa_disc = 23;
