@@ -245,10 +245,12 @@ message JamConnCmd {
  * Enable scan mode.
  *
  * `active_scan` enables scan requests if set to `true`.
+ * `interval` configures scan interval (in ms).
  **/
 
 message ScanModeCmd {
     bool active_scan = 1;
+    uint32 interval = 2;
 }
 
 /**
