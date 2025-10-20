@@ -7,6 +7,7 @@ import "whad/protocol/dot15d4/dot15d4.proto";
 import "whad/protocol/esb/esb.proto";
 import "whad/protocol/unifying/unifying.proto";
 import "whad/protocol/phy/phy.proto";
+import "whad/protocol/ant/ant.proto";
 
 message Message {
     oneof msg {
@@ -17,5 +18,6 @@ message Message {
         esb.Message esb = 5;
         unifying.Message unifying = 6;
         phy.Message phy = 7;
+        ant.Message ant = 8;
     }
 }

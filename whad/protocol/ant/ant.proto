@@ -1,0 +1,482 @@
+/******************************************************
+ * ANT messages and notifications
+ *
+ * This file defines a set of messages used to communicate
+ * with an ANT hacking device in order to:
+ *
+ * - packet sniffing
+ * - packet jamming
+ * - raw packet injection
+ * - act as a Master
+ * - act as a Slave
+ **/
+
+
+syntax = "proto3";
+
+package ant;
+
+/**
+ * Supported commands for ANT domain.
+ *
+ * This enumeration specifies the commands a device may
+ * support, allowing a host computer to determine what
+ * features a device provides and the supported commands.
+ *
+ * These constants SHALL be used to generate the commands
+ * bitmap for ANT domain in DeviceDomainInfoResp message.
+ *
+ **/
+
+enum ANTCommand {
+    /**
+     * Low-level commands
+     **/
+
+        /* Set Device number. */
+        SetDeviceNumber           = 0x00;
+
+        /* Set Device Type. */
+        SetDeviceType             = 0x01;
+
+        /* Set Transmission Type. */
+        SetTransmissionType       = 0x02;
+
+        /* Set Channel Period. */
+        SetChannelPeriod          = 0x03;
+
+        /* Set Network Key */
+        SetNetworkKey             = 0x04;
+
+        /* Assign Channel */
+        AssignChannel             = 0x05;
+
+        /* Unassign Channel */
+        UnassignChannel           = 0x06;
+
+        /* Open Channel */
+        OpenChannel               = 0x07;
+
+        /* Close Channel */
+        CloseChannel              = 0x08;
+
+        /* Set RF Channel */
+        SetRFChannel              = 0x09;
+
+        /* Sniff packets. */
+        Sniff                     = 0x0a;
+
+        /* Jam packets. */
+        Jam                       = 0x0b;
+
+        /* Send packets. */
+        Send                      = 0x0c;
+
+        SendRaw                   = 0x0d;
+
+        /**
+        * High-level commands.
+        **/
+
+        /* Master mode. */
+        MasterMode                = 0x0e;
+
+        /* Slave mode. */
+        SlaveMode                 = 0x0f;
+
+        /* Start and Stop commands shared with node-related mode. */
+        Start                     = 0x10;
+        Stop                      = 0x11;
+
+
+        /* Channels and Networks management commands. */
+        ListChannels                = 0x12;
+        ListNetworks                = 0x13;
+
+    }
+
+/**************************************************
+ **************************************************
+ *             ANT command messages
+ **************************************************
+ *************************************************/
+
+/**
+ * AntChannelType
+ *
+ * enum listing the different mode that can be used to
+ * configure an ANT packet.
+  **/
+enum AntChannelType {
+    BIDIRECTIONAL_RECEIVE_CHANNEL = 0;
+    BIDIRECTIONAL_TRANSMIT_CHANNEL = 1;
+    SHARED_BIDIRECTIONAL_RECEIVE_CHANNEL = 2;
+    SHARED_BIDIRECTIONAL_TRANSMIT_CHANNEL = 3;
+    RECEIVE_ONLY_CHANNEL = 4;
+    TRANSMIT_ONLY_CHANNEL = 5;
+}
+
+/**
+ * AntChannelEvent
+ *
+ * enum listing the different channel events than can occurs.
+ * 
+ **/
+ enum AntChannelEvent {
+    EVENT_NO_ERROR = 0;
+    EVENT_RX_SEARCH_TIMEOUT = 1;
+    EVENT_RX_FAIL = 2;
+    EVENT_TX = 3;
+    EVENT_TRANSFER_RX_FAILED = 4;
+    EVENT_TRANSFER_TX_COMPLETED = 5;
+    EVENT_TRANSFER_TX_FAILED = 6;
+    EVENT_CHANNEL_CLOSED = 7;
+    EVENT_RX_FAIL_TO_GO_TO_SEARCH = 8;
+    EVENT_CHANNEL_COLLISION = 9;
+    EVENT_TRANSFER_TX_START = 10;
+    EVENT_TRANSFER_NEXT_DATA_BLOCK = 17;
+    EVENT_CHANNEL_IN_WRONG_STATE = 21;
+    EVENT_CHANNEL_NOT_OPENED = 22;
+    EVENT_CHANNEL_ID_NOT_SET = 24;
+    EVENT_CLOSE_ALL_CHANNELS = 25;
+    EVENT_TRANSFER_IN_PROGRESS = 31;
+    EVENT_TRANSFER_SEQUENCE_NUMBER_ERROR = 32;
+    EVENT_TRANSFER_IN_ERROR = 33;
+ }
+
+/**
+ * SetDeviceNumberCmd
+ *
+ * Configure the ANT device number for a given channel
+ *
+ **/
+message SetDeviceNumberCmd {
+    uint32 channel_number = 1;
+    uint32 device_number = 2;
+}
+/**
+ * SetDeviceTypeCmd
+ *
+ * Configure the  ANT device type, for a given channel
+ *
+ **/
+message SetDeviceTypeCmd {
+    uint32 channel_number = 1;
+    uint32 device_type = 2;
+}
+/**
+ * SetTransmissionTypeCmd
+ *
+ * Configure the  ANT transmission type for a given channel
+ *
+ **/
+message SetTransmissionTypeCmd {
+    uint32 channel_number = 1;
+    uint32 transmission_type = 2;
+}
+/**
+ * SetChannelPeriodCmd
+ *
+ * Configure the  ANT channel period to use for a given channel
+ *
+ **/
+message SetChannelPeriodCmd {
+    uint32 channel_number = 1;
+    uint32 channel_period = 2;
+}
+/**
+ * SetNetworkKeyCmd
+ *
+ * Provision of a network key associated with the related network number
+ *
+ **/
+
+message SetNetworkKeyCmd {
+    uint32 network_number = 1;
+    bytes network_key = 2;
+}
+/**
+ * AssignChannelCmd
+ *
+ * Links channel number to network_number
+ * In extented mode, it is possible to provide optional parameters if dongle allows
+ *
+ **/
+
+message AssignChannelCmd {
+    uint32 channel_number = 1;
+    uint32 network_number = 2;
+    AntChannelType channel_type = 3;
+    optional bool background_scanning = 4;
+    optional bool frequency_agility = 5;
+    optional bool fast_channel_initiation = 6;
+    optional bool asynchronous_transmission = 7;
+}
+
+/**
+ * UnassignChannelCmd
+ *
+ * Breaks the link between a channel and a network
+ *
+ **/
+message UnassignChannelCmd {
+    uint32 channel_number = 1;
+}
+
+/**
+ * OpenChannelCmd
+ *
+ * Open a new channel linked to a channel number 
+ *
+ **/
+message OpenChannelCmd {
+    uint32 channel_number = 1;
+}
+
+/**
+ * CloseChannelCmd
+ *
+ * Close an opened channel linked to a channel number
+ *
+ **/
+message CloseChannelCmd {
+    uint32 channel_number = 1;
+}
+/**
+ * SetRFChannelCmd
+ *
+ * Set the RF Channel and the associated channel numbers
+ *
+ **/
+message SetRFChannelCmd {
+    uint32 channel_number = 1;
+    uint32 rf_channel = 2;
+}
+
+/**
+ * SniffCmd
+ *
+ * Enter sniffer mode
+ * It requires the user to provide the RF channel,
+ * network key; and optionaly the device number, the device type,
+ * and the transmission type.
+ **/
+message SniffCmd {
+    uint32 rf_channel = 1;
+    bytes network_key = 2;
+    optional uint32 device_number = 3;
+    optional uint32 device_type = 4;
+    optional uint32 transmission_type = 5;
+}
+
+message JamCmd {
+    uint32 rf_channel = 1;
+}
+
+
+/**
+ * SendCmd
+ *
+ * Transmit ANT packets on a single channel.
+ *
+ **/
+message SendCmd {
+    optional uint32 rf_channel = 1;
+    uint32 channel_number = 2;
+    bytes pdu = 3;
+}
+/**
+ * SendCmd
+ *
+ * Transmit raw ANT packets on a single channel.
+ *
+ **/
+ message SendRawCmd {
+    optional uint32 rf_channel = 1;
+    uint32 channel_number = 2;
+    bytes pdu = 3;
+}
+
+/**
+ * MasterMode
+ *
+ * Enable Master mode. (maybe redundant with Assign Channel ?)
+ *
+ **/
+message MasterModeCmd {
+  uint32 channel_number = 1;
+}
+
+/**
+ * SlaveMode
+ *
+ * Enable Slave mode. (maybe redundant with Assign Channel ?)
+ *
+ **/
+message SlaveModeCmd {
+  uint32 channel_number = 1;
+}
+
+/**
+ * StartCmd
+ *
+ * Enable node-related modes.
+ **/
+message StartCmd {
+}
+
+/**
+ * StopCmd
+ *
+ * Disable node-related modes.
+ **/
+message StopCmd {
+}
+
+/**
+ * ListChannelsCmd
+ *
+ * List the channels exposed by the device.
+ **/
+message ListChannelsCmd {
+}
+
+/**
+ * ListNetworksCmd
+ *
+ * List the networks supported by the device.
+ **/
+message ListNetworksCmd {
+}
+
+
+/**
+ * Jammed
+ *
+ * Indicates that packets have been Jammed.
+ *
+ **/
+
+message Jammed {
+    uint32 timestamp = 1;
+}
+
+
+
+/**
+ * AvailableChannels
+ *
+ * Indicates the number of available channels.
+ *
+ **/
+
+message AvailableChannels {
+    uint32 number_of_channels = 1;
+}
+
+
+
+/**
+ * AvailableNetworks
+ *
+ * Indicates the number of available networks.
+ *
+ **/
+
+message AvailableNetworks {
+    uint32 number_of_networks = 1;
+}
+
+
+/**
+ * RawPduReceived
+ *
+ * Notifies reception of a raw PDU. This message must be used by devices
+ * that do have access to raw PDU data (CRC).
+ *
+ **/
+
+message RawPduReceived {
+    uint32 channel_number = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    optional bool crc_validity = 4;
+    bytes pdu = 5;
+    uint32 crc = 6;
+    uint32 rf_channel = 7;
+
+
+}
+/**
+ * PduReceived
+ *
+ * Notifies reception of a normal PDU. This message must be used by devices
+ * that do not have access to raw PDU data (thus exposing the NoRawData
+ * capability).
+ *
+ **/
+
+ message PduReceived {
+    uint32 channel_number = 1;
+    optional int32 rssi = 2;
+    optional uint32 timestamp = 3;
+    optional bool crc_validity = 4;
+    bytes pdu = 5;
+    uint32 rf_channel = 6;
+}
+
+/**
+ * ChannelEvent
+ *
+ * Notifies an event on the channel. This message must be transmitted to 
+ * inform the host about the current state of the controller.
+ *
+ **/
+
+ message ChannelEvent {
+    uint32 channel_number = 1;
+    AntChannelEvent event = 2;
+}
+
+ message Message {
+
+    oneof msg {
+        /* Messages */
+        SetDeviceNumberCmd set_device_number          = 1;
+        SetDeviceTypeCmd set_device_type              = 2;
+        SetTransmissionTypeCmd set_transmission_type  = 3;
+        SetChannelPeriodCmd set_channel_period        = 4;
+        SetNetworkKeyCmd set_network_key              = 5;
+        AssignChannelCmd assign_channel               = 6;
+        UnassignChannelCmd unassign_channel           = 7;
+        OpenChannelCmd open_channel                   = 8;
+        CloseChannelCmd close_channel                 = 9;
+        SetRFChannelCmd set_rf_channel                = 10;
+        SniffCmd sniff                                = 11;
+        JamCmd jam                                    = 12;
+        SendCmd send                                  = 13;
+        SendRawCmd send_raw                           = 14;
+
+        MasterModeCmd master_mode                     = 15;
+        SlaveModeCmd slave_mode                       = 16;
+
+        StartCmd start                                = 17;
+        StopCmd stop                                  = 18;
+
+        /* Notifications */
+        Jammed jammed                                 = 19;
+        RawPduReceived raw_pdu                        = 20;
+        PduReceived pdu                               = 21;
+
+        /* Management commands */
+        ListChannelsCmd list_channels                 = 22;
+        ListNetworksCmd list_networks                 = 23;
+
+        /* Management notifications */
+        AvailableChannels available_channels          = 24;
+        AvailableNetworks available_networks          = 25;
+        
+        /* Events */
+        ChannelEvent channel_event                    = 26;
+    }
+ }
