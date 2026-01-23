@@ -237,7 +237,7 @@ message RawPduReceived {
 
         LogitechDongleModeCmd dongle = 6;
         LogitechKeyboardModeCmd keyboard = 7;
-        LogitechKeyboardModeCmd mouse = 8;
+        LogitechMouseModeCmd mouse = 8;
 
         StartCmd start = 9;
         StopCmd stop = 10;
