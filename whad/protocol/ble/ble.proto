@@ -233,16 +233,21 @@ message SniffConnReqCmd {
  * Sniff Access Addresses sent over BLE.
  *
  * Will send AccessAddressDiscovered notifications each
- * time an AccessAddress has been found.
+ * time an AccessAddress has been found. PHY can be specified
+ * using the `phy` parameter.
  **/
 message SniffAccessAddressCmd {
     bytes monitored_channels = 6;
+
+    /* Introduced in protocol v4. */
+    BlePhy phy = 7;
 }
 
 /**
  * SniffActiveConnCmd
  *
- * Sniff an active connection identified by its Access Address.
+ * Sniff an active connection identified by its Access Address,
+ * works only for BLE connections using LE_1M PHY.
  **/
 
 message SniffActiveConnCmd {
@@ -262,6 +267,9 @@ message SniffActiveConnCmd {
 
 message JamConnCmd {
     uint32 access_address = 1;
+
+    /* Introduced in protocol v4. */
+    BlePhy phy = 2;
 }
 
 /**
@@ -530,7 +538,7 @@ message DeleteSequenceCmd {
 /**
  * SetPhyCmd
  *
- * Set the PHY to use for BLE TX/RX.
+ * Set the PHY to use for BLE TX/RX, introduced in version 4.
  **/
 
 message SetPhyCmd {
@@ -546,6 +554,8 @@ message SetPhyCmd {
  * vendors or RF hardware peripherals allow
  * to configure the transmission power level
  * to a value in dBm.
+ *
+ * Introduced in version 4.
  **/
 
 message SetTxPowerLevelCmd {
