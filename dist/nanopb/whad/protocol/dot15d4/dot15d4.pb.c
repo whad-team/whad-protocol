@@ -54,6 +54,30 @@ PB_BIND(dot15d4_RawPduReceived, dot15d4_RawPduReceived, 2)
 PB_BIND(dot15d4_PduReceived, dot15d4_PduReceived, 2)
 
 
+PB_BIND(dot15d4_SendInSlotCmd, dot15d4_SendInSlotCmd, AUTO)
+
+
+PB_BIND(dot15d4_ConfigureTSCHCmd, dot15d4_ConfigureTSCHCmd, AUTO)
+
+
+PB_BIND(dot15d4_AddLinkCmd, dot15d4_AddLinkCmd, AUTO)
+
+
+PB_BIND(dot15d4_DeleteLinkCmd, dot15d4_DeleteLinkCmd, AUTO)
+
+
+PB_BIND(dot15d4_UpdateSuperframeCmd, dot15d4_UpdateSuperframeCmd, AUTO)
+
+
+PB_BIND(dot15d4_DeleteSuperframeCmd, dot15d4_DeleteSuperframeCmd, AUTO)
+
+
+PB_BIND(dot15d4_SetChannelMapCmd, dot15d4_SetChannelMapCmd, AUTO)
+
+
+PB_BIND(dot15d4_DiscoveredCommunication, dot15d4_DiscoveredCommunication, AUTO)
+
+
 PB_BIND(dot15d4_Message, dot15d4_Message, 2)
 
 
