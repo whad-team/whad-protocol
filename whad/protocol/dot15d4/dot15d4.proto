@@ -11,6 +11,7 @@
  * - act as a coordinator device
  * - act as a router device
  * - perform man-in-the-middle attack
+ * - enable, disable and configure Time Slotted Channel Hopping features (TSCH)
  **/
 
 
@@ -71,6 +72,32 @@ enum Dot15d4Command {
 
     /* Man-in-the-Middle mode */
     ManInTheMiddle          = 0x0b;
+
+    /**
+     * Time Slotted Channel Hopping commands.
+    */
+    /* Enable or disable TSCH */
+    ConfigureTSCH           = 0x0c;
+    
+    /* Send packet on a given slot. */
+    SendInSlot              = 0x0d;
+
+    /* Add a new link. */
+    AddLink                 = 0x0e;
+
+    /* Delete a given link. */
+    DeleteLink              = 0x0f;
+
+    /* Write or modify a superframe. */
+    UpdateSuperframe        = 0x10;
+
+    /* Delete a superframe. */
+    DeleteSuperframe        = 0x11;
+
+    /* Configure Channel Map. */
+    SetChannelMap           = 0x12;
+
+
 }
 
 enum Dot15d4MitmRole {
@@ -234,6 +261,8 @@ message RawPduReceived {
     bytes pdu = 5;
     uint32 fcs = 6;
     optional uint32 lqi = 7;
+    optional uint32 asn = 8;
+    optional uint32 slot_timestamp = 9;
 }
 
 /**
@@ -252,6 +281,112 @@ message RawPduReceived {
     optional bool fcs_validity = 4;
     bytes pdu = 5;
     optional uint32 lqi = 6;
+    optional uint32 asn = 7;
+    optional uint32 slot_timestamp = 8;
+}
+
+
+/**
+ * SendInSlotCmd
+ *
+ * Sends 802.15.4 packets on a single channel on a specified time slot if TSCH mode is enabled.
+ *
+ **/
+message SendInSlotCmd {
+    uint64 slot = 1;
+    bytes pdu = 2;
+}
+
+
+/**
+ * ConfigureTSCH
+ *
+ * Configure if Time Slotted Channel Hopping feature is enabled or disabled.
+**/
+message ConfigureTSCHCmd {
+    bool enabled = 1;
+}
+
+
+/**
+ * AddLinkCmd
+ *
+ * This command add a new link to the sniffer. 
+**/
+message AddLinkCmd {
+    /* ID of the corresponding superframe. */ 
+    uint32 id_superframe = 1;
+    /* Source address of the link. */
+    uint32 src = 2;
+    /* Join slot */
+    uint32 join_slot = 3;
+    /* Offset of the link in the superframe. */
+    uint32 offset = 4;
+    /* Neighbor address of the link. */
+    uint32 neighbor = 5;
+    /* Option fields. */
+    uint32 options = 6;
+    /* Type of link. */
+    uint32 type = 7;
+}
+
+/**
+ * DeleteLinkCmd
+ *
+ * This command deletes a link from the sniffer. 
+**/
+message DeleteLinkCmd {
+    /* ID of the corresponding superframe. */ 
+    uint32 id_superframe = 1;
+    /* Offset of the link in the superframe. */
+    uint32 offset = 2;
+    /* Neighbor address of the link. */
+    uint32 neighbor = 3;
+}
+
+/**
+ * UpdateSuperframeCmd
+ * 
+ * Add a new superframe or modify an existing one
+ */
+message UpdateSuperframeCmd {
+    uint32 id_superframe = 1;
+    uint32 number_of_slots = 2;
+    uint32 flags = 3;
+    optional uint64 asn = 4;
+}
+
+/**
+ * DeleteSuperframeCmd
+ * 
+ * Delete an existing superframe.
+ */
+message DeleteSuperframeCmd {
+    uint32 superframe_id = 1;
+}
+
+/**
+ * SetChannelMapCmd
+ *
+ * Update the channel map
+ *
+*/
+message SetChannelMapCmd {
+    uint32 channel_map = 1;
+}
+
+
+
+/**
+ * DiscoveredCommunication
+ *
+ * Notifies the discovery of a communication on an unknown link
+ * This message allows to discover existing links and add them to the superframes 
+**/
+message DiscoveredCommunication {
+    uint32 slot = 1;
+    uint32 offset = 2;
+    bytes pdu = 3;
 }
 
 
@@ -284,5 +419,15 @@ message RawPduReceived {
         EnergyDetectionSample ed_sample = 14;
         RawPduReceived raw_pdu = 15;
         PduReceived pdu = 16;
+        DiscoveredCommunication discovered_comm = 17;
+
+        /* Time Slotted Channel Hopping Messages. */
+        ConfigureTSCHCmd config_tsch = 18;
+        SendInSlotCmd send_in_slot = 19;
+        AddLinkCmd add_link = 20;
+        DeleteLinkCmd del_link = 21;
+        UpdateSuperframeCmd update_superframe = 22;
+        DeleteSuperframeCmd del_superframe = 23;
+        SetChannelMapCmd set_chm = 24;
     }
  }
