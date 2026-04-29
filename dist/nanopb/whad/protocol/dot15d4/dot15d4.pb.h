@@ -193,8 +193,16 @@ typedef struct _dot15d4_PduReceived {
     uint32_t lqi;
     bool has_asn;
     uint32_t asn;
-    bool has_slot_timestamp;
-    uint32_t slot_timestamp;
+    bool has_start_of_slot_timestamp;
+    uint32_t start_of_slot_timestamp;
+    bool has_time_slot;
+    uint32_t time_slot;
+    bool has_base_channel_frequency;
+    uint32_t base_channel_frequency;
+    bool has_number_of_channels;
+    uint32_t number_of_channels;
+    bool has_channel_spacing;
+    uint32_t channel_spacing;
 } dot15d4_PduReceived;
 
 typedef PB_BYTES_ARRAY_T(255) dot15d4_RawPduReceived_pdu_t;
@@ -212,8 +220,16 @@ typedef struct _dot15d4_RawPduReceived {
     uint32_t lqi;
     bool has_asn;
     uint32_t asn;
-    bool has_slot_timestamp;
-    uint32_t slot_timestamp;
+    bool has_start_of_slot_timestamp;
+    uint32_t start_of_slot_timestamp;
+    bool has_time_slot;
+    uint32_t time_slot;
+    bool has_base_channel_frequency;
+    uint32_t base_channel_frequency;
+    bool has_number_of_channels;
+    uint32_t number_of_channels;
+    bool has_channel_spacing;
+    uint32_t channel_spacing;
 } dot15d4_RawPduReceived;
 
 /* *
@@ -348,8 +364,8 @@ extern "C" {
 #define dot15d4_ManInTheMiddleCmd_init_default   {_dot15d4_Dot15d4MitmRole_MIN}
 #define dot15d4_Jammed_init_default              {0}
 #define dot15d4_EnergyDetectionSample_init_default {0, 0}
-#define dot15d4_RawPduReceived_init_default      {0, false, 0, false, 0, false, 0, {0, {0}}, 0, false, 0, false, 0, false, 0}
-#define dot15d4_PduReceived_init_default         {0, false, 0, false, 0, false, 0, {0, {0}}, false, 0, false, 0, false, 0}
+#define dot15d4_RawPduReceived_init_default      {0, false, 0, false, 0, false, 0, {0, {0}}, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0}
+#define dot15d4_PduReceived_init_default         {0, false, 0, false, 0, false, 0, {0, {0}}, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0}
 #define dot15d4_SendInSlotCmd_init_default       {0, {{NULL}, NULL}}
 #define dot15d4_ConfigureTSCHCmd_init_default    {0}
 #define dot15d4_AddLinkCmd_init_default          {0, 0, 0, 0, 0, 0, 0}
@@ -373,8 +389,8 @@ extern "C" {
 #define dot15d4_ManInTheMiddleCmd_init_zero      {_dot15d4_Dot15d4MitmRole_MIN}
 #define dot15d4_Jammed_init_zero                 {0}
 #define dot15d4_EnergyDetectionSample_init_zero  {0, 0}
-#define dot15d4_RawPduReceived_init_zero         {0, false, 0, false, 0, false, 0, {0, {0}}, 0, false, 0, false, 0, false, 0}
-#define dot15d4_PduReceived_init_zero            {0, false, 0, false, 0, false, 0, {0, {0}}, false, 0, false, 0, false, 0}
+#define dot15d4_RawPduReceived_init_zero         {0, false, 0, false, 0, false, 0, {0, {0}}, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0}
+#define dot15d4_PduReceived_init_zero            {0, false, 0, false, 0, false, 0, {0, {0}}, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0}
 #define dot15d4_SendInSlotCmd_init_zero          {0, {{NULL}, NULL}}
 #define dot15d4_ConfigureTSCHCmd_init_zero       {0}
 #define dot15d4_AddLinkCmd_init_zero             {0, 0, 0, 0, 0, 0, 0}
@@ -416,7 +432,11 @@ extern "C" {
 #define dot15d4_PduReceived_pdu_tag              5
 #define dot15d4_PduReceived_lqi_tag              6
 #define dot15d4_PduReceived_asn_tag              7
-#define dot15d4_PduReceived_slot_timestamp_tag   8
+#define dot15d4_PduReceived_start_of_slot_timestamp_tag 8
+#define dot15d4_PduReceived_time_slot_tag        9
+#define dot15d4_PduReceived_base_channel_frequency_tag 10
+#define dot15d4_PduReceived_number_of_channels_tag 11
+#define dot15d4_PduReceived_channel_spacing_tag  12
 #define dot15d4_RawPduReceived_channel_tag       1
 #define dot15d4_RawPduReceived_rssi_tag          2
 #define dot15d4_RawPduReceived_timestamp_tag     3
@@ -425,7 +445,11 @@ extern "C" {
 #define dot15d4_RawPduReceived_fcs_tag           6
 #define dot15d4_RawPduReceived_lqi_tag           7
 #define dot15d4_RawPduReceived_asn_tag           8
-#define dot15d4_RawPduReceived_slot_timestamp_tag 9
+#define dot15d4_RawPduReceived_start_of_slot_timestamp_tag 9
+#define dot15d4_RawPduReceived_time_slot_tag     10
+#define dot15d4_RawPduReceived_base_channel_frequency_tag 11
+#define dot15d4_RawPduReceived_number_of_channels_tag 12
+#define dot15d4_RawPduReceived_channel_spacing_tag 13
 #define dot15d4_RouterCmd_channel_tag            1
 #define dot15d4_SendCmd_channel_tag              1
 #define dot15d4_SendCmd_pdu_tag                  2
@@ -552,7 +576,11 @@ X(a, STATIC,   SINGULAR, BYTES,    pdu,               5) \
 X(a, STATIC,   SINGULAR, UINT32,   fcs,               6) \
 X(a, STATIC,   OPTIONAL, UINT32,   lqi,               7) \
 X(a, STATIC,   OPTIONAL, UINT32,   asn,               8) \
-X(a, STATIC,   OPTIONAL, UINT32,   slot_timestamp,    9)
+X(a, STATIC,   OPTIONAL, UINT32,   start_of_slot_timestamp,   9) \
+X(a, STATIC,   OPTIONAL, UINT32,   time_slot,        10) \
+X(a, STATIC,   OPTIONAL, UINT32,   base_channel_frequency,  11) \
+X(a, STATIC,   OPTIONAL, UINT32,   number_of_channels,  12) \
+X(a, STATIC,   OPTIONAL, UINT32,   channel_spacing,  13)
 #define dot15d4_RawPduReceived_CALLBACK NULL
 #define dot15d4_RawPduReceived_DEFAULT NULL
 
@@ -564,7 +592,11 @@ X(a, STATIC,   OPTIONAL, BOOL,     fcs_validity,      4) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               5) \
 X(a, STATIC,   OPTIONAL, UINT32,   lqi,               6) \
 X(a, STATIC,   OPTIONAL, UINT32,   asn,               7) \
-X(a, STATIC,   OPTIONAL, UINT32,   slot_timestamp,    8)
+X(a, STATIC,   OPTIONAL, UINT32,   start_of_slot_timestamp,   8) \
+X(a, STATIC,   OPTIONAL, UINT32,   time_slot,         9) \
+X(a, STATIC,   OPTIONAL, UINT32,   base_channel_frequency,  10) \
+X(a, STATIC,   OPTIONAL, UINT32,   number_of_channels,  11) \
+X(a, STATIC,   OPTIONAL, UINT32,   channel_spacing,  12)
 #define dot15d4_PduReceived_CALLBACK NULL
 #define dot15d4_PduReceived_DEFAULT NULL
 
@@ -742,8 +774,8 @@ extern const pb_msgdesc_t dot15d4_Message_msg;
 #define dot15d4_JamCmd_size                      6
 #define dot15d4_Jammed_size                      11
 #define dot15d4_ManInTheMiddleCmd_size           2
-#define dot15d4_PduReceived_size                 306
-#define dot15d4_RawPduReceived_size              312
+#define dot15d4_PduReceived_size                 330
+#define dot15d4_RawPduReceived_size              336
 #define dot15d4_RouterCmd_size                   6
 #define dot15d4_SendCmd_size                     264
 #define dot15d4_SendRawCmd_size                  270
