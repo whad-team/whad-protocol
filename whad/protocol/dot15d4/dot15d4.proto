@@ -262,7 +262,11 @@ message RawPduReceived {
     uint32 fcs = 6;
     optional uint32 lqi = 7;
     optional uint32 asn = 8;
-    optional uint32 slot_timestamp = 9;
+    optional uint32 start_of_slot_timestamp = 9;
+    optional uint32 time_slot = 10;
+    optional uint32 base_channel_frequency = 11;
+    optional uint32 number_of_channels = 12;
+    optional uint32 channel_spacing = 13;
 }
 
 /**
@@ -282,7 +286,11 @@ message RawPduReceived {
     bytes pdu = 5;
     optional uint32 lqi = 6;
     optional uint32 asn = 7;
-    optional uint32 slot_timestamp = 8;
+    optional uint32 start_of_slot_timestamp = 8;
+    optional uint32 time_slot = 9;
+    optional uint32 base_channel_frequency = 10;
+    optional uint32 number_of_channels = 11;
+    optional uint32 channel_spacing = 12;
 }
 
 
