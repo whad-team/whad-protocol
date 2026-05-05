@@ -137,6 +137,7 @@ enum BleDirection {
 enum BleAddrType {
     PUBLIC = 0;
     RANDOM = 1;
+    RPA = 2; /* Introduced in protocol version 3. */
 }
 
 enum BlePhy {
@@ -146,7 +147,7 @@ enum BlePhy {
     LE_2M_2BT = 3;      /* Introduced in BLE 6 */
 }
 
-enum BleCSA {
+enum BleCsa {
     CSA1 = 0;           /* Default Channel Selection Algorithm
                            introduced in BLE 4 */
     CSA2 = 1;           /* Channel Selection Algorithm #2
@@ -183,7 +184,7 @@ message SetBdAddressCmd {
 
 message SniffAdvCmd {
     /* Extended advertisements (BLE 5). */
-    bool use_extended_adv = 1;
+    bool use_ext_adv = 1;
 
     /* Channel can be specified, the device will only
        listen on this specific channel. */
@@ -224,6 +225,7 @@ message SniffConnReqCmd {
     bool show_advertisements = 2;
     uint32 channel = 3;
     bytes bd_address = 4;
+    BlePhy phy = 5; /* Introduced in version 3, defaults to LE_1M. */
 }
 
 
@@ -239,8 +241,7 @@ message SniffConnReqCmd {
 message SniffAccessAddressCmd {
     bytes monitored_channels = 6;
 
-    /* Introduced in protocol v4. */
-    BlePhy phy = 7;
+    BlePhy phy = 7; /* Introduced in version 3, defaults to LE_1M. */
 }
 
 /**
@@ -268,8 +269,7 @@ message SniffActiveConnCmd {
 message JamConnCmd {
     uint32 access_address = 1;
 
-    /* Introduced in protocol v4. */
-    BlePhy phy = 2;
+    BlePhy phy = 2; /* Introduced in version 3. */
 }
 
 /**
@@ -282,6 +282,9 @@ message JamConnCmd {
 
 message ScanModeCmd {
     bool active_scan = 1;
+    
+    /* Introduced in protocol version 3. */
+    bool use_ext_adv = 2;
 }
 
 /**
@@ -298,6 +301,9 @@ message AdvModeCmd {
     BleAdvType adv_type = 4;
     uint32 inter_min = 5;
     uint32 inter_max = 6;
+
+    /* Introduced in protocol version 3. */
+    BleCsa csa = 7;
 }
 
 /**
@@ -336,7 +342,7 @@ message ConnectToCmd {
     optional uint32 crc_init = 7;           /* CRC Initial value (seed) */
 
     /* Introduced in protocol v4 */
-    BleCSA csa = 8;                         /* Channel Selection Algorithm */
+    BleCsa csa = 8;                         /* Channel Selection Algorithm */
 }
 
 /**
@@ -400,6 +406,11 @@ message PeripheralModeCmd {
     BleAdvType adv_type = 4;
     uint32 inter_min = 5;
     uint32 inter_max = 6;
+
+    /* Introduced in protocol version 3. */
+    BleCsa csa = 7; /* Channel Selection Algorithm to use, defaults to CSA1. */
+    BlePhy default_phy = 8; /* Default PHY. */
+    repeated BlePhy extra_phys = 8; /* Supported extra PHYs. */
 }
 
 /**
@@ -490,6 +501,9 @@ message ReactiveJamCmd {
     uint32 channel = 1;
     bytes pattern = 2;
     uint32 position = 3;
+
+    /* Introduced in protocol version 3. */
+    BlePhy phy = 4;
 }
 
 message PrepareSequenceCmd {
@@ -596,6 +610,9 @@ message AdvPduReceived {
     bytes bd_address = 3;
     bytes adv_data = 4;
     BleAddrType addr_type = 5;
+
+    /* Introduced in protocol version 3. */
+    uint32 channel = 6; /* Channel on which the advertisement pdu has been received. */
 }
 
 
@@ -626,6 +643,9 @@ message Connected {
     uint32 conn_handle = 8;
     BleAddrType adv_addr_type = 9;
     BleAddrType init_addr_type = 10;
+
+    /* Introduced in protocol version 3. */
+    BlePhy phy = 11; /* PHY used by the initiating device. */
 }
 
 /**
@@ -647,6 +667,9 @@ message Connected {
  * - `hop_interval`: the interval value used in FHSS
  * - `hop_increment`: the increment value used in FHSS
  * - `channel_map`: the channel map (5 bytes) used in FHSS
+ *
+ * This message is only used when synchronizing with connections
+ * using CSA1.
  **/
 
  message Synchronized {
@@ -704,6 +727,9 @@ message RawPduReceived {
     uint32 conn_handle = 10;
     bool processed = 11;
     bool decrypted = 12;
+
+    /* Introduced in protocol version 3. */
+    BlePhy phy = 13; /* Current PHY. */
 }
 
 /**
@@ -723,6 +749,9 @@ message PduReceived {
     uint32 conn_handle = 3;
     bool processed = 4;
     bool decrypted = 5;
+
+    /* Introduced in protocol version 3. */
+    BlePhy phy = 6;
 }
 
 /**
