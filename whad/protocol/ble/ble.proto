@@ -110,7 +110,8 @@ enum BleCommand {
 
     /* PHY control */
     SetPhy = 0x1b;
-    SetTxPowerLevel = 0x1c;
+    SetSupportedPhys = 0x1c
+    SetTxPowerLevel = 0x1d;
 }
 
 
@@ -225,7 +226,6 @@ message SniffConnReqCmd {
     bool show_advertisements = 2;
     uint32 channel = 3;
     bytes bd_address = 4;
-    BlePhy phy = 5; /* Introduced in version 3, defaults to LE_1M. */
 }
 
 
@@ -258,6 +258,9 @@ message SniffActiveConnCmd {
     uint32 hop_interval = 4;
     uint32 hop_increment = 5;
     bytes monitored_channels = 6;
+   
+    /* Introduced in protocol v3. */
+    BlePhy phy = 7;
 }
 
 /**
@@ -306,6 +309,8 @@ message AdvModeCmd {
     BleCsa csa = 7;
 }
 
+// TODO: Message dédié pour Extended Advertisements
+
 /**
  * SetAdvDataCmd
  *
@@ -341,7 +346,7 @@ message ConnectToCmd {
     optional uint32 hop_increment = 6;      /* Channel hopping increment (CSA1) */
     optional uint32 crc_init = 7;           /* CRC Initial value (seed) */
 
-    /* Introduced in protocol v4 */
+    /* Introduced in protocol v3. */
     BleCsa csa = 8;                         /* Channel Selection Algorithm */
 }
 
@@ -361,6 +366,9 @@ message SendRawPDUCmd {
     bytes pdu = 4;
     uint32 crc = 5;
     bool encrypt = 6;
+
+    /* Introduced in protocol v3. */
+    optional BlePhy phy = 7;
 }
 
 /**
@@ -381,6 +389,9 @@ message SendRawPDUCmd {
     uint32 conn_handle = 2;
     bytes pdu = 3;
     bool encrypt = 4;
+
+    /* Introduced in protocol v3. */
+    optional BlePhy phy = 7;
 }
 
 /**
@@ -409,8 +420,6 @@ message PeripheralModeCmd {
 
     /* Introduced in protocol version 3. */
     BleCsa csa = 7; /* Channel Selection Algorithm to use, defaults to CSA1. */
-    BlePhy default_phy = 8; /* Default PHY. */
-    repeated BlePhy extra_phys = 8; /* Supported extra PHYs. */
 }
 
 /**
@@ -542,7 +551,7 @@ message DeleteSequenceCmd {
 }
 
 /********************************************
-* Commands introduced in version 4:
+* Commands introduced in version 3:
 *
 * - SetPhyCmd
 * - SetTxPowerLevelCmd
@@ -556,7 +565,13 @@ message DeleteSequenceCmd {
  **/
 
 message SetPhyCmd {
-    BlePhy phy = 0;
+    BlePhy tx_phy = 0;
+    BlePhy rx_phy = 1;
+}
+
+message SetSupportedPhysCmd {
+    repeated BlePhy tx_phy = 0;
+    repeated BlePhy rx_phy = 1;
 }
 
 /**
@@ -613,6 +628,7 @@ message AdvPduReceived {
 
     /* Introduced in protocol version 3. */
     uint32 channel = 6; /* Channel on which the advertisement pdu has been received. */
+    BlePhy phy = 7;
 }
 
 
@@ -678,6 +694,7 @@ message Connected {
      uint32 hop_interval = 3;
      uint32 hop_increment = 4;
      bytes channel_map = 5;
+     optional BlePhy phy = 6;
  }
 
 /**
@@ -806,5 +823,7 @@ message PduReceived {
         Injected injected = 31;
         Desynchronized desynchronized = 32;
         Triggered triggered = 37;
+    
+        SetSupportedPhysCmd = 41;
     }
  }
