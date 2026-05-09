@@ -83,7 +83,7 @@ typedef struct _dot15d4_StopCmd {
  This command add a new link to the sniffer. */
 typedef struct _dot15d4_AddLinkCmd { 
     /* ID of the corresponding superframe. */
-    uint32_t id_superframe;
+    uint32_t superframe_id;
     /* Source address of the link. */
     uint32_t src;
     /* Join slot */
@@ -103,6 +103,7 @@ typedef struct _dot15d4_AddLinkCmd {
 
  Configure if Time Slotted Channel Hopping feature is enabled or disabled. */
 typedef struct _dot15d4_ConfigureTSCHCmd { 
+    /* Indicator of TSCH enabling. */
     bool enabled;
 } dot15d4_ConfigureTSCHCmd;
 
@@ -120,7 +121,7 @@ typedef struct _dot15d4_CoordinatorCmd {
  This command deletes a link from the sniffer. */
 typedef struct _dot15d4_DeleteLinkCmd { 
     /* ID of the corresponding superframe. */
-    uint32_t id_superframe;
+    uint32_t superframe_id;
     /* Offset of the link in the superframe. */
     uint32_t offset;
     /* Neighbor address of the link. */
@@ -132,6 +133,7 @@ typedef struct _dot15d4_DeleteLinkCmd {
  
  Delete an existing superframe. */
 typedef struct _dot15d4_DeleteSuperframeCmd { 
+    /* ID of the corresponding superframe to delete. */
     uint32_t superframe_id;
 } dot15d4_DeleteSuperframeCmd;
 
@@ -141,8 +143,11 @@ typedef struct _dot15d4_DeleteSuperframeCmd {
  Notifies the discovery of a communication on an unknown link
  This message allows to discover existing links and add them to the superframes */
 typedef struct _dot15d4_DiscoveredCommunication { 
+    /* Slot Number of the discovered communication. */
     uint32_t slot;
+    /* Offset associated with the discovered communication. */
     uint32_t offset;
+    /* PDU identified during the communication. */
     pb_callback_t pdu;
 } dot15d4_DiscoveredCommunication;
 
@@ -250,13 +255,14 @@ typedef struct _dot15d4_SendCmd {
     dot15d4_SendCmd_pdu_t pdu;
 } dot15d4_SendCmd;
 
+typedef PB_BYTES_ARRAY_T(255) dot15d4_SendInSlotCmd_pdu_t;
 /* *
  SendInSlotCmd
 
  Sends 802.15.4 packets on a single channel on a specified time slot if TSCH mode is enabled. */
 typedef struct _dot15d4_SendInSlotCmd { 
     uint64_t slot;
-    pb_callback_t pdu;
+    dot15d4_SendInSlotCmd_pdu_t pdu;
 } dot15d4_SendInSlotCmd;
 
 typedef PB_BYTES_ARRAY_T(255) dot15d4_SendRawCmd_pdu_t;
@@ -271,6 +277,7 @@ typedef struct _dot15d4_SendRawCmd {
 
  Update the channel map */
 typedef struct _dot15d4_SetChannelMapCmd { 
+    /* Bitmap of supported channels for channel hopping. */
     uint32_t channel_map;
 } dot15d4_SetChannelMapCmd;
 
@@ -290,9 +297,13 @@ listen on this specific channel. */
  
  Add a new superframe or modify an existing one */
 typedef struct _dot15d4_UpdateSuperframeCmd { 
-    uint32_t id_superframe;
+    /* ID of the corresponding superframe to update or create. */
+    uint32_t superframe_id;
+    /* Size of the Superframe (in number of slots). */
     uint32_t number_of_slots;
+    /* Set of flags associated to the superframe. */
     uint32_t flags;
+    /* Absolute Slot Number associated with the superframe. */
     bool has_asn;
     uint64_t asn;
 } dot15d4_UpdateSuperframeCmd;
@@ -366,7 +377,7 @@ extern "C" {
 #define dot15d4_EnergyDetectionSample_init_default {0, 0}
 #define dot15d4_RawPduReceived_init_default      {0, false, 0, false, 0, false, 0, {0, {0}}, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0}
 #define dot15d4_PduReceived_init_default         {0, false, 0, false, 0, false, 0, {0, {0}}, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0}
-#define dot15d4_SendInSlotCmd_init_default       {0, {{NULL}, NULL}}
+#define dot15d4_SendInSlotCmd_init_default       {0, {0, {0}}}
 #define dot15d4_ConfigureTSCHCmd_init_default    {0}
 #define dot15d4_AddLinkCmd_init_default          {0, 0, 0, 0, 0, 0, 0}
 #define dot15d4_DeleteLinkCmd_init_default       {0, 0, 0}
@@ -391,7 +402,7 @@ extern "C" {
 #define dot15d4_EnergyDetectionSample_init_zero  {0, 0}
 #define dot15d4_RawPduReceived_init_zero         {0, false, 0, false, 0, false, 0, {0, {0}}, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0}
 #define dot15d4_PduReceived_init_zero            {0, false, 0, false, 0, false, 0, {0, {0}}, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0, false, 0}
-#define dot15d4_SendInSlotCmd_init_zero          {0, {{NULL}, NULL}}
+#define dot15d4_SendInSlotCmd_init_zero          {0, {0, {0}}}
 #define dot15d4_ConfigureTSCHCmd_init_zero       {0}
 #define dot15d4_AddLinkCmd_init_zero             {0, 0, 0, 0, 0, 0, 0}
 #define dot15d4_DeleteLinkCmd_init_zero          {0, 0, 0}
@@ -402,7 +413,7 @@ extern "C" {
 #define dot15d4_Message_init_zero                {0, {dot15d4_SetNodeAddressCmd_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define dot15d4_AddLinkCmd_id_superframe_tag     1
+#define dot15d4_AddLinkCmd_superframe_id_tag     1
 #define dot15d4_AddLinkCmd_src_tag               2
 #define dot15d4_AddLinkCmd_join_slot_tag         3
 #define dot15d4_AddLinkCmd_offset_tag            4
@@ -411,7 +422,7 @@ extern "C" {
 #define dot15d4_AddLinkCmd_type_tag              7
 #define dot15d4_ConfigureTSCHCmd_enabled_tag     1
 #define dot15d4_CoordinatorCmd_channel_tag       1
-#define dot15d4_DeleteLinkCmd_id_superframe_tag  1
+#define dot15d4_DeleteLinkCmd_superframe_id_tag  1
 #define dot15d4_DeleteLinkCmd_offset_tag         2
 #define dot15d4_DeleteLinkCmd_neighbor_tag       3
 #define dot15d4_DeleteSuperframeCmd_superframe_id_tag 1
@@ -462,7 +473,7 @@ extern "C" {
 #define dot15d4_SetNodeAddressCmd_address_tag    1
 #define dot15d4_SetNodeAddressCmd_address_type_tag 2
 #define dot15d4_SniffCmd_channel_tag             1
-#define dot15d4_UpdateSuperframeCmd_id_superframe_tag 1
+#define dot15d4_UpdateSuperframeCmd_superframe_id_tag 1
 #define dot15d4_UpdateSuperframeCmd_number_of_slots_tag 2
 #define dot15d4_UpdateSuperframeCmd_flags_tag    3
 #define dot15d4_UpdateSuperframeCmd_asn_tag      4
@@ -602,8 +613,8 @@ X(a, STATIC,   OPTIONAL, UINT32,   channel_spacing,  12)
 
 #define dot15d4_SendInSlotCmd_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT64,   slot,              1) \
-X(a, CALLBACK, SINGULAR, BYTES,    pdu,               2)
-#define dot15d4_SendInSlotCmd_CALLBACK pb_default_field_callback
+X(a, STATIC,   SINGULAR, BYTES,    pdu,               2)
+#define dot15d4_SendInSlotCmd_CALLBACK NULL
 #define dot15d4_SendInSlotCmd_DEFAULT NULL
 
 #define dot15d4_ConfigureTSCHCmd_FIELDLIST(X, a) \
@@ -612,7 +623,7 @@ X(a, STATIC,   SINGULAR, BOOL,     enabled,           1)
 #define dot15d4_ConfigureTSCHCmd_DEFAULT NULL
 
 #define dot15d4_AddLinkCmd_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   id_superframe,     1) \
+X(a, STATIC,   SINGULAR, UINT32,   superframe_id,     1) \
 X(a, STATIC,   SINGULAR, UINT32,   src,               2) \
 X(a, STATIC,   SINGULAR, UINT32,   join_slot,         3) \
 X(a, STATIC,   SINGULAR, UINT32,   offset,            4) \
@@ -623,14 +634,14 @@ X(a, STATIC,   SINGULAR, UINT32,   type,              7)
 #define dot15d4_AddLinkCmd_DEFAULT NULL
 
 #define dot15d4_DeleteLinkCmd_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   id_superframe,     1) \
+X(a, STATIC,   SINGULAR, UINT32,   superframe_id,     1) \
 X(a, STATIC,   SINGULAR, UINT32,   offset,            2) \
 X(a, STATIC,   SINGULAR, UINT32,   neighbor,          3)
 #define dot15d4_DeleteLinkCmd_CALLBACK NULL
 #define dot15d4_DeleteLinkCmd_DEFAULT NULL
 
 #define dot15d4_UpdateSuperframeCmd_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   id_superframe,     1) \
+X(a, STATIC,   SINGULAR, UINT32,   superframe_id,     1) \
 X(a, STATIC,   SINGULAR, UINT32,   number_of_slots,   2) \
 X(a, STATIC,   SINGULAR, UINT32,   flags,             3) \
 X(a, STATIC,   OPTIONAL, UINT64,   asn,               4)
@@ -760,7 +771,6 @@ extern const pb_msgdesc_t dot15d4_Message_msg;
 #define dot15d4_Message_fields &dot15d4_Message_msg
 
 /* Maximum encoded size of messages (where known) */
-/* dot15d4_SendInSlotCmd_size depends on runtime parameters */
 /* dot15d4_DiscoveredCommunication_size depends on runtime parameters */
 /* dot15d4_Message_size depends on runtime parameters */
 #define dot15d4_AddLinkCmd_size                  42
@@ -778,6 +788,7 @@ extern const pb_msgdesc_t dot15d4_Message_msg;
 #define dot15d4_RawPduReceived_size              336
 #define dot15d4_RouterCmd_size                   6
 #define dot15d4_SendCmd_size                     264
+#define dot15d4_SendInSlotCmd_size               269
 #define dot15d4_SendRawCmd_size                  270
 #define dot15d4_SetChannelMapCmd_size            6
 #define dot15d4_SetNodeAddressCmd_size           13

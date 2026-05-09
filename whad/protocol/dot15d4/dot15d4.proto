@@ -312,6 +312,7 @@ message SendInSlotCmd {
  * Configure if Time Slotted Channel Hopping feature is enabled or disabled.
 **/
 message ConfigureTSCHCmd {
+    /* Indicator of TSCH enabling. */ 
     bool enabled = 1;
 }
 
@@ -323,7 +324,7 @@ message ConfigureTSCHCmd {
 **/
 message AddLinkCmd {
     /* ID of the corresponding superframe. */ 
-    uint32 id_superframe = 1;
+    uint32 superframe_id = 1;
     /* Source address of the link. */
     uint32 src = 2;
     /* Join slot */
@@ -345,7 +346,7 @@ message AddLinkCmd {
 **/
 message DeleteLinkCmd {
     /* ID of the corresponding superframe. */ 
-    uint32 id_superframe = 1;
+    uint32 superframe_id = 1;
     /* Offset of the link in the superframe. */
     uint32 offset = 2;
     /* Neighbor address of the link. */
@@ -358,9 +359,13 @@ message DeleteLinkCmd {
  * Add a new superframe or modify an existing one
  */
 message UpdateSuperframeCmd {
-    uint32 id_superframe = 1;
+    /* ID of the corresponding superframe to update or create. */ 
+    uint32 superframe_id = 1;
+    /* Size of the Superframe (in number of slots). */ 
     uint32 number_of_slots = 2;
+    /* Set of flags associated to the superframe. */ 
     uint32 flags = 3;
+    /* Absolute Slot Number associated with the superframe. */ 
     optional uint64 asn = 4;
 }
 
@@ -370,6 +375,7 @@ message UpdateSuperframeCmd {
  * Delete an existing superframe.
  */
 message DeleteSuperframeCmd {
+    /* ID of the corresponding superframe to delete. */ 
     uint32 superframe_id = 1;
 }
 
@@ -380,6 +386,7 @@ message DeleteSuperframeCmd {
  *
 */
 message SetChannelMapCmd {
+    /* Bitmap of supported channels for channel hopping. */ 
     uint32 channel_map = 1;
 }
 
@@ -392,8 +399,11 @@ message SetChannelMapCmd {
  * This message allows to discover existing links and add them to the superframes 
 **/
 message DiscoveredCommunication {
+    /* Slot Number of the discovered communication. */ 
     uint32 slot = 1;
+    /* Offset associated with the discovered communication. */ 
     uint32 offset = 2;
+    /* PDU identified during the communication. */ 
     bytes pdu = 3;
 }
 

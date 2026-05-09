@@ -54,7 +54,7 @@ PB_BIND(dot15d4_RawPduReceived, dot15d4_RawPduReceived, 2)
 PB_BIND(dot15d4_PduReceived, dot15d4_PduReceived, 2)
 
 
-PB_BIND(dot15d4_SendInSlotCmd, dot15d4_SendInSlotCmd, AUTO)
+PB_BIND(dot15d4_SendInSlotCmd, dot15d4_SendInSlotCmd, 2)
 
 
 PB_BIND(dot15d4_ConfigureTSCHCmd, dot15d4_ConfigureTSCHCmd, AUTO)
