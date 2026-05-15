@@ -110,7 +110,7 @@ enum BleCommand {
 
     /* PHY control */
     SetPhy = 0x1b;
-    SetSupportedPhys = 0x1c
+    SetSupportedPhys = 0x1c;
     SetTxPowerLevel = 0x1d;
 }
 
@@ -280,7 +280,8 @@ message JamConnCmd {
  *
  * Enable scan mode.
  *
- * `active_scan` enables scan requests if set to `true`.
+ * - `active_scan` enables scan requests if set to `true`
+ * - `use_ext_adv` enables support for extended advertisements.
  **/
 
 message ScanModeCmd {
@@ -309,8 +310,6 @@ message AdvModeCmd {
     BleCsa csa = 7;
 }
 
-// TODO: Message dédié pour Extended Advertisements
-
 /**
  * SetAdvDataCmd
  *
@@ -322,6 +321,73 @@ message AdvModeCmd {
 message SetAdvDataCmd {
     bytes adv_data = 1;
     bytes scanrsp_data = 2;
+}
+
+/*
+ * BLE extended advertisement AuxPtr info.
+ *
+ * See Vol 6, Part B, Section 2.3.4.5 for more details.
+ *
+ * This message provides all the required values for
+ * successfully transmit the following extended advertising
+ * PDU on a secondary channel.
+ *
+ * Shall be used when the provided extended advertising PDU
+ * is malformed or impossible to parse without errors.
+ */
+message AuxPtr {
+    uint32 channel = 1;
+    uint32 ca = 2;
+    uint32 offset_units = 3;
+    uint32 offset = 4;
+    BlePhy phy = 5;
+}
+
+/**
+ * BLE 5+ extended advertising PDU message.
+ *
+ * See Vol 6, Part B, Section 2.3.4 for more details.
+ *
+ * This message has been introduced in version 3 of the WHAD protocol
+ * as a requirement for BLE extended advertising PDUs. Parsing of the
+ * extended header may be required to retrieve any AuxPtr that may be
+ * present and adjust timings accordingly.
+ *
+ * - `header_len`: integer value in the [0, 64] range
+ * - `adv_mode`: integer value in the [0, 3] range
+ * - `header`: extended header bytes (up to 63 octets)
+ * - `adv_data`: advertising data (up to 254 octets)
+ **/
+message ExtAdvPdu {
+    /* Extended Advertising Payload parameters. */
+    uint32 header_len = 1;
+    uint32 adv_mode = 2;
+    bytes header = 3;
+    bytes adv_data = 4;
+
+    /* Duplicated AuxPtr, shall be set when extended header is corrupted. */ 
+    optional AuxPtr aux_ptr = 5;
+}
+
+/**
+ * ExtAdvModeCmd
+ *
+ * Enable advertiser mode with extended advertisements. In this mode,
+ * the device only advertises and is not connectable.
+ *
+ * This message contains low-level extended advertising PDUs, giving control
+ * over their full definition (header & data).
+ **/
+
+message ExtAdvModeCmd {
+    /* Primary advertising parameters. */
+    bytes channel_map = 1;
+    uint32 inter_min = 2;
+    uint32 inter_max = 3;
+    BleCsa csa = 4;
+
+    /* Secondary advertising parameters. */
+    repeated ExtAdvPdu ext_pdus = 5;
 }
 
 /**
@@ -411,6 +477,7 @@ message SendRawPDUCmd {
  * Enable peripheral mode.
  **/
 message PeripheralModeCmd {
+    /* Legacy advertising parameters. */
     bytes adv_data = 1;
     bytes scanrsp_data = 2;
     bytes channel_map = 3;
@@ -565,13 +632,13 @@ message DeleteSequenceCmd {
  **/
 
 message SetPhyCmd {
-    BlePhy tx_phy = 0;
-    BlePhy rx_phy = 1;
+    BlePhy tx_phy = 1;
+    BlePhy rx_phy = 2;
 }
 
 message SetSupportedPhysCmd {
-    repeated BlePhy tx_phy = 0;
-    repeated BlePhy rx_phy = 1;
+    repeated BlePhy tx_phy = 1;
+    repeated BlePhy rx_phy = 2;
 }
 
 /**
@@ -588,7 +655,7 @@ message SetSupportedPhysCmd {
  **/
 
 message SetTxPowerLevelCmd {
-    int32 level;
+    int32 level = 1;
 }
 
 
@@ -809,7 +876,7 @@ message PduReceived {
         TriggerSequenceCmd trigger = 36;
         DeleteSequenceCmd delete_seq = 38;
         SetPhyCmd set_phy = 39;
-        SetTxPowerLevel set_tx_pwr = 40;
+        SetTxPowerLevelCmd set_tx_pwr = 40;
 
         /* Notifications */
         AccessAddressDiscovered aa_disc = 23;
@@ -824,6 +891,6 @@ message PduReceived {
         Desynchronized desynchronized = 32;
         Triggered triggered = 37;
     
-        SetSupportedPhysCmd = 41;
+        SetSupportedPhysCmd set_supp_phys= 41;
     }
  }
