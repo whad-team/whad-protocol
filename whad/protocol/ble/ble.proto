@@ -112,6 +112,9 @@ enum BleCommand {
     SetPhy = 0x1b;
     SetSupportedPhys = 0x1c;
     SetTxPowerLevel = 0x1d;
+
+    /* Extended Advertising */
+    SetExtAdvPdus = 0x1e;
 }
 
 
@@ -296,6 +299,15 @@ message ScanModeCmd {
  *
  * Enable Advertiser mode. In this mode, the device only
  * advertises and is not connectable.
+ *
+ * When `adv_type` is set to ADV_EXT_IND, the `ext_pdus`
+ * array must contain at least one (1) ExtAdvPdu message.
+ * The first ExtAdvPdu message of this list will be transmitted
+ * on the primary advertising channel, while the following will
+ * be transmitted on secondary advertising channels.
+ * In this specific case, the hardware adapter must discard both
+ * the provided `adv_data` and `scanrsp_data` fields because they
+ * are not needed for extended advertising.
  **/
 
 message AdvModeCmd {
@@ -306,8 +318,15 @@ message AdvModeCmd {
     uint32 inter_min = 5;
     uint32 inter_max = 6;
 
-    /* Introduced in protocol version 3. */
+    /*
+     * Introduced in protocol version 3.
+     */
+
+    /* Channel Selection Algorithm to use, default to CSA1. */
     BleCsa csa = 7;
+
+    /* Extended advertising PDUs. */
+    repeated ExtAdvPdu ext_pdus = 8;
 }
 
 /**
@@ -321,6 +340,22 @@ message AdvModeCmd {
 message SetAdvDataCmd {
     bytes adv_data = 1;
     bytes scanrsp_data = 2;
+}
+
+/**
+ * SetExtAdvPdusCmd
+ *
+ * Introduced in version 3 of WHAD protocol, following
+ * BLE 5.x Extended Advertising feature.
+ *
+ * Set extended advertisement PDUs that will be sent on
+ * secondary channels. These PDUs will be sent in the
+ * exact order of the provided list, on secondary channels
+ * as instructed in the provided messages (thanks to the AuxPtr
+ * duplicated information).
+ **/
+message SetExtAdvPdusCmd {
+    repeated ExtAdvPdu pdus = 1;
 }
 
 /*
@@ -353,41 +388,18 @@ message AuxPtr {
  * extended header may be required to retrieve any AuxPtr that may be
  * present and adjust timings accordingly.
  *
- * - `header_len`: integer value in the [0, 64] range
- * - `adv_mode`: integer value in the [0, 3] range
- * - `header`: extended header bytes (up to 63 octets)
- * - `adv_data`: advertising data (up to 254 octets)
+ * - `adv_data`: advertising data using the Extended Advertising Payload Format
  **/
 message ExtAdvPdu {
-    /* Extended Advertising Payload parameters. */
-    uint32 header_len = 1;
-    uint32 adv_mode = 2;
-    bytes header = 3;
+    /* Extended Advertising Payload, size could not exceed 254 + 64 octets. */
     bytes adv_data = 4;
 
-    /* Duplicated AuxPtr, shall be set when extended header is corrupted. */ 
+    /*
+     * Optional AuxPtr record, providing information about when, where and
+     * how the next secondary advertising PDU shall be sent. Complete PDU
+     * or last fragment shall not include this field.
+     */
     optional AuxPtr aux_ptr = 5;
-}
-
-/**
- * ExtAdvModeCmd
- *
- * Enable advertiser mode with extended advertisements. In this mode,
- * the device only advertises and is not connectable.
- *
- * This message contains low-level extended advertising PDUs, giving control
- * over their full definition (header & data).
- **/
-
-message ExtAdvModeCmd {
-    /* Primary advertising parameters. */
-    bytes channel_map = 1;
-    uint32 inter_min = 2;
-    uint32 inter_max = 3;
-    BleCsa csa = 4;
-
-    /* Secondary advertising parameters. */
-    repeated ExtAdvPdu ext_pdus = 5;
 }
 
 /**
@@ -485,8 +497,18 @@ message PeripheralModeCmd {
     uint32 inter_min = 5;
     uint32 inter_max = 6;
 
-    /* Introduced in protocol version 3. */
-    BleCsa csa = 7; /* Channel Selection Algorithm to use, defaults to CSA1. */
+    /*
+     * Introduced in protocol version 3.
+     */
+
+    /* Channel Selection Algorithm to use, defaults to CSA1. */
+    BleCsa csa = 7;
+
+    /* 
+     * Extended Advertising PDUs, only used when adv_type is set
+     * to BleAdvType.ADV_EXT_IND.
+     */
+    repeated ExtAdvPdu ext_pdus = 8;
 }
 
 /**
@@ -891,6 +913,8 @@ message PduReceived {
         Desynchronized desynchronized = 32;
         Triggered triggered = 37;
     
+        /* Introduced in v3 */
         SetSupportedPhysCmd set_supp_phys= 41;
+        SetExtAdvPdusCmd set_ext_adv_pdus = 42;
     }
  }
