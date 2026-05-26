@@ -110,6 +110,19 @@ enum AddressType {
     EXTENDED = 1;
 }
 
+enum LinkType {
+    NORMAL = 0;
+    DISCOVERY = 1;
+    BROADCAST = 2;
+    JOIN = 3;
+}
+
+enum LinkOptions {
+    UNKNOWN = 0;
+    SHARED = 1;
+    RECEIVE = 2;
+    TRANSMIT = 4;
+}
 /**************************************************
  **************************************************
  * Dot15d4 command messages
@@ -285,9 +298,9 @@ message RawPduReceived {
     optional bool fcs_validity = 4;
     bytes pdu = 5;
     optional uint32 lqi = 6;
-    optional uint32 asn = 7;
+    optional uint64 asn = 7;
     optional uint32 start_of_slot_timestamp = 8;
-    optional uint32 time_slot = 9;
+    optional uint64 time_slot = 9;
     optional uint32 base_channel_frequency = 10;
     optional uint32 number_of_channels = 11;
     optional uint32 channel_spacing = 12;
@@ -302,7 +315,8 @@ message RawPduReceived {
  **/
 message SendInSlotCmd {
     uint64 slot = 1;
-    bytes pdu = 2;
+    uint32 wait_offset = 2;
+    bytes pdu = 3;
 }
 
 
@@ -334,9 +348,9 @@ message AddLinkCmd {
     /* Neighbor address of the link. */
     uint32 neighbor = 5;
     /* Option fields. */
-    uint32 options = 6;
+    LinkOptions options = 6;
     /* Type of link. */
-    uint32 type = 7;
+    LinkType type = 7;
 }
 
 /**
@@ -400,7 +414,7 @@ message SetChannelMapCmd {
 **/
 message DiscoveredCommunication {
     /* Slot Number of the discovered communication. */ 
-    uint32 slot = 1;
+    uint64 slot = 1;
     /* Offset associated with the discovered communication. */ 
     uint32 offset = 2;
     /* PDU identified during the communication. */ 

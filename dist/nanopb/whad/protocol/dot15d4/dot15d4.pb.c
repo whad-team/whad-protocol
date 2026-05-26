@@ -75,10 +75,12 @@ PB_BIND(dot15d4_DeleteSuperframeCmd, dot15d4_DeleteSuperframeCmd, AUTO)
 PB_BIND(dot15d4_SetChannelMapCmd, dot15d4_SetChannelMapCmd, AUTO)
 
 
-PB_BIND(dot15d4_DiscoveredCommunication, dot15d4_DiscoveredCommunication, AUTO)
+PB_BIND(dot15d4_DiscoveredCommunication, dot15d4_DiscoveredCommunication, 2)
 
 
 PB_BIND(dot15d4_Message, dot15d4_Message, 2)
+
+
 
 
 
