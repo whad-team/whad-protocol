@@ -100,10 +100,10 @@ typedef struct _dot15d4_AddLinkCmd {
     uint32_t superframe_id;
     /* Source address of the link. */
     uint32_t src;
-    /* Join slot */
-    uint32_t join_slot;
+    /* Time slot */
+    uint32_t time_slot;
     /* Offset of the link in the superframe. */
-    uint32_t offset;
+    uint32_t channel_offset;
     /* Neighbor address of the link. */
     uint32_t neighbor;
     /* Option fields. */
@@ -136,10 +136,10 @@ typedef struct _dot15d4_CoordinatorCmd {
 typedef struct _dot15d4_DeleteLinkCmd { 
     /* ID of the corresponding superframe. */
     uint32_t superframe_id;
-    /* Offset of the link in the superframe. */
-    uint32_t offset;
-    /* Neighbor address of the link. */
-    uint32_t neighbor;
+    /* Time slot of the link in the superframe. */
+    uint32_t time_slot;
+    /* Channel offset of the link */
+    uint32_t channel_offset;
 } dot15d4_DeleteLinkCmd;
 
 /* *
@@ -159,9 +159,9 @@ typedef PB_BYTES_ARRAY_T(255) dot15d4_DiscoveredCommunication_pdu_t;
  This message allows to discover existing links and add them to the superframes */
 typedef struct _dot15d4_DiscoveredCommunication { 
     /* Slot Number of the discovered communication. */
-    uint64_t slot;
+    uint64_t time_slot;
     /* Offset associated with the discovered communication. */
-    uint32_t offset;
+    uint32_t channel_offset;
     /* PDU identified during the communication. */
     dot15d4_DiscoveredCommunication_pdu_t pdu;
 } dot15d4_DiscoveredCommunication;
@@ -439,19 +439,19 @@ extern "C" {
 /* Field tags (for use in manual encoding/decoding) */
 #define dot15d4_AddLinkCmd_superframe_id_tag     1
 #define dot15d4_AddLinkCmd_src_tag               2
-#define dot15d4_AddLinkCmd_join_slot_tag         3
-#define dot15d4_AddLinkCmd_offset_tag            4
+#define dot15d4_AddLinkCmd_time_slot_tag         3
+#define dot15d4_AddLinkCmd_channel_offset_tag    4
 #define dot15d4_AddLinkCmd_neighbor_tag          5
 #define dot15d4_AddLinkCmd_options_tag           6
 #define dot15d4_AddLinkCmd_type_tag              7
 #define dot15d4_ConfigureTSCHCmd_enabled_tag     1
 #define dot15d4_CoordinatorCmd_channel_tag       1
 #define dot15d4_DeleteLinkCmd_superframe_id_tag  1
-#define dot15d4_DeleteLinkCmd_offset_tag         2
-#define dot15d4_DeleteLinkCmd_neighbor_tag       3
+#define dot15d4_DeleteLinkCmd_time_slot_tag      2
+#define dot15d4_DeleteLinkCmd_channel_offset_tag 3
 #define dot15d4_DeleteSuperframeCmd_superframe_id_tag 1
-#define dot15d4_DiscoveredCommunication_slot_tag 1
-#define dot15d4_DiscoveredCommunication_offset_tag 2
+#define dot15d4_DiscoveredCommunication_time_slot_tag 1
+#define dot15d4_DiscoveredCommunication_channel_offset_tag 2
 #define dot15d4_DiscoveredCommunication_pdu_tag  3
 #define dot15d4_EndDeviceCmd_channel_tag         1
 #define dot15d4_EnergyDetectionCmd_channel_tag   1
@@ -651,8 +651,8 @@ X(a, STATIC,   SINGULAR, BOOL,     enabled,           1)
 #define dot15d4_AddLinkCmd_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   superframe_id,     1) \
 X(a, STATIC,   SINGULAR, UINT32,   src,               2) \
-X(a, STATIC,   SINGULAR, UINT32,   join_slot,         3) \
-X(a, STATIC,   SINGULAR, UINT32,   offset,            4) \
+X(a, STATIC,   SINGULAR, UINT32,   time_slot,         3) \
+X(a, STATIC,   SINGULAR, UINT32,   channel_offset,    4) \
 X(a, STATIC,   SINGULAR, UINT32,   neighbor,          5) \
 X(a, STATIC,   SINGULAR, UENUM,    options,           6) \
 X(a, STATIC,   SINGULAR, UENUM,    type,              7)
@@ -661,8 +661,8 @@ X(a, STATIC,   SINGULAR, UENUM,    type,              7)
 
 #define dot15d4_DeleteLinkCmd_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   superframe_id,     1) \
-X(a, STATIC,   SINGULAR, UINT32,   offset,            2) \
-X(a, STATIC,   SINGULAR, UINT32,   neighbor,          3)
+X(a, STATIC,   SINGULAR, UINT32,   time_slot,         2) \
+X(a, STATIC,   SINGULAR, UINT32,   channel_offset,    3)
 #define dot15d4_DeleteLinkCmd_CALLBACK NULL
 #define dot15d4_DeleteLinkCmd_DEFAULT NULL
 
@@ -685,8 +685,8 @@ X(a, STATIC,   SINGULAR, UINT32,   channel_map,       1)
 #define dot15d4_SetChannelMapCmd_DEFAULT NULL
 
 #define dot15d4_DiscoveredCommunication_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT64,   slot,              1) \
-X(a, STATIC,   SINGULAR, UINT32,   offset,            2) \
+X(a, STATIC,   SINGULAR, UINT64,   time_slot,         1) \
+X(a, STATIC,   SINGULAR, UINT32,   channel_offset,    2) \
 X(a, STATIC,   SINGULAR, BYTES,    pdu,               3)
 #define dot15d4_DiscoveredCommunication_CALLBACK NULL
 #define dot15d4_DiscoveredCommunication_DEFAULT NULL

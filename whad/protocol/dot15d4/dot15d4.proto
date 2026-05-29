@@ -341,10 +341,10 @@ message AddLinkCmd {
     uint32 superframe_id = 1;
     /* Source address of the link. */
     uint32 src = 2;
-    /* Join slot */
-    uint32 join_slot = 3;
+    /* Time slot */
+    uint32 time_slot = 3;
     /* Offset of the link in the superframe. */
-    uint32 offset = 4;
+    uint32 channel_offset = 4;
     /* Neighbor address of the link. */
     uint32 neighbor = 5;
     /* Option fields. */
@@ -361,10 +361,11 @@ message AddLinkCmd {
 message DeleteLinkCmd {
     /* ID of the corresponding superframe. */ 
     uint32 superframe_id = 1;
-    /* Offset of the link in the superframe. */
-    uint32 offset = 2;
-    /* Neighbor address of the link. */
-    uint32 neighbor = 3;
+    /* Time slot of the link in the superframe. */
+    uint32 time_slot = 2;
+    /* Channel offset of the link */
+    uint32 channel_offset = 3;
+
 }
 
 /**
@@ -414,9 +415,9 @@ message SetChannelMapCmd {
 **/
 message DiscoveredCommunication {
     /* Slot Number of the discovered communication. */ 
-    uint64 slot = 1;
+    uint64 time_slot = 1;
     /* Offset associated with the discovered communication. */ 
-    uint32 offset = 2;
+    uint32 channel_offset = 2;
     /* PDU identified during the communication. */ 
     bytes pdu = 3;
 }
