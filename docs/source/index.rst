@@ -17,7 +17,7 @@ Welcome to Wireless HAcking Devices Protocol's documentation!
    domain/unifying.rst
    domain/dot15d4.rst
    domain/phy.rst
-
+   domain/ant.rst
 
 Introduction
 ------------
@@ -59,6 +59,7 @@ WHAD Services
 * :ref:`WHAD Enhanced ShockBurst Domain service <domain_esb>`
 * :ref:`WHAD Logitech Unifying Domain service <domain_unifying>`
 * :ref:`WHAD IEEE 802.15.4 Domain service <domain_dot15d4>`
+* :ref:`WHAD IEEE 802.15.4 Domain service <domain_ant>`
 
 
 Indices and tables
