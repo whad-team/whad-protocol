@@ -35,79 +35,86 @@ package ble;
  **/
 
 enum BleCommand {
-  /**
-   * Low-level commands
-   **/
+    /**
+     * Low-level commands
+     **/
 
-  /* Set BD address. */
-  SetBdAddress = 0x00;
+    /* Set BD address. */
+    SetBdAddress = 0x00;
 
-  /* Sniff advertisements. */
-  SniffAdv = 0x01;
+    /* Sniff advertisements. */
+    SniffAdv = 0x01;
 
-  /* Jam advertisements. */
-  JamAdv = 0x02;
+    /* Jam advertisements. */
+    JamAdv = 0x02;
 
-  /* Jam advertisements on a single channel. */
-  JamAdvOnChannel = 0x03;
+    /* Jam advertisements on a single channel. */
+    JamAdvOnChannel = 0x03;
 
-  /* Jam a specific pattern on a single channel. */
-  ReactiveJam = 0x04;
+    /* Jam a specific pattern on a single channel. */
+    ReactiveJam = 0x04;
 
-  /* Sniff CONN_REQ PDUs and sync with connection. */    
-  SniffConnReq = 0x05;
-
-
-  /* Sniff active connection. */
-  SniffAccessAddress = 0x06;
-  SniffActiveConn = 0x07;
+    /* Sniff CONN_REQ PDUs and sync with connection. */    
+    SniffConnReq = 0x05;
 
 
-  /* Connection jamming. */
-  JamConn = 0x08;
+    /* Sniff active connection. */
+    SniffAccessAddress = 0x06;
+    SniffActiveConn = 0x07;
 
-  /**
-   * High-level commands.
-   **/
 
-   /* Scanner mode. */
-  ScanMode = 0x09;
+    /* Connection jamming. */
+    JamConn = 0x08;
 
-  /* Advertiser mode. */
-  AdvMode = 0x0a;
-  SetAdvData = 0x0b;
-   //SetAdvData shared with Peripheral mode.
+    /**
+     * High-level commands.
+     **/
 
-  /* Central mode. */
-  CentralMode = 0x0c;
-  ConnectTo = 0x0d;
-  SendRawPDU = 0x0e;
-  SendPDU = 0x0f;
-  Disconnect = 0x10;
+     /* Scanner mode. */
+    ScanMode = 0x09;
 
-  /* Peripheral mode. */
-  PeripheralMode = 0x11;
+    /* Advertiser mode. */
+    AdvMode = 0x0a;
+    SetAdvData = 0x0b;
+     //SetAdvData shared with Peripheral mode.
 
-  // SetAdvData and SetScanRspData are shared accross
-  // Peripheral and Advertiser modes
-  // SendPDU is shared with Central mode
-  // Disconnect is shared with Central mode
+    /* Central mode. */
+    CentralMode = 0x0c;
+    ConnectTo = 0x0d;
+    SendRawPDU = 0x0e;
+    SendPDU = 0x0f;
+    Disconnect = 0x10;
 
-  /* Common to multiple modes. */
-  Start = 0x12;
-  Stop = 0x13;
-  SetEncryption = 0x14;
+    /* Peripheral mode. */
+    PeripheralMode = 0x11;
 
-  /* Hijack mode. */
-  HijackMaster = 0x15;
-  HijackSlave = 0x16;
-  HijackBoth = 0x17;
+    // SetAdvData and SetScanRspData are shared accross
+    // Peripheral and Advertiser modes
+    // SendPDU is shared with Central mode
+    // Disconnect is shared with Central mode
 
-  /* Sequence mode */
-  PrepareSequence = 0x18;
-  TriggerSequence = 0x19;
-  DeleteSequence = 0x1a;
+    /* Common to multiple modes. */
+    Start = 0x12;
+    Stop = 0x13;
+    SetEncryption = 0x14;
 
+    /* Hijack mode. */
+    HijackMaster = 0x15;
+    HijackSlave = 0x16;
+    HijackBoth = 0x17;
+
+    /* Sequence mode */
+    PrepareSequence = 0x18;
+    TriggerSequence = 0x19;
+    DeleteSequence = 0x1a;
+
+    /* PHY control */
+    SetPhy = 0x1b;
+    SetSupportedPhys = 0x1c;
+    SetTxPowerLevel = 0x1d;
+
+    /* Extended Advertising */
+    SetExtAdvPdus = 0x1e;
 }
 
 
@@ -119,6 +126,8 @@ enum BleAdvType {
     ADV_NONCONN_IND = 3;
     ADV_SCAN_IND = 4;
     ADV_SCAN_RSP = 5;
+    ADV_EXT_IND = 6;
+    ADV_DECISION_IND = 7;
 }
 
 enum BleDirection {
@@ -132,6 +141,27 @@ enum BleDirection {
 enum BleAddrType {
     PUBLIC = 0;
     RANDOM = 1;
+    RPA = 2; /* Introduced in protocol version 3. */
+}
+
+enum BlePhy {
+    LE_1M = 0;          /* Default PHY for BLE 4 */
+    LE_1M_CODED = 1;    /* Introduced in BLE 5 */
+    LE_2M = 2;          /* Introduced in BLE 5 */
+    LE_2M_2BT = 3;      /* Introduced in BLE 6 */
+}
+
+enum BleCsa {
+    CSA1 = 0;           /* Default Channel Selection Algorithm
+                           introduced in BLE 4 */
+    CSA2 = 1;           /* Channel Selection Algorithm #2
+                           introduced in BLE 5 */
+    CSA3a = 2;          /* Channel Selection Algorithm #3a,
+                           introduced in BLE 6 (Vol 6, part H, Section 4.1.3 */
+    CSA3b = 3;          /* Channel Selection Algorithm #3b,
+                           Introduced in BLE 6 (Vol 6, part H, Section 4.1.4.1 */
+    CSA3c = 4;          /* Channel Selection Algorithm #3c,
+                           introduced in BLE 6 (Vol 6, part H, Section 4.1.4.2 */
 }
 
 /**************************************************
@@ -158,7 +188,7 @@ message SetBdAddressCmd {
 
 message SniffAdvCmd {
     /* Extended advertisements (BLE 5). */
-    bool use_extended_adv = 1;
+    bool use_ext_adv = 1;
 
     /* Channel can be specified, the device will only
        listen on this specific channel. */
@@ -208,16 +238,20 @@ message SniffConnReqCmd {
  * Sniff Access Addresses sent over BLE.
  *
  * Will send AccessAddressDiscovered notifications each
- * time an AccessAddress has been found.
+ * time an AccessAddress has been found. PHY can be specified
+ * using the `phy` parameter.
  **/
 message SniffAccessAddressCmd {
     bytes monitored_channels = 6;
+
+    BlePhy phy = 7; /* Introduced in version 3, defaults to LE_1M. */
 }
 
 /**
  * SniffActiveConnCmd
  *
- * Sniff an active connection identified by its Access Address.
+ * Sniff an active connection identified by its Access Address,
+ * works only for BLE connections using LE_1M PHY.
  **/
 
 message SniffActiveConnCmd {
@@ -227,6 +261,9 @@ message SniffActiveConnCmd {
     uint32 hop_interval = 4;
     uint32 hop_increment = 5;
     bytes monitored_channels = 6;
+   
+    /* Introduced in protocol v3. */
+    BlePhy phy = 7;
 }
 
 /**
@@ -237,6 +274,8 @@ message SniffActiveConnCmd {
 
 message JamConnCmd {
     uint32 access_address = 1;
+
+    BlePhy phy = 2; /* Introduced in version 3. */
 }
 
 /**
@@ -244,13 +283,16 @@ message JamConnCmd {
  *
  * Enable scan mode.
  *
- * `active_scan` enables scan requests if set to `true`.
- * `interval` configures scan interval (in ms).
+ * - `active_scan` enables scan requests if set to `true`
+ * - `interval` configures scan interval (in ms).
+ * - `use_ext_adv` enables support for extended advertisements.
  **/
 
 message ScanModeCmd {
     bool active_scan = 1;
-    uint32 interval = 2;
+    uint32 interval = 2; /* to remove ? */
+    /* Introduced in protocol version 3. */
+    bool use_ext_adv = 3;
 }
 
 /**
@@ -258,6 +300,15 @@ message ScanModeCmd {
  *
  * Enable Advertiser mode. In this mode, the device only
  * advertises and is not connectable.
+ *
+ * When `adv_type` is set to ADV_EXT_IND, the `ext_pdus`
+ * array must contain at least one (1) ExtAdvPdu message.
+ * The first ExtAdvPdu message of this list will be transmitted
+ * on the primary advertising channel, while the following will
+ * be transmitted on secondary advertising channels.
+ * In this specific case, the hardware adapter must discard both
+ * the provided `adv_data` and `scanrsp_data` fields because they
+ * are not needed for extended advertising.
  **/
 
 message AdvModeCmd {
@@ -267,6 +318,16 @@ message AdvModeCmd {
     BleAdvType adv_type = 4;
     uint32 inter_min = 5;
     uint32 inter_max = 6;
+
+    /*
+     * Introduced in protocol version 3.
+     */
+
+    /* Channel Selection Algorithm to use, default to CSA1. */
+    BleCsa csa = 7;
+
+    /* Extended advertising PDUs. */
+    repeated ExtAdvPdu ext_pdus = 8;
 }
 
 /**
@@ -283,6 +344,66 @@ message SetAdvDataCmd {
 }
 
 /**
+ * SetExtAdvPdusCmd
+ *
+ * Introduced in version 3 of WHAD protocol, following
+ * BLE 5.x Extended Advertising feature.
+ *
+ * Set extended advertisement PDUs that will be sent on
+ * secondary channels. These PDUs will be sent in the
+ * exact order of the provided list, on secondary channels
+ * as instructed in the provided messages (thanks to the AuxPtr
+ * duplicated information).
+ **/
+message SetExtAdvPdusCmd {
+    repeated ExtAdvPdu pdus = 1;
+}
+
+/*
+ * BLE extended advertisement AuxPtr info.
+ *
+ * See Vol 6, Part B, Section 2.3.4.5 for more details.
+ *
+ * This message provides all the required values for
+ * successfully transmit the following extended advertising
+ * PDU on a secondary channel.
+ *
+ * Shall be used when the provided extended advertising PDU
+ * is malformed or impossible to parse without errors.
+ */
+message AuxPtr {
+    uint32 channel = 1;
+    uint32 ca = 2;
+    uint32 offset_units = 3;
+    uint32 offset = 4;
+    BlePhy phy = 5;
+}
+
+/**
+ * BLE 5+ extended advertising PDU message.
+ *
+ * See Vol 6, Part B, Section 2.3.4 for more details.
+ *
+ * This message has been introduced in version 3 of the WHAD protocol
+ * as a requirement for BLE extended advertising PDUs. Parsing of the
+ * extended header may be required to retrieve any AuxPtr that may be
+ * present and adjust timings accordingly.
+ *
+ * - `adv_data`: advertising data using the Extended Advertising Payload Format
+ **/
+message ExtAdvPdu {
+    /* Extended Advertising Payload, size could not exceed 254 + 64 octets. */
+    bytes adv_data = 4;
+
+    /*
+     * Optional AuxPtr record, providing information about when, where and
+     * how the next secondary advertising PDU shall be sent. Complete PDU
+     * or last fragment shall not include this field.
+     */
+    optional AuxPtr aux_ptr = 5;
+}
+
+/**
  * CentralModeCmd
  *
  * Enable central mode.
@@ -296,13 +417,16 @@ message CentralModeCmd {
  * Connect to a specific target device.
  **/
 message ConnectToCmd {
-    bytes bd_address = 1;
-    BleAddrType addr_type = 2;
-    optional uint32 access_address = 3;
-    optional bytes channel_map = 4;
-    optional uint32 hop_interval = 5;
-    optional uint32 hop_increment = 6;
-    optional uint32 crc_init = 7;
+    bytes bd_address = 1;                   /* Destination BD address */
+    BleAddrType addr_type = 2;              /* Destination address type */
+    optional uint32 access_address = 3;     /* Access address (32-bit link identifier) */
+    optional bytes channel_map = 4;         /* Channel map */
+    optional uint32 hop_interval = 5;       /* Channel hopping interval */
+    optional uint32 hop_increment = 6;      /* Channel hopping increment (CSA1) */
+    optional uint32 crc_init = 7;           /* CRC Initial value (seed) */
+
+    /* Introduced in protocol v3. */
+    BleCsa csa = 8;                         /* Channel Selection Algorithm */
 }
 
 /**
@@ -321,6 +445,9 @@ message SendRawPDUCmd {
     bytes pdu = 4;
     uint32 crc = 5;
     bool encrypt = 6;
+
+    /* Introduced in protocol v3. */
+    optional BlePhy phy = 7;
 }
 
 /**
@@ -341,6 +468,9 @@ message SendRawPDUCmd {
     uint32 conn_handle = 2;
     bytes pdu = 3;
     bool encrypt = 4;
+
+    /* Introduced in protocol v3. */
+    optional BlePhy phy = 7;
 }
 
 /**
@@ -360,12 +490,26 @@ message SendRawPDUCmd {
  * Enable peripheral mode.
  **/
 message PeripheralModeCmd {
+    /* Legacy advertising parameters. */
     bytes adv_data = 1;
     bytes scanrsp_data = 2;
     bytes channel_map = 3;
     BleAdvType adv_type = 4;
     uint32 inter_min = 5;
     uint32 inter_max = 6;
+
+    /*
+     * Introduced in protocol version 3.
+     */
+
+    /* Channel Selection Algorithm to use, defaults to CSA1. */
+    BleCsa csa = 7;
+
+    /* 
+     * Extended Advertising PDUs, only used when adv_type is set
+     * to BleAdvType.ADV_EXT_IND.
+     */
+    repeated ExtAdvPdu ext_pdus = 8;
 }
 
 /**
@@ -456,50 +600,96 @@ message ReactiveJamCmd {
     uint32 channel = 1;
     bytes pattern = 2;
     uint32 position = 3;
+
+    /* Introduced in protocol version 3. */
+    BlePhy phy = 4;
 }
 
 message PrepareSequenceCmd {
-  message ReceptionTrigger {
-    bytes pattern = 1;
-    bytes mask = 2;
-    uint32 offset = 3;
-  }
-  message ConnectionEventTrigger {
-    uint32 connection_event = 1;
-  }
-  message ManualTrigger {
-  }
-  message Trigger {
-    oneof trigger {
-      ReceptionTrigger reception = 1;
-      ConnectionEventTrigger connection_event = 2;
-      ManualTrigger manual = 3;
+    message ReceptionTrigger {
+        bytes pattern = 1;
+        bytes mask = 2;
+        uint32 offset = 3;
     }
-  }
-  message PendingPacket {
-    bytes packet = 1;
-  }
-  Trigger trigger = 1;
-  uint32 id = 2;
-  BleDirection direction = 3;
-  repeated PendingPacket sequence = 4;
-
+    message ConnectionEventTrigger {
+        uint32 connection_event = 1;
+    }
+    message ManualTrigger {
+    }
+    message Trigger {
+        oneof trigger {
+            ReceptionTrigger reception = 1;
+            ConnectionEventTrigger connection_event = 2;
+            ManualTrigger manual = 3;
+        }
+    }
+    message PendingPacket {
+        bytes packet = 1;
+    }
+    Trigger trigger = 1;
+    uint32 id = 2;
+    BleDirection direction = 3;
+    repeated PendingPacket sequence = 4;
 }
 
 message TriggerSequenceCmd {
-  uint32 id = 1;
+    uint32 id = 1;
 }
 
 message DeleteSequenceCmd {
-  uint32 id = 1;
+    uint32 id = 1;
 }
+
+/********************************************
+* Commands introduced in version 3:
+*
+* - SetPhyCmd
+* - SetTxPowerLevelCmd
+*
+********************************************/
+
+/**
+ * SetPhyCmd
+ *
+ * Set the PHY to use for BLE TX/RX, introduced in version 4.
+ **/
+
+message SetPhyCmd {
+    BlePhy tx_phy = 1;
+    BlePhy rx_phy = 2;
+}
+
+message SetSupportedPhysCmd {
+    repeated BlePhy tx_phy = 1;
+    repeated BlePhy rx_phy = 2;
+}
+
+/**
+ * SetTxPowerLevelCmd
+ *
+ * This message shall be sent to control the
+ * BLE adapter TX power level, if available.
+ * TX Power cannot be set by default but some
+ * vendors or RF hardware peripherals allow
+ * to configure the transmission power level
+ * to a value in dBm.
+ *
+ * Introduced in version 4.
+ **/
+
+message SetTxPowerLevelCmd {
+    int32 level = 1;
+}
+
+
 /*******************************************
  *******************************************
  * Ble Notification messages
  *******************************************
  *******************************************/
+
 message Triggered {
-  uint32 id = 1;
+    uint32 id = 1;
 }
 
 message AccessAddressDiscovered {
@@ -525,6 +715,10 @@ message AdvPduReceived {
     bytes bd_address = 3;
     bytes adv_data = 4;
     BleAddrType addr_type = 5;
+
+    /* Introduced in protocol version 3. */
+    uint32 channel = 6; /* Channel on which the advertisement pdu has been received. */
+    BlePhy phy = 7;
 }
 
 
@@ -555,6 +749,9 @@ message Connected {
     uint32 conn_handle = 8;
     BleAddrType adv_addr_type = 9;
     BleAddrType init_addr_type = 10;
+
+    /* Introduced in protocol version 3. */
+    BlePhy phy = 11; /* PHY used by the initiating device. */
 }
 
 /**
@@ -576,6 +773,9 @@ message Connected {
  * - `hop_interval`: the interval value used in FHSS
  * - `hop_increment`: the increment value used in FHSS
  * - `channel_map`: the channel map (5 bytes) used in FHSS
+ *
+ * This message is only used when synchronizing with connections
+ * using CSA1.
  **/
 
  message Synchronized {
@@ -584,6 +784,7 @@ message Connected {
      uint32 hop_interval = 3;
      uint32 hop_increment = 4;
      bytes channel_map = 5;
+     optional BlePhy phy = 6;
  }
 
 /**
@@ -633,6 +834,9 @@ message RawPduReceived {
     uint32 conn_handle = 10;
     bool processed = 11;
     bool decrypted = 12;
+
+    /* Introduced in protocol version 3. */
+    BlePhy phy = 13; /* Current PHY. */
 }
 
 /**
@@ -646,12 +850,15 @@ message RawPduReceived {
  *
  **/
 
- message PduReceived {
+message PduReceived {
     BleDirection direction = 1;
     bytes pdu = 2;
     uint32 conn_handle = 3;
     bool processed = 4;
     bool decrypted = 5;
+
+    /* Introduced in protocol version 3. */
+    BlePhy phy = 6;
 }
 
 /**
@@ -691,6 +898,8 @@ message RawPduReceived {
         PrepareSequenceCmd prepare = 35;
         TriggerSequenceCmd trigger = 36;
         DeleteSequenceCmd delete_seq = 38;
+        SetPhyCmd set_phy = 39;
+        SetTxPowerLevelCmd set_tx_pwr = 40;
 
         /* Notifications */
         AccessAddressDiscovered aa_disc = 23;
@@ -704,5 +913,9 @@ message RawPduReceived {
         Injected injected = 31;
         Desynchronized desynchronized = 32;
         Triggered triggered = 37;
+    
+        /* Introduced in v3 */
+        SetSupportedPhysCmd set_supp_phys= 41;
+        SetExtAdvPdusCmd set_ext_adv_pdus = 42;
     }
  }

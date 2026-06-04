@@ -33,10 +33,19 @@ PB_BIND(ble_JamConnCmd, ble_JamConnCmd, AUTO)
 PB_BIND(ble_ScanModeCmd, ble_ScanModeCmd, AUTO)
 
 
-PB_BIND(ble_AdvModeCmd, ble_AdvModeCmd, AUTO)
+PB_BIND(ble_AdvModeCmd, ble_AdvModeCmd, 4)
 
 
 PB_BIND(ble_SetAdvDataCmd, ble_SetAdvDataCmd, AUTO)
+
+
+PB_BIND(ble_SetExtAdvPdusCmd, ble_SetExtAdvPdusCmd, AUTO)
+
+
+PB_BIND(ble_AuxPtr, ble_AuxPtr, AUTO)
+
+
+PB_BIND(ble_ExtAdvPdu, ble_ExtAdvPdu, 2)
 
 
 PB_BIND(ble_CentralModeCmd, ble_CentralModeCmd, AUTO)
@@ -102,6 +111,15 @@ PB_BIND(ble_TriggerSequenceCmd, ble_TriggerSequenceCmd, AUTO)
 PB_BIND(ble_DeleteSequenceCmd, ble_DeleteSequenceCmd, AUTO)
 
 
+PB_BIND(ble_SetPhyCmd, ble_SetPhyCmd, AUTO)
+
+
+PB_BIND(ble_SetSupportedPhysCmd, ble_SetSupportedPhysCmd, AUTO)
+
+
+PB_BIND(ble_SetTxPowerLevelCmd, ble_SetTxPowerLevelCmd, AUTO)
+
+
 PB_BIND(ble_Triggered, ble_Triggered, AUTO)
 
 
@@ -136,6 +154,8 @@ PB_BIND(ble_PduReceived, ble_PduReceived, 2)
 
 
 PB_BIND(ble_Message, ble_Message, 4)
+
+
 
 
 
