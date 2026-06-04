@@ -27,19 +27,19 @@ in sniffing mode on a channel and listen for packets.
         Host->>+Interface: StopCmd
         Interface-->>-Host: CommandResult(result=SUCCESS)
 
-First, the host sends a :ref:`SniffCmd` message to switch the WHAD interface into
+First, the host sends a :ref:`ESBSniffCmd` message to switch the WHAD interface into
 sniffing mode. The host **must** provide at least a channel number to sniff,
 but can also provide an ESB address that will be used by the WHAD interface to
 only keep packets sent to this address. The ``show_acknowledgements`` boolean
 field can be set to ``true`` to also capture ESB acknowledgements.
 
 Once the WHAD interface configured in sniffing mode on a specific channel, the
-host sends a :ref:`StartCmd` to start sniffing actual packets. The WHAD interface
-will report any packet through a :ref:`PacketReceived` or :ref:`RawPacketReceived`
+host sends a :ref:`ESBStartCmd` to start sniffing actual packets. The WHAD interface
+will report any packet through a :ref:`ESBPduReceived` or :ref:`ESBRawPduReceived`
 message (depending on its capabilities).
 
 When sniffing mode is enabled, packets can also be injected into a specific
-channel through the use of :ref:`SendCmd` message:
+channel through the use of :ref:`ESBSendCmd` message:
 
 .. mermaid::
 
@@ -49,7 +49,7 @@ channel through the use of :ref:`SendCmd` message:
         Host->>+Interface: SendCmd(channel=5, pdu=...)
         Interface-->>-Host: CommandResult(result=SUCCESS)
 
-Sniffing can be stopped by the host by sending a :ref:`StopCmd` message.
+Sniffing can be stopped by the host by sending a :ref:`ESBStopCmd` message.
 
 .. mermaid::
 
@@ -117,11 +117,11 @@ a specified address.
             Host->>Interface: SendCmd(channel=5, pdu=...)
         end
 
-First, the host sends a :ref:`SetNodeAddressCmd` to set the WHAD interface ESB
+First, the host sends a :ref:`ESBSetNodeAddressCmd` to set the WHAD interface ESB
 address. Then, the hosts sets the WHAD interface into *PTX* mode by sending a
-:ref:`PrimaryTransmitterModeCmd` and activates the interface by sending a
-:ref:`StartCmd`. Once started, it can send packets on various channels through
-:ref:`SendCmd` or :ref:`SendRawCmd` messages.
+:ref:`ESBPrimaryTransmitterModeCmd` and activates the interface by sending a
+:ref:`ESBStartCmd`. Once started, it can send packets on various channels through
+:ref:`ESBSendCmd` or :ref:`ESBSendRawCmd` messages.
 
 
 Jamming an ESB channel
@@ -161,7 +161,7 @@ create the domain supported commands bitmap.
 Messages
 --------
 
-.. _JamCmd:
+.. _ESBJamCmd:
 
 JamCmd
 ^^^^^^
@@ -174,7 +174,7 @@ Field         Type       Description
 channel       uint32     Channel to jam
 ============= ========== ===============================
 
-.. _Jammed:
+.. _ESBJammed:
 
 Jammed
 ^^^^^^
@@ -187,7 +187,10 @@ Field         Type       Description
 timestamp     uint64     Timestamp in microseconds
 ============= ========== ===============================
 
-.. _PduReceived:
+.. _ESBPduReceived:
+
+PduReceived
+^^^^^^^^^^^^
 
 This notification message is sent by the WHAD interface to report a
 PDU that has been received.
@@ -203,7 +206,7 @@ address               bytes, optional  ESB address of the sender
 pdu                   bytes            ESB PDU
 ===================== ================ ======================================
 
-.. _PrimaryReceiverMode:
+.. _ESBPrimaryReceiverMode:
 
 PrimaryReceiverMode
 ^^^^^^^^^^^^^^^^^^^
@@ -221,7 +224,7 @@ channel               uint32     Channel on which PDUs must be received
 ``channel`` specifies the channel number the WHAD interface must listen.
 
 
-.. _PrimaryTransmitterModeCmd:
+.. _ESBPrimaryTransmitterModeCmd:
 
 PrimaryTransmitterModeCmd
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -239,7 +242,10 @@ channel               uint32     Channel on which PDUs must be sent
 ``channel`` specifies the channel number the WHAD interface must use.
 
 
-.. _RawPduReceived:
+.. _ESBRawPduReceived:
+
+RawPduReceived
+^^^^^^^^^^^^^^^
 
 This notification message is sent by the WHAD interface to report a raw
 PDU that has been received.
@@ -257,7 +263,7 @@ pdu                   bytes            ESB raw PDU
 
 
 
-.. _SendCmd:
+.. _ESBSendCmd:
 
 SendCmd
 ^^^^^^^
@@ -272,7 +278,7 @@ retransmission_count  uint32     Maximum number of retransmission
 pdu                   bytes      PDU to send
 ===================== ========== ======================================
 
-.. _SendRawCmd:
+.. _ESBSendRawCmd:
 
 SendRawCmd
 ^^^^^^^^^^
@@ -287,10 +293,10 @@ retransmission_count  uint32     Maximum number of retransmission
 pdu                   bytes      PDU to send
 ===================== ========== ======================================
 
-Unlike the :ref:`SendCmd`, this command specifies a complete raw packet
+Unlike the :ref:`ESBSendCmd`, this command specifies a complete raw packet
 including the ESB header.
 
-.. _SetNodeAddressCmd:
+.. _ESBSetNodeAddressCmd:
 
 SetNodeAddressCmd
 ^^^^^^^^^^^^^^^^^
@@ -303,7 +309,7 @@ Field         Type       Description
 address       bytes      ESB address (2-5 bytes)
 ============= ========== ===============================
 
-.. _SniffCmd:
+.. _ESBSniffCmd:
 
 SniffCmd
 ^^^^^^^^
@@ -327,7 +333,7 @@ sniffed.
 If ``show_acknowledgements`` is set to ``true``, ESB Ack packets will be
 reported to the host.
 
-.. _StartCmd:
+.. _ESBStartCmd:
 
 StartCmd
 ^^^^^^^^
@@ -339,7 +345,7 @@ interface is in idle mode.
 
     This message has no specific field.
 
-.. _StopCmd:
+.. _ESBStopCmd:
 
 StopCmd
 ^^^^^^^

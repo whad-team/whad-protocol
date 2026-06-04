@@ -12,7 +12,7 @@ Bluetooth Low Energy procedures
 Discovering access addresses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If the WHAD interface implements the :ref:`SniffAccessAddressCmd` command then
+If the WHAD interface implements the :ref:`BLESniffAccessAddressCmd` command then
 it is able to discover access addresses.
 
 .. mermaid::
@@ -31,10 +31,10 @@ it is able to discover access addresses.
         Interface-->>-Host: CommandResult(result=SUCCESS)
 
 
-The host sends a :ref:`SniffAccessAddressCmd` command to switch the WHAD
+The host sends a :ref:`BLESniffAccessAddressCmd` command to switch the WHAD
 interface into access address sniffing mode and then starts the WHAD interface
-with a :ref:`StartCmd`. Discovered access addresses are reported to the host
-by the WHAD interface through a series of :ref:`AccessAddressDiscovered`
+with a :ref:`BLEStartCmd`. Discovered access addresses are reported to the host
+by the WHAD interface through a series of :ref:`BLEAccessAddressDiscovered`
 messages.
 
 
@@ -61,7 +61,7 @@ each advertisement it receives in order to get more information from devices.
         Host->>+Interface: StopCmd
         Interface-->>-Host: CommandResult(result=SUCCESS)
 
-First, the host sends a :ref:`ScanModeCmd` message to the WHAD interface. If
+First, the host sends a :ref:`BLEScanModeCmd` message to the WHAD interface. If
 the ``active_scan`` field is set to ``true``, the WHAD interface will send a
 scan request for each advertisement it receives. If set to ``false``, only the
 received advertisement will be reported to the host.
@@ -84,13 +84,13 @@ Initiating a connection to a target device
         Note over Host,Interface: Connection is established
 
 First, the host puts the WHAD interface in *central* mode by sending a
-:ref:`CentralModeCmd` message to the WHAD interface. If this command succeeds,
-then the host sends a :ref:`ConnectToCmd` message providing the WHAD interface with
+:ref:`BLECentralModeCmd` message to the WHAD interface. If this command succeeds,
+then the host sends a :ref:`BLEConnectToCmd` message providing the WHAD interface with
 all the information required to initiate a connection to the target device.
 The ``bd_address`` and ``addr_type`` can be provided to initiate a normal
 connection on a device. 
 
-If the connection cannot be initiated, no :ref:`Connected` message is sent by the
+If the connection cannot be initiated, no :ref:`BLEConnected` message is sent by the
 WHAD interface. The host needs to enforce a timeout to determine if the
 connection has failed.
 
@@ -115,20 +115,20 @@ Creating a BLE peripheral
         Interface-->>-Host: CommandResult(result=SUCCESS)
         Note over Host,Interface: Peripheral is stopped, no advertising
 
-First, the host sends a :ref:`PeripheralModeCmd` to the WHAD interface in order
+First, the host sends a :ref:`BLEPeripheralModeCmd` to the WHAD interface in order
 to set it in BLE peripheral mode. This message provides the WHAD interface with
 the advertising data and optional scan response to send while advertising. At
 this point, the BLE peripheral is configured but not yet advertising.
 
-The host must send a :ref:`StartCmd` message to make the WHAD interface advertising.
+The host must send a :ref:`BLEStartCmd` message to make the WHAD interface advertising.
 Once started, the WHAD interface will wait for BLE connections initiated by other
-devices. If a connection is established, the host is notified with a :ref:`Connected`
+devices. If a connection is established, the host is notified with a :ref:`BLEConnected`
 notification sent by the WHAD interface.
 
-If a device disconnects, a :ref:`Disconnected` notification message is sent
+If a device disconnects, a :ref:`BLEDisconnected` notification message is sent
 to the host.
 
-The host can stop this BLE peripheral at any time by sending a :ref:`StopCmd`
+The host can stop this BLE peripheral at any time by sending a :ref:`BLEStopCmd`
 command.
 
 Sending and receiving PDUs
@@ -137,11 +137,11 @@ Sending and receiving PDUs
 Once a connection established (in *central* or *peripheral* mode), the host
 can provide the WHAD interface with a PDU to send. If the WHAD interface does
 have the ``NoRawData`` capability (see. :ref:`Capability`), the host must send
-:ref:`SendPduCmd` messages. If the WHAD interface can send raw PDU, it must
-send :ref:`SendRawPduCmd` messages.
+:ref:`BLESendPduCmd` messages. If the WHAD interface can send raw PDU, it must
+send :ref:`BLESendRawPduCmd` messages.
 
 A received PDU is notified by the WHAD interface to the host through a
-:ref:`PduReceived` message or :ref:`RawPduReceived` message depending on its
+:ref:`BLEPduReceived` message or :ref:`BLERawPduReceived` message depending on its
 capabilities.
 
 .. mermaid::
@@ -223,7 +223,7 @@ specify the correct address type for a device or a connection will fail.
 Messages
 --------
 
-.. _AccessAddressDiscovered:
+.. _BLEAccessAddressDiscovered:
 
 AccessAddressDiscovered
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -239,7 +239,7 @@ rssi             int32, optional    Received signal strength indicator
 timestamp        uint64, optional   When the access address has been discovered
 ================ ================== ===========================================
 
-.. _AdvPduReceived:
+.. _BLEAdvPduReceived:
 
 AdvPduReceived
 ^^^^^^^^^^^^^^
@@ -247,17 +247,17 @@ AdvPduReceived
 This notification message is sent whenever an advertising PDU has been
 received.
 
-================ ================== ===========================================
-**Field**        **Type**           **Description**
-================ ================== ===========================================
-adv_type         :ref:`BleAdvType`  BLE advertisement type
-rssi             int32              Received signal strength indicator
-bd_address       bytes              Advertiser BD address
-adv_data         bytes              Advertising data
-addr_type        :ref:`BleAddrType` Advertiser BD address type
-================ ================== ===========================================
+================ ==================== ===========================================
+**Field**        **Type**              **Description**
+================ ==================== ===========================================
+adv_type         :ref:`BleAdvType`     BLE advertisement type
+rssi             int32                 Received signal strength indicator
+bd_address       bytes                 Advertiser BD address
+adv_data         bytes                 Advertising data
+addr_type        :ref:`BleAddrType`    Advertiser BD address type
+================ ==================== ===========================================
 
-.. _AdvModeCmd:
+.. _BLEAdvModeCmd:
 
 AdvModeCmd
 ^^^^^^^^^^
@@ -276,7 +276,7 @@ provides some extra advertising data that will be used to answer SCAN_REQ PDUs.
 
 ``scan_data`` is mandatory while ``scanrsp_data`` is optional.
 
-.. _CentralModeCmd:
+.. _BLECentralModeCmd:
 
 CentralModeCmd
 ^^^^^^^^^^^^^^
@@ -287,7 +287,7 @@ This message sets the WHAD interface into Central mode.
 
     This message has no field.
 
-.. _Connected:
+.. _BLEConnected:
 
 Connected
 ^^^^^^^^^
@@ -307,7 +307,7 @@ init_addr_type   :ref:`BleAddrType` Initiator BD address type
 ================ ================== ===========================================
 
 
-.. _ConnectToCmd:
+.. _BLEConnectToCmd:
 
 ConnectToCmd
 ^^^^^^^^^^^^
@@ -332,7 +332,7 @@ crc_init         uint32, optional   Target connection CRCInit value
     Only BLE v4 connections synchronization are supported for now, since CSA #2
     is not implemented yet (and requires extra parameters)
 
-.. _DeleteSequenceCmd:
+.. _BLEDeleteSequenceCmd:
 
 DeleteSequenceCmd
 ^^^^^^^^^^^^^^^^^
@@ -345,7 +345,7 @@ This message deletes a previously registered prepared sequence.
 id                  uint32       Prepared sequence ID
 =================== ============ ===========================================
 
-.. _Desynchronized:
+.. _BLEDesynchronized:
 
 Desynchronized
 ^^^^^^^^^^^^^^
@@ -359,7 +359,7 @@ from an active connection.
 access_address      uint32       Connection access address
 =================== ============ ===========================================
 
-.. _DisconnectCmd:
+.. _BLEDisconnectCmd:
 
 DisconnectCmd
 ^^^^^^^^^^^^^
@@ -372,7 +372,7 @@ This message terminates an existing connection.
 conn_handle      uint32             Connection handle
 ================ ================== ===========================================
 
-.. _Disconnected:
+.. _BLEDisconnected:
 
 Disconnected
 ^^^^^^^^^^^^
@@ -386,7 +386,7 @@ reason           uint32             Termination reason
 conn_handle      uint32             Connection handle
 ================ ================== ===========================================
 
-.. _HijackBothCmd:
+.. _BLEHijackBothCmd:
 
 HijackBothCmd
 ^^^^^^^^^^^^^^^
@@ -400,7 +400,7 @@ initiating device and the advertising device.
 access_address   uint32             Target connection access address
 ================ ================== ===========================================
 
-.. _Hijacked:
+.. _BLEHijacked:
 
 Hijacked
 ^^^^^^^^
@@ -416,7 +416,7 @@ access_address   uint32             Target connection access address
 ================ ================== ===========================================
 
 
-.. _HijackMasterCmd:
+.. _BLEHijackMasterCmd:
 
 HijackMasterCmd
 ^^^^^^^^^^^^^^^
@@ -431,7 +431,7 @@ access_address   uint32             Target connection access address
 ================ ================== ===========================================
 
 
-.. _HijackSlaveCmd:
+.. _BLEHijackSlaveCmd:
 
 HijackSlaveCmd
 ^^^^^^^^^^^^^^^
@@ -447,7 +447,7 @@ access_address   uint32             Target connection access address
 
 
 
-.. _Injected:
+.. _BLEInjected:
 
 Injected
 ^^^^^^^^
@@ -464,7 +464,7 @@ injection_attempts uint32           Number of injection attempts
 ================== ================ ===========================================
 
 
-.. _JamAdvCmd:
+.. _BLEJamAdvCmd:
 
 JamAdvCmd
 ^^^^^^^^^
@@ -476,7 +476,7 @@ In this mode, the interface jams all BLE advertising channels.
 
     This message has no field.
 
-.. _JamAdvOnChannelCmd:
+.. _BLEJamAdvOnChannelCmd:
 
 JamAdvOnChannelCmd
 ^^^^^^^^^^^^^^^^^^
@@ -492,10 +492,10 @@ channel          uint32             Target channel to jam
 
 .. note::
 
-    Looks like a duplicate with :ref:`JamAdvCmd`, may be interesting to use
+    Looks like a duplicate with :ref:`BLEJamAdvCmd`, may be interesting to use
     this command with an optional channel value instead.
 
-.. _JamConnCmd:
+.. _BLEJamConnCmd:
 
 JamConnCmd
 ^^^^^^^^^^
@@ -510,7 +510,7 @@ access_address   uint32             Target access address
 
 ``access address`` specifies the Access Address of the connection to jam.
 
-.. _PduReceived:
+.. _BLEPduReceived:
 
 PduReceived
 ^^^^^^^^^^^
@@ -519,17 +519,17 @@ This notification message is sent by the WHAD interface to report a raw PDU
 received to the host.
 
 ================== ====================== ============================================
-**Field**          **Type**               **Description**
+**Field**          **Type**                **Description**
 ================== ====================== ============================================
-direction          :ref:`BleDirection`    Direction
-pdu                bytes                  PDU
-conn_handle        uint32                 Connection handle
-processed          bool                   ``true`` if already processed by firmware
-decrypted          bool                   ``true`` if already decrypted by firmware
+direction          :ref:`BleDirection`     Direction
+pdu                bytes                   PDU
+conn_handle        uint32                  Connection handle
+processed          bool                    ``true`` if already processed by firmware
+decrypted          bool                    ``true`` if already decrypted by firmware
 ================== ====================== ============================================
 
 
-.. _PeripheralModeCmd:
+.. _BLEPeripheralModeCmd:
 
 PeripheralModeCmd
 ^^^^^^^^^^^^^^^^^
@@ -544,7 +544,7 @@ scan_data        bytes              Advertising data (31 bytes max)
 scanrsp_data     bytes              Scan response data (31 bytes max)
 ================ ================== ===========================================
 
-.. _PrepareSequenceCmd:
+.. _BLEPrepareSequenceCmd:
 
 PrepareSequenceCmd
 ^^^^^^^^^^^^^^^^^^
@@ -552,22 +552,22 @@ PrepareSequenceCmd
 This message tells the WHAD interface to prepare a sequence of packets for
 transmission. This transmission will be triggered by a specific condition.
 
-================ ====================== ===========================================
-**Field**        **Type**               **Description**
-================ ====================== ===========================================
-trigger          :ref:`Trigger`         Reception trigger
-id               uint32                 Sequence unique ID
-direction        :ref:`BleDirection`    Direction
-sequence         :ref:`PendingPacket`   Sequence of prepared packets
-================ ====================== ===========================================
+================ ======================== ===========================================
+**Field**        **Type**                  **Description**
+================ ======================== ===========================================
+trigger          BLETrigger                Reception trigger
+id               uint32                    Sequence unique ID
+direction        :ref:`BleDirection`       Direction
+sequence         :ref:`BLEPendingPacket`   Sequence of prepared packets
+================ ======================== ===========================================
 
 ``trigger`` must be one of the following available triggers:
 
-- :ref:`ReceptionTrigger`
-- :ref:`ConnectionEventTrigger`
-- :ref:`ManualTrigger`
+- :ref:`BLEReceptionTrigger`
+- :ref:`BLEConnectionEventTrigger`
+- :ref:`BLEManualTrigger`
 
-.. _RawPduReceived:
+.. _BLERawPduReceived:
 
 RawPduReceived
 ^^^^^^^^^^^^^^
@@ -575,24 +575,24 @@ RawPduReceived
 This notification message is sent by the WHAD interface to report a raw PDU
 received to the host.
 
-================== ====================== ============================================
+================== ====================== ==============================================
 **Field**          **Type**               **Description**
-================== ====================== ============================================
+================== ====================== ==============================================
 direction          :ref:`BleDirection`    Direction
 channel            uint32                 BLE channel on which the PDU was received
 rssi               int32, optional        Received signal strength indicator
 timestamp          uint64. optional       When the PDU has been received
 relative_timestmap uint64, optional       Relative timestamp
-crc_validity       bool, optional         ``true`` if CRC is valid, ``false``otherwise
+crc_validity       bool, optional         ``true`` if CRC is valid, ``false`` otherwise
 access_address     uint32                 Connection access address
 pdu                bytes                  PDU
 crc                uint32                 PDU CRC
 conn_handle        uint32                 Connection handle
 processed          bool                   ``true`` if already processed by firmware
 decrypted          bool                   ``true`` if already decrypted by firmware
-================== ====================== ============================================
+================== ====================== ==============================================
 
-.. _ReceptionTrigger:
+.. _BLEReceptionTrigger:
 
 ReceptionTrigger
 ~~~~~~~~~~~~~~~~
@@ -607,7 +607,7 @@ mask             bytes                  Bitmask for pattern
 offset           uint32                 Pattern offset
 ================ ====================== =======================================
 
-.. _ConnectionEventTrigger:
+.. _BLEConnectionEventTrigger:
 
 ConnectionEventTrigger
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -618,19 +618,19 @@ ConnectionEventTrigger
 connection_event uint32                 Connection event to match
 ================ ====================== =======================================
 
-.. _ManualTrigger:
+.. _BLEManualTrigger:
 
 ManualTrigger
 ~~~~~~~~~~~~~
 
 This trigger specifies that the sequence will be triggered manually with a
-specific message (:ref:`TriggerSequenceCmd`).
+specific message (:ref:`BLETriggerSequenceCmd`).
 
 .. note::
 
     This message have no specific field.
 
-.. _PendingPacket:
+.. _BLEPendingPacket:
 
 PendingPacket
 ~~~~~~~~~~~~~
@@ -644,7 +644,7 @@ packet           bytes                  Packet bytes (PDU)
 ================ ====================== =======================================
 
 
-.. _ReactiveJamCmd:
+.. _BLEReactiveJamCmd:
 
 ReactiveJamCmd
 ^^^^^^^^^^^^^^
@@ -660,7 +660,7 @@ position         uint32             Pattern position in payload
 ================ ================== ===========================================
 
 
-.. _ScanModeCmd:
+.. _BLEScanModeCmd:
 
 ScanModeCmd
 ^^^^^^^^^^^
@@ -677,7 +677,7 @@ If ``active_scan`` is set to True, the WHAD device sends a SCAN_REQ for each
 advertisement received. If set to False, only advertisements (ADV_IND, ...)
 will be reported to host.
 
-.. _SendPduCmd:
+.. _BLESendPduCmd:
 
 SendPduCmd
 ^^^^^^^^^^
@@ -694,7 +694,7 @@ pdu              bytes               Raw pdu to send
 encrypt          bool                Let hardware encrypt PDU if ``true``
 ================ =================== ==========================================
 
-.. _SendRawPduCmd:
+.. _BLESendRawPduCmd:
 
 SendRawPduCmd
 ^^^^^^^^^^^^^
@@ -702,22 +702,22 @@ SendRawPduCmd
 This message specifies a raw BLE PDU to send. Raw PDU gives control over the
 BLE PDU header and its CRC.
 
-================ =================== ==========================================
-**Field**        **Type**            **Description**
-================ =================== ==========================================
-direction        :ref:`BleDirection` PDU direction
-conn_handle      uint32              Connection handle
-access_address   uint32              Connection access address
-pdu              bytes               Raw pdu to send
-crc              uint32              PDU CRC
-encrypt          bool                Let hardware encrypt PDU if ``true``
-================ =================== ==========================================
+================ ====================== ==========================================
+**Field**        **Type**                **Description**
+================ ====================== ==========================================
+direction        :ref:`BleDirection`      PDU direction
+conn_handle      uint32                   Connection handle
+access_address   uint32                   Connection access address
+pdu              bytes                    Raw pdu to send
+crc              uint32                   PDU CRC
+encrypt          bool                     Let hardware encrypt PDU if ``true``
+================ ====================== ==========================================
 
 .. warning::
 
-    Only devices without the :ref:`NoRawData` capability can send this message.
+    Only devices without the ``NoRawData`` capability can send this message.
 
-.. _SetAdvDataCmd:
+.. _BLESetAdvDataCmd:
 
 SetAdvDataCmd
 ^^^^^^^^^^^^^
@@ -734,7 +734,7 @@ scanrsp_data     bytes              Scan response data (31 bytes max)
 `scan_data`` is mandatory while ``scanrsp_data`` is optional.
 
 
-.. _SetBdAddressCmd:
+.. _BLESetBdAddressCmd:
 
 SetBdAddressCmd
 ^^^^^^^^^^^^^^^
@@ -748,7 +748,7 @@ bd_address       bytes              Bluetooth Device address (6 bytes)
 addr_type        :ref:`BleAddrType` Address type
 ================ ================== ===========================================
 
-.. _SetEncryptionCmd:
+.. _BLESetEncryptionCmd:
 
 SetEncryptionCmd
 ^^^^^^^^^^^^^^^^
@@ -769,7 +769,7 @@ ediv             bytes              Diversifier value
 ================ ================== ===========================================
 
 
-.. _SniffAccessAddressCmd:
+.. _BLESniffAccessAddressCmd:
 
 SniffAccessAddressCmd
 ^^^^^^^^^^^^^^^^^^^^^
@@ -788,7 +788,7 @@ buffer. Usually, advertising channels (37, 38 and 39) are excluded as they
 are not used by BLE connections for data exchange.
 
 
-.. _SniffActiveConnCmd:
+.. _BLESniffActiveConnCmd:
 
 SniffActiveConnCmd
 ^^^^^^^^^^^^^^^^^^
@@ -808,7 +808,7 @@ monitored_channels bytes              Channel map used for sniffing
 
 
 
-.. _SniffAdvCmd:
+.. _BLESniffAdvCmd:
 
 SniffAdvCmd
 ^^^^^^^^^^^
@@ -834,7 +834,7 @@ advertisements and only keep those matching this address, except when set to
 The ``use_extended_adv`` option can be used with BLE5 compatible WHAD
 interfaces to follow extended advertisements that occur on data channels.
 
-.. _SniffConnReqCmd:
+.. _BLESniffConnReqCmd:
 
 SniffConnReqCmd
 ^^^^^^^^^^^^^^^
@@ -863,7 +863,7 @@ If ``bd_address`` is set, it will be used a filter to target a connection to
 the corresponding BD address. If set to *FF:FF:FF:FF:FF:FF* (6 0xFF bytes) then
 the WHAD interface will not filter connection initiation requests.
 
-.. _StartCmd:
+.. _BLEStartCmd:
 
 StartCmd
 ^^^^^^^^
@@ -874,7 +874,7 @@ This message starts the WHAD interface in the currently selected mode.
 
     This message has no specific field.
 
-.. _StopCmd:
+.. _BLEStopCmd:
 
 StopCmd
 ^^^^^^^
@@ -885,7 +885,7 @@ This message stops the WHAD interface that then goes idle.
 
     This message has no specific field.
 
-.. _Synchronized:
+.. _BLESynchronized:
 
 Synchronized
 ^^^^^^^^^^^^
@@ -904,7 +904,7 @@ channel_map         bytes        Connection channel map
 =================== ============ ===========================================
 
 
-.. _Triggered:
+.. _BLETriggered:
 
 Triggered
 ^^^^^^^^^
@@ -918,7 +918,7 @@ sequence has been triggered.
 id                  uint32       Prepared sequence ID
 =================== ============ ===========================================
 
-.. _TriggerSequenceCmd:
+.. _BLETriggerSequenceCmd:
 
 TriggerSequenceCmd
 ^^^^^^^^^^^^^^^^^^

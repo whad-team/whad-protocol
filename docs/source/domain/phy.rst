@@ -9,7 +9,7 @@ Procedures
 Enumerations
 ------------
 
-.. _Endianness:
+.. _PhyEndianness:
 
 Endianness
 ^^^^^^^^^^
@@ -23,7 +23,7 @@ BIG        big-endian
 LITTLE     little-endian
 ========== =========================
 
-.. _JammingMode:
+.. _PhyJammingMode:
 
 JammingMode
 ^^^^^^^^^^^
@@ -38,7 +38,7 @@ REACTIVE   Reactive jamming
 ========== =========================
 
 
-.. _LoRaCodingRate:
+.. _PhyLoRaCodingRate:
 
 LoRaCodingRate
 ^^^^^^^^^^^^^^
@@ -55,7 +55,7 @@ CR48       Coding rate 4/8
 ========== =========================
 
 
-.. _LoRaSpreadingFactor:
+.. _PhyLoRaSpreadingFactor:
 
 LoRaSpreadingFactor
 ^^^^^^^^^^^^^^^^^^^
@@ -74,7 +74,7 @@ SF11       Spreading factor 11
 SF12       Spreading factor 12
 ========== =========================
 
-.. _Modulation:
+.. _PhyModulation:
 
 Modulation
 ^^^^^^^^^^
@@ -103,7 +103,7 @@ PhyCommand
 This enumeration contains the various PHY commands ID that are required to
 create the domain supported commands bitmap.
 
-.. _TXPower:
+.. _PhyTXPower:
 
 TXPower
 ^^^^^^^
@@ -122,7 +122,7 @@ HIGH       High power
 Messages
 --------
 
-.. _GetSupportedFrequenciesCmd:
+.. _PhyGetSupportedFrequenciesCmd:
 
 GetSupportedFrequenciesCmd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -133,7 +133,7 @@ This message requests the supported frequencies for the WHAD interface.
 
     This message has no specific field.
 
-.. _JamCmd:
+.. _PhyJamCmd:
 
 JamCmd
 ^^^^^^
@@ -141,13 +141,13 @@ JamCmd
 This message sets the WHAD interface in jamming mode.
 
 ============= ============================= ===============================
-Field         Type                          Description
+Field         Type                           Description
 ============= ============================= ===============================
-mode          :ref:`JammingMode`            Jamming mode
+mode          :ref:`PhyJammingMode`          Jamming mode
 ============= ============================= ===============================
 
 
-.. _Jammed:
+.. _PhyJammed:
 
 Jammed
 ^^^^^^
@@ -162,7 +162,7 @@ timestamp     uint64             Timestamp in microseconds
 ============= ================== ==============================================
 
 
-.. _MonitorCmd:
+.. _PhyMonitorCmd:
 
 MonitorCmd
 ^^^^^^^^^^
@@ -174,7 +174,7 @@ frequency.
 
     This message has no specific field.
 
-.. _MonitoringReport:
+.. _PhyMonitoringReport:
 
 MonitoringReport
 ^^^^^^^^^^^^^^^^
@@ -188,7 +188,7 @@ timestamp     uint64             Timestamp in microseconds
 report        uint32[]           Report values
 ============= ================== ==============================================
 
-.. _PacketReceived:
+.. _PhyPacketReceived:
 
 PacketReceived
 ^^^^^^^^^^^^^^
@@ -196,21 +196,21 @@ PacketReceived
 This notification message is sent by the WHAD interface when a packet is
 received.
 
-============= ================== ==============================================
-Field         Type               Description
-============= ================== ==============================================
-frequency     uint32             Current frequency
-rssi          int32, optional    Received signal strength indicator
-timestamp     uint64, optional   Timestamp in microseconds
-packet        bytes              Packet bytes
-deviation     uint32             Current frequency deviation
-datarate      uint32             Current data rate
-endian        :ref:`Endianness`  Current endianness
-modulation    :ref:`Modulation`  Current modulation
-syncword      bytes              Current synchronization word
-============= ================== ==============================================
+============= ==================== ==============================================
+Field         Type                  Description
+============= ==================== ==============================================
+frequency     uint32                Current frequency
+rssi          int32, optional       Received signal strength indicator
+timestamp     uint64, optional      Timestamp in microseconds
+packet        bytes                 Packet bytes
+deviation     uint32                Current frequency deviation
+datarate      uint32                Current data rate
+endian        :ref:`PhyEndianness`  Current endianness
+modulation    :ref:`PhyModulation`  Current modulation
+syncword      bytes                 Current synchronization word
+============= ==================== ==============================================
 
-.. _PacketSent:
+.. _PhyPacketSent:
 
 PacketSent
 ^^^^^^^^^^
@@ -225,7 +225,7 @@ timestamp     uint64             Timestamp in microseconds
 ============= ================== ==============================================
 
 
-.. _RawPacketReceived:
+.. _PhyRawPacketReceived:
 
 RawPacketReceived
 ^^^^^^^^^^^^^^^^^
@@ -233,22 +233,22 @@ RawPacketReceived
 This notification message is sent by the WHAD interface when a packet is
 received.
 
-============= ================== ==============================================
-Field         Type               Description
-============= ================== ==============================================
-frequency     uint32             Current frequency
-rssi          int32, optional    Received signal strength indicator
-timestamp     uint64, optional   Timestamp in microseconds
-packet        bytes              Packet bytes
-iq            int32[]            Corresponding IQs
-deviation     uint32             Current frequency deviation
-datarate      uint32             Current data rate
-endian        :ref:`Endianness`  Current endianness
-modulation    :ref:`Modulation`  Current modulation
-syncword      bytes              Current synchronization word
-============= ================== ==============================================
+============= ==================== ==============================================
+Field         Type                  Description
+============= ==================== ==============================================
+frequency     uint32                Current frequency
+rssi          int32, optional       Received signal strength indicator
+timestamp     uint64, optional      Timestamp in microseconds
+packet        bytes                 Packet bytes
+iq            int32[]               Corresponding IQs
+deviation     uint32                Current frequency deviation
+datarate      uint32                Current data rate
+endian        :ref:`PhyEndianness`  Current endianness
+modulation    :ref:`PhyModulation`  Current modulation
+syncword      bytes                 Current synchronization word
+============= ==================== ==============================================
 
-.. _ScheduleSendCmd:
+.. _PhyScheduleSendCmd:
 
 ScheduleSendCmd
 ^^^^^^^^^^^^^^^
@@ -264,7 +264,7 @@ timestamp     uint64             Timestamp in microseconds
 ============= ================== ===============================
 
 
-.. _SchedulePacketResp:
+.. _PhySchedulePacketResp:
 
 SchedulePacketResp
 ^^^^^^^^^^^^^^^^^^
@@ -279,7 +279,7 @@ id            int32              Schedule packet slot ID
 full          bool               Indicate schedule queue is full
 ============= ================== ===============================
 
-.. _SchedulePacketSent:
+.. _PhySchedulePacketSent:
 
 SchedulePacketSent
 ^^^^^^^^^^^^^^^^^^
@@ -293,7 +293,7 @@ Field         Type               Description
 id            int32              Schedule packet slot ID
 ============= ================== ===============================
 
-.. _SendCmd:
+.. _PhySendCmd:
 
 SendCmd
 ^^^^^^^
@@ -307,7 +307,7 @@ packet        bytes              PDU to send
 ============= ================== ===============================
 
 
-.. _SendRawCmd:
+.. _PhySendRawCmd:
 
 SendRawCmd
 ^^^^^^^^^^
@@ -320,7 +320,7 @@ Field         Type               Description
 iq            int32[]            IQs to send
 ============= ================== ===============================
 
-.. _Set4FSKModulationCmd:
+.. _PhySet4FSKModulationCmd:
 
 Set4FSKModulationCmd
 ^^^^^^^^^^^^^^^^^^^^
@@ -333,7 +333,7 @@ Field         Type       Description
 deviation     uint32     Frequency deviation in Hz
 ============= ========== ===============================
 
-.. _SetASKModulationCmd:
+.. _PhySetASKModulationCmd:
 
 SetASKModulationCmd
 ^^^^^^^^^^^^^^^^^^^
@@ -346,7 +346,7 @@ Field         Type       Description
 ook           bool       Enable OOK mode
 ============= ========== ===============================
 
-.. _SetBPSKModulationCmd:
+.. _PhySetBPSKModulationCmd:
 
 SetBPSKModulationCmd
 ^^^^^^^^^^^^^^^^^^^^
@@ -358,7 +358,7 @@ This message sets the WHAD interface in BPSK mode.
     This message has no specific field.
 
 
-.. _SetDataRateCmd:
+.. _PhySetDataRateCmd:
 
 SetDataRateCmd
 ^^^^^^^^^^^^^^
@@ -371,20 +371,20 @@ Field         Type       Description
 rate          uint32     Data rate in bits/second
 ============= ========== ===============================
 
-.. _SetEndiannessCmd:
+.. _PhySetEndiannessCmd:
 
 SetEndiannessCmd
 ^^^^^^^^^^^^^^^^
 
 This message sets the WHAD interface endianness.
 
-============= ================== ===============================
-Field         Type               Description
-============= ================== ===============================
-endianness    :ref:`Endianness`  Endianness to use
-============= ================== ===============================
+============= ==================== ===============================
+Field         Type                  Description
+============= ==================== ===============================
+endianness    :ref:`PhyEndianness`  Endianness to use
+============= ==================== ===============================
 
-.. _SetFrequencyCmd:
+.. _PhySetFrequencyCmd:
 
 SetFrequencyCmd
 ^^^^^^^^^^^^^^^
@@ -397,7 +397,7 @@ Field         Type       Description
 frequency     uint32     Frequency in Hz
 ============= ========== ===============================
 
-.. _SetFSKModulationCmd:
+.. _PhySetFSKModulationCmd:
 
 SetFSKModulationCmd
 ^^^^^^^^^^^^^^^^^^^
@@ -410,7 +410,7 @@ Field         Type       Description
 deviation     uint32     Frequency deviation in Hz
 ============= ========== ===============================
 
-.. _SetGFSKModulationCmd:
+.. _PhySetGFSKModulationCmd:
 
 SetGFSKModulationCmd
 ^^^^^^^^^^^^^^^^^^^^
@@ -423,26 +423,26 @@ Field         Type       Description
 deviation     uint32     Frequency deviation in Hz
 ============= ========== ===============================
 
-.. _SetLoRaModulationCmd:
+.. _PhySetLoRaModulationCmd:
 
 SetLoRaModulationCmd
 ^^^^^^^^^^^^^^^^^^^^
 
 This message sets the WHAD interface in LoRa mode.
 
-================== ============================ ===============================
-Field              Type                         Description
-================== ============================ ===============================
-bandwidth          uint32                       Bandwidth in Hz
-spreading_factor   :ref:`LoRaSpreadingFactor`   Spreading factor
-coding_rate        :ref:`LoRaCodingRate`        Coding rate
-preamble_length    uint32                       Preamble length in bits
-enable_crc         bool                         Enable LoRa CRC
-explicit_mode      bool                         Use LoRa explicit mode
-invert_iq          bool                         Enable IQ inversion
-================== ============================ ===============================
+================== ============================== ===============================
+Field              Type                            Description
+================== ============================== ===============================
+bandwidth          uint32                          Bandwidth in Hz
+spreading_factor   :ref:`PhyLoRaSpreadingFactor`   Spreading factor
+coding_rate        :ref:`PhyLoRaCodingRate`        Coding rate
+preamble_length    uint32                          Preamble length in bits
+enable_crc         bool                            Enable LoRa CRC
+explicit_mode      bool                            Use LoRa explicit mode
+invert_iq          bool                            Enable IQ inversion
+================== ============================== ===============================
 
-.. _SetMSKModulationCmd:
+.. _PhySetMSKModulationCmd:
 
 SetMSKModulationCmd
 ^^^^^^^^^^^^^^^^^^^
@@ -455,7 +455,7 @@ Field         Type       Description
 deviation     uint32     Frequency deviation in Hz
 ============= ========== ===============================
 
-.. _SetPacketSizeCmd:
+.. _PhySetPacketSizeCmd:
 
 SetPacketSizeCmd
 ^^^^^^^^^^^^^^^^
@@ -469,7 +469,7 @@ packet_size   uint32             Packet size in bytes
 ============= ================== ===============================
 
 
-.. _SetQPSKModulationCmd:
+.. _PhySetQPSKModulationCmd:
 
 SetQPSKModulationCmd
 ^^^^^^^^^^^^^^^^^^^^
@@ -482,7 +482,7 @@ Field         Type       Description
 offset_qpsk   bool       Use an offset
 ============= ========== ===============================
 
-.. _SetSyncWordCmd:
+.. _PhySetSyncWordCmd:
 
 SetSyncWordCmd
 ^^^^^^^^^^^^^^
@@ -495,7 +495,7 @@ Field         Type               Description
 sync_word     bytes              Synchronization word
 ============= ================== ===============================
 
-.. _SetTXPowerCmd:
+.. _PhySetTXPowerCmd:
 
 SetTXPowerCmd
 ^^^^^^^^^^^^^
@@ -505,10 +505,10 @@ This message sets the WHAD interface TX power.
 ============= ================== ===============================
 Field         Type               Description
 ============= ================== ===============================
-tx_power      :ref:`TXPower`     Transmit power
+tx_power      :ref:`PhyTXPower`     Transmit power
 ============= ================== ===============================
 
-.. _SniffCmd:
+.. _PhySniffCmd:
 
 SniffCmd
 ^^^^^^^^
@@ -521,7 +521,7 @@ Field         Type               Description
 iq_stream     bool               Enable capture of IQs
 ============= ================== ===============================
 
-.. _StartCmd:
+.. _PhyStartCmd:
 
 StartCmd
 ^^^^^^^^
@@ -533,7 +533,7 @@ interface is in idle mode.
 
     This message has no specific field.
 
-.. _StopCmd:
+.. _PhyStopCmd:
 
 StopCmd
 ^^^^^^^
@@ -545,7 +545,7 @@ mode.
 
     This message has no specific field.
 
-.. _SupportedFrequencyRanges:
+.. _PhySupportedFrequencyRanges:
 
 SupportedFrequencyRanges
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -556,10 +556,10 @@ ranges.
 ================= ======================== ===============================
 Field             Type                     Description
 ================= ======================== ===============================
-frequency_ranges  :ref:`FrequencyRange` []  List of frequency ranges
+frequency_ranges  :ref:`PhyFrequencyRange` []  List of frequency ranges
 ================= ======================== ===============================
 
-.. _FrequencyRange:
+.. _PhyFrequencyRange:
 
 FrequencyRange
 ~~~~~~~~~~~~~~

@@ -27,19 +27,19 @@ in sniffing mode on a channel and listen for packets.
         Host->>+Interface: StopCmd
         Interface-->>-Host: CommandResult(result=SUCCESS)
 
-First, the host sends a :ref:`SniffCmd` message to switch the WHAD interface into
+First, the host sends a :ref:`UnifyingSniffCmd` message to switch the WHAD interface into
 sniffing mode. The host **must** provide at least a channel number to sniff,
 but can also provide an ESB address that will be used by the WHAD interface to
 only keep packets sent to this address. The ``show_acknowledgements`` boolean
 field can be set to ``true`` to also capture ESB acknowledgements.
 
 Once the WHAD interface configured in sniffing mode on a specific channel, the
-host sends a :ref:`StartCmd` to start sniffing actual packets. The WHAD interface
-will report any packet through a :ref:`PacketReceived` or :ref:`RawPacketReceived`
+host sends a :ref:`UnifyingStartCmd` to start sniffing actual packets. The WHAD interface
+will report any packet through a :ref:`UnifyingPduReceived` or :ref:`UnifyingRawPduReceived`
 message (depending on its capabilities).
 
 When sniffing mode is enabled, packets can also be injected into a specific
-channel through the use of :ref:`SendCmd` message:
+channel through the use of :ref:`UnifyingSendCmd` message:
 
 .. mermaid::
 
@@ -49,7 +49,7 @@ channel through the use of :ref:`SendCmd` message:
         Host->>+Interface: SendCmd(channel=5, pdu=...)
         Interface-->>-Host: CommandResult(result=SUCCESS)
 
-Sniffing can be stopped by the host by sending a :ref:`StopCmd` message.
+Sniffing can be stopped by the host by sending a :ref:`UnifyingStopCmd` message.
 
 .. mermaid::
 
@@ -74,7 +74,7 @@ create the domain supported commands bitmap.
 Messages
 --------
 
-.. _JamCmd:
+.. _UnifyingJamCmd:
 
 JamCmd
 ^^^^^^
@@ -87,7 +87,7 @@ Field         Type       Description
 channel       uint32     Channel to jam
 ============= ========== ===============================
 
-.. _Jammed:
+.. _UnifyingJammed:
 
 Jammed
 ^^^^^^
@@ -100,7 +100,7 @@ Field         Type       Description
 timestamp     uint64     Timestamp in microseconds
 ============= ========== ===============================
 
-.. _LogitechDongleModeCmd:
+.. _UnifyingLogitechDongleModeCmd:
 
 LogitechDongleModeCmd
 ^^^^^^^^^^^^^^^^^^^^^
@@ -114,7 +114,7 @@ Field         Type       Description
 channel       uint32     Channel to use
 ============= ========== ===============================
 
-.. _LogitechKeyboardModeCmd:
+.. _UnifyingLogitechKeyboardModeCmd:
 
 LogitechKeyboardModeCmd
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -128,7 +128,7 @@ Field         Type       Description
 channel       uint32     Channel to use
 ============= ========== ===============================
 
-.. _LogitechMouseModeCmd:
+.. _UnifyingLogitechMouseModeCmd:
 
 LogitechMouseModeCmd
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -142,8 +142,10 @@ Field         Type       Description
 channel       uint32     Channel to use
 ============= ========== ===============================
 
-.. _PduReceived:
+.. _UnifyingPduReceived:
 
+PduReceived
+^^^^^^^^^^^^^^
 This notification message is sent by the WHAD interface to report a
 PDU that has been received.
 
@@ -159,7 +161,10 @@ pdu                   bytes            ESB PDU
 ===================== ================ ======================================
 
 
-.. _RawPduReceived:
+.. _UnifyingRawPduReceived:
+
+RawPduReceived
+^^^^^^^^^^^^^^
 
 This notification message is sent by the WHAD interface to report a raw
 PDU that has been received.
@@ -177,7 +182,7 @@ pdu                   bytes            ESB raw PDU
 
 
 
-.. _SendCmd:
+.. _UnifyingSendCmd:
 
 SendCmd
 ^^^^^^^
@@ -192,7 +197,7 @@ retransmission_count  uint32     Maximum number of retransmission
 pdu                   bytes      PDU to send
 ===================== ========== ======================================
 
-.. _SendRawCmd:
+.. _UnifyingSendRawCmd:
 
 SendRawCmd
 ^^^^^^^^^^
@@ -207,10 +212,10 @@ retransmission_count  uint32     Maximum number of retransmission
 pdu                   bytes      PDU to send
 ===================== ========== ======================================
 
-Unlike the :ref:`SendCmd`, this command specifies a complete raw packet
+Unlike the :ref:`UnifyingSendCmd`, this command specifies a complete raw packet
 including the ESB header.
 
-.. _SetNodeAddressCmd:
+.. _UnifyingSetNodeAddressCmd:
 
 SetNodeAddressCmd
 ^^^^^^^^^^^^^^^^^
@@ -223,7 +228,7 @@ Field         Type       Description
 address       bytes      ESB address (2-5 bytes)
 ============= ========== ===============================
 
-.. _SniffCmd:
+.. _UnifyingSniffCmd:
 
 SniffCmd
 ^^^^^^^^
@@ -247,7 +252,7 @@ sniffed.
 If ``show_acknowledgements`` is set to ``true``, ESB Ack packets will be
 reported to the host.
 
-.. _SniffPairingCmd:
+.. _UnifyingSniffPairingCmd:
 
 SniffPairingCmd
 ^^^^^^^^^^^^^^^
@@ -258,7 +263,7 @@ This message sets the WHAD interface into pairing sniffing mode.
 
     This message has no specific field.
 
-.. _StartCmd:
+.. _UnifyingStartCmd:
 
 StartCmd
 ^^^^^^^^
@@ -270,7 +275,7 @@ interface is in idle mode.
 
     This message has no specific field.
 
-.. _StopCmd:
+.. _UnifyingStopCmd:
 
 StopCmd
 ^^^^^^^

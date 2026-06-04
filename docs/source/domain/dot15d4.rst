@@ -47,7 +47,7 @@ REACTIVE_JAMMER  Perform reactive jamming
 CORRECTOR        Corrector
 ================ ===================================================
 
-.. _AddressType:
+.. _Dot15d4AddressType:
 
 AddressType
 ^^^^^^^^^^^
@@ -61,11 +61,44 @@ SHORT            16-bit short address
 EXTENDED         64-bit extended address
 ================ ===================================================
 
+
+.. _Dot15d4LinkType:
+
+LinkType (TSCH specific)
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This enumeration contains the different types of TSCH links.
+
+================ ===================================================
+Field            Description
+================ ===================================================
+NORMAL            Normal Link
+DISCOVERY         Discovery-specific Link
+BROADCAST         Broadcast Link
+JOIN              Join Link
+================ ===================================================
+
+
+.. _Dot15d4LinkOptions:
+
+LinkOptions (TSCH specific)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This enumeration contains the different options associated to TSCH links.
+
+================ ===================================================
+Field            Description
+================ ===================================================
+UNKNOWN           Unknown options (default value)
+SHARED            Link can be used both for transmission or reception
+RECEIVE           Link can be used for reception only
+TRANSMIT          Link can be used for transmission only
+================ ===================================================
+
 Messages
 --------
 
-
-.. _CoordinatorCmd:
+.. _Dot15d4CoordinatorCmd:
 
 CoordinatorCmd
 ^^^^^^^^^^^^^^
@@ -78,7 +111,7 @@ Field         Type                Description
 channel       uint32              Channel to use
 ============= =================== ===============================
 
-.. _EndDeviceCmd:
+.. _Dot15d4EndDeviceCmd:
 
 EndDeviceCmd
 ^^^^^^^^^^^^
@@ -91,7 +124,7 @@ Field         Type                Description
 channel       uint32              Channel to use
 ============= =================== ===============================
 
-.. _EnergyDetectionCmd:
+.. _Dot15d4EnergyDetectionCmd:
 
 EnergyDetectionCmd
 ^^^^^^^^^^^^^^^^^^
@@ -104,7 +137,7 @@ Field         Type                Description
 channel       uint32              Channel to analyze
 ============= =================== ===============================
 
-.. _EnergyDetectionSample:
+.. _Dot15d4EnergyDetectionSample:
 
 EnergyDetectionSample
 ^^^^^^^^^^^^^^^^^^^^^
@@ -120,7 +153,7 @@ timestamp     uint64              Timestamp in microseconds
 ============= =================== ===============================
 
 
-.. _JamCmd:
+.. _Dot15d4JamCmd:
 
 JamCmd
 ^^^^^^
@@ -133,7 +166,7 @@ Field         Type                Description
 channel       uint32              Channel to analyze
 ============= =================== ===============================
 
-.. _Jammed:
+.. _Dot15d4Jammed:
 
 Jammed
 ^^^^^^
@@ -147,7 +180,7 @@ Field         Type                Description
 timestamp     uint64              Timestamp in microseconds
 ============= =================== ===============================
 
-.. _ManInTheMiddleCmd:
+.. _Dot15d4ManInTheMiddleCmd:
 
 ManInTheMiddleCmd
 ^^^^^^^^^^^^^^^^^
@@ -160,7 +193,7 @@ Field         Type                   Description
 role          :ref:`Dot15d4MitmRole` Mitm Role to use
 ============= ====================== ===============================
 
-.. _PduReceived:
+.. _Dot15d4PduReceived:
 
 PduReceived
 ^^^^^^^^^^^
@@ -168,19 +201,29 @@ PduReceived
 This notification message is sent by the WHAD interface each time a raw
 PDU is received.
 
-============= ====================== ======================================
-Field         Type                   Description
-============= ====================== ======================================
-channel       uint32                 Channel
-rssi          int32, optional        Received signal strength indicator
-timestamp     uint64, optional       Timestamp in microseconds
-fcs_validyt   bool, optional         Frame Check Sequence validity
-pdu           bytes                  PDU
-lqi           uint32, optional       Link quality indicator
-============= ====================== ======================================
+======================== ====================== ===========================================================
+Field                    Type                    Description
+======================== ====================== ===========================================================
+channel                   uint32                 Channel
+rssi                      int32, optional        Received signal strength indicator
+timestamp                 uint64, optional       Timestamp in microseconds
+fcs_validity              bool, optional         Frame Check Sequence validity
+pdu                       bytes                  PDU
+lqi                       uint32, optional       Link quality indicator
+asn                       uint64, optional       Absolute Slot Number (TSCH specific)
+start_of_slot_timestamp   uint32, optional       Start of slot Timestamp in microseconds (TSCH specific)
+time_slot                 uint32, optional       Time slot linked to the PDU (TSCH specific)
+base_channel_frequency    uint32, optional       Base Channel Frequency (TSCH specific)
+number_of_channels        uint32, optional       Number of active RF channels (TSCH specific)
+channel_spacing           uint32, optional       Spacing between RF channels (TSCH specific)
+======================== ====================== ===========================================================
+
+.. note::
+
+    This message has been extended with optional fields for TSCH mode (introduced in v3.0).
 
 
-.. _RawPduReceived:
+.. _Dot15d4RawPduReceived:
 
 RawPduReceived
 ^^^^^^^^^^^^^^
@@ -188,19 +231,29 @@ RawPduReceived
 This notification message is sent by the WHAD interface each time a raw
 PDU is received.
 
-============= ====================== ======================================
-Field         Type                   Description
-============= ====================== ======================================
-channel       uint32                 Channel
-rssi          int32, optional        Received signal strength indicator
-timestamp     uint64, optional       Timestamp in microseconds
-fcs_validyt   bool, optional         Frame Check Sequence validity
-pdu           bytes                  PDU
-fcs           uint32                 Frame Check Sequence
-lqi           uint32, optional       Link quality indicator
-============= ====================== ======================================
+======================== ====================== ===========================================================
+Field                    Type                    Description
+======================== ====================== ===========================================================
+channel                   uint32                 Channel
+rssi                      int32, optional        Received signal strength indicator
+timestamp                 uint64, optional       Timestamp in microseconds
+fcs_validity              bool, optional         Frame Check Sequence validity
+pdu                       bytes                  PDU
+fcs                       uint32                 FCS associated to the frame
+lqi                       uint32, optional       Link quality indicator
+asn                       uint64, optional       Absolute Slot Number (TSCH specific)
+start_of_slot_timestamp   uint32, optional       Start of slot Timestamp in microseconds (TSCH specific)
+time_slot                 uint32, optional       Time slot linked to the PDU (TSCH specific)
+base_channel_frequency    uint32, optional       Base Channel Frequency (TSCH specific)
+number_of_channels        uint32, optional       Number of active RF channels (TSCH specific)
+channel_spacing           uint32, optional       Spacing between RF channels (TSCH specific)
+======================== ====================== ===========================================================
 
-.. _RouterCmd:
+.. note::
+
+    This message has been extended with optional fields for TSCH mode (introduced in v3.0).
+
+.. _Dot15d4RouterCmd:
 
 RouterCmd
 ^^^^^^^^^
@@ -213,7 +266,7 @@ Field         Type                Description
 channel       uint32              Channel to use
 ============= =================== ===============================
 
-.. _SendCmd:
+.. _Dot15d4SendCmd:
 
 SendCmd
 ^^^^^^^
@@ -228,7 +281,7 @@ pdu           bytes               IEEE 802.15.4 PDU to send
 ============= =================== ===============================
 
 
-.. _SendRawCmd:
+.. _Dot15d4SendRawCmd:
 
 SendRawCmd
 ^^^^^^^^^^
@@ -245,21 +298,21 @@ fcs           uint32              Frame Check Sequence
 
 
 
-.. _SetNodeAddressCmd:
+.. _Dot15d4SetNodeAddressCmd:
 
 SetNodeAddressCmd
 ^^^^^^^^^^^^^^^^^
 
 This message sets the WHAD interface node address.
 
-============= =================== ===============================
-Field         Type                Description
-============= =================== ===============================
-address       uint64              64-bit extended address
-address_type  :ref:`AddressType`  Node address type
-============= =================== ===============================
+============= ========================== ===============================
+Field         Type                       Description
+============= ========================== ===============================
+address       uint64                     64-bit extended address
+address_type  :ref:`Dot15d4AddressType`  Node address type
+============= ========================== ===============================
 
-.. _SniffCmd:
+.. _Dot15d4SniffCmd:
 
 SniffCmd
 ^^^^^^^^
@@ -272,7 +325,7 @@ Field         Type                Description
 channel       uint32              Channel to sniff
 ============= =================== ===============================
 
-.. _StartCmd:
+.. _Dot15d4StartCmd:
 
 StartCmd
 ^^^^^^^^
@@ -284,7 +337,7 @@ This message activates the current selected mode.
     This message has no specific field.
 
 
-.. _StopCmd:
+.. _Dot15d4StopCmd:
 
 StopCmd
 ^^^^^^^^
@@ -294,3 +347,136 @@ This message terminates the current selected mode.
 .. note::
 
     This message has no specific field.
+
+.. _Dot15d4ConfigureTSCHCmd:
+
+ConfigureTSCHCmd (TSCH specific)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This message enables or disables the Time-Slotted Channel Hopping (TSCH) mode.
+
+============= =================== ==================================
+Field         Type                Description
+============= =================== ==================================
+enabled       bool                Indicator of TSCH mode activation
+============= =================== ==================================
+
+.. note::
+
+    This message is specific to TSCH mode (introduced in v3.0).
+
+.. _Dot15d4AddLinkCmd:
+
+_AddLinkCmd (TSCH specific)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This message adds a new TSCH Link in the WHAD interface.
+
+============== ========================== ===================================================
+Field          Type                       Description
+============== ========================== ===================================================
+superframe_id  uint32                     ID of the corresponding superframe
+src            uint32                     Source address of the link
+time_slot      uint32                     Time slot associated to the link (in superframe)
+channel_offset uint32                     Channel offset of the link
+neighbor       uint32                     Neigbor address of the link
+options        :ref:`Dot15d4LinkOptions`  Options associated to the link
+type           :ref:`Dot15d4LinkType`     Type of the link
+============== ========================== ===================================================
+
+.. note::
+
+    This message is specific to TSCH mode.
+
+.. _Dot15d4DeleteLinkCmd:
+
+__DeleteLinkCmd (TSCH specific)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This message deletes an existing TSCH Link in the WHAD interface.
+
+============== =================== ===================================================
+Field          Type                Description
+============== =================== ===================================================
+superframe_id  uint32              ID of the corresponding superframe
+time_slot      uint32              Time slot associated to the link (in superframe)
+channel_offset uint32              Channel offset of the link
+============== =================== ===================================================
+
+.. note::
+
+    This message is specific to TSCH mode.
+
+.. _Dot15d4UpdateSuperframeCmd:
+
+__UpdateSuperframeCmd (TSCH specific)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This message adds or update a TSCH Superframe in the WHAD interface.
+
+=============== =================== ======================================================
+Field           Type                Description
+=============== =================== ======================================================
+superframe_id   uint32              ID of the corresponding superframe
+number_of_slots uint32              Size of the superframe (in number of slots)
+flags           uint32              Set of flags associated to the superframe
+asn             uint64, optional    Absolute Slot Number (ASN) where the operation occurs 
+=============== =================== ======================================================
+
+.. note::
+
+    This message is specific to TSCH mode.
+
+.. _Dot15d4DeleteSuperframeCmd:
+
+__DeleteSuperframeCmd (TSCH specific)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This message deletes an existing TSCH Superframe in the WHAD interface.
+
+=============== =================== ======================================================
+Field           Type                Description
+=============== =================== ======================================================
+superframe_id   uint32              ID of the superframe to delete
+=============== =================== ======================================================
+
+.. note::
+
+    This message is specific to TSCH mode.
+
+.. _Dot15d4SetChannelMapCmd:
+
+__SetChannelMapCmd (TSCH specific)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This message configure the Channel Map associated to channel hopping in the WHAD interface.
+
+=============== =================== ======================================================
+Field           Type                Description
+=============== =================== ======================================================
+channel_map     uint32              Bitmap of enabled channels in channel hopping mode
+=============== =================== ======================================================
+
+.. note::
+
+    This message is specific to TSCH mode.
+
+.. _Dot15d4DiscoveredCommunication:
+
+__DiscoveredCommunication (TSCH specific)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This message notifies that a new communication has been discovered by the WHAD interface. 
+It allows to discover existing links and add them to the known superframe.
+
+=============== =================== ======================================================
+Field           Type                Description
+=============== =================== ======================================================
+time_slot       uint32              Slot number of the discovered communication
+channel_offset  uint32              Channel offset when the communication was detected
+pdu             bytes               Main PDU associated with the communication
+=============== =================== ======================================================
+
+.. note::
+
+    This message is specific to TSCH mode.
