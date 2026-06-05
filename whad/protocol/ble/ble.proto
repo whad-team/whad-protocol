@@ -393,14 +393,14 @@ message AuxPtr {
  **/
 message ExtAdvPdu {
     /* Extended Advertising Payload, size could not exceed 254 + 64 octets. */
-    bytes adv_data = 4;
+    bytes adv_data = 1;
 
     /*
      * Optional AuxPtr record, providing information about when, where and
      * how the next secondary advertising PDU shall be sent. Complete PDU
      * or last fragment shall not include this field.
      */
-    optional AuxPtr aux_ptr = 5;
+    optional AuxPtr aux_ptr = 2;
 }
 
 /**
