@@ -145,10 +145,11 @@ enum BleAddrType {
 }
 
 enum BlePhy {
-    LE_1M = 0;          /* Default PHY for BLE 4 */
-    LE_1M_CODED = 1;    /* Introduced in BLE 5 */
-    LE_2M = 2;          /* Introduced in BLE 5 */
-    LE_2M_2BT = 3;      /* Introduced in BLE 6 */
+    UNDEFINED = 0;      /* Not defined. */
+    LE_1M = 1;          /* Default PHY for BLE 4 */
+    LE_1M_CODED = 2;    /* Introduced in BLE 5 */
+    LE_2M = 3;          /* Introduced in BLE 5 */
+    LE_2M_2BT = 4;      /* Introduced in BLE 6 */
 }
 
 enum BleCsa {
@@ -840,6 +841,20 @@ message RawPduReceived {
 }
 
 /**
+ * PhyUpdated
+ *
+ * Notifies a PHY (RX, TX, or both) has been updated. This PHY update
+ * could have been caused by a procedure initiated by the host or by
+ * the remote device.
+ **/
+
+message PhyUpdated {
+    BlePhy tx_phy = 1;
+    BlePhy rx_phy = 2;
+    optional uint64 timestamp = 3;
+}
+
+/**
  * PduReceived
  *
  * Notifies reception of a PDU. This message must be used by devices
@@ -917,5 +932,6 @@ message PduReceived {
         /* Introduced in v3 */
         SetSupportedPhysCmd set_supp_phys= 41;
         SetExtAdvPdusCmd set_ext_adv_pdus = 42;
+        PhyUpdated phy_updated = 43;
     }
  }
