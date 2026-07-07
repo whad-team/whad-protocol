@@ -51,6 +51,7 @@ ble.SetAdvDataCmd.scanrsp_data max_size:31
 ble.PeripheralModeCmd.adv_data max_size:31
 ble.PeripheralModeCmd.scanrsp_data max_size:31
 ble.PeripheralModeCmd.channel_map max_size:5, fixed_length: true
+ble.PeripheralModeCmd.ext_pdus max_count:4
 
 ble.SetEncryptionCmd.ll_key max_size:16, fixed_length: true
 ble.SetEncryptionCmd.ll_iv max_size:8, fixed_length: true
@@ -60,8 +61,9 @@ ble.SetEncryptionCmd.ediv max_size:2, fixed_length: true
 
 # ExtAdvPdu
 ble.ExtAdvPdu.adv_data max_size:318
-ble.AdvModeCmd.ext_pdus max_count:32
+ble.AdvModeCmd.ext_pdus max_count:4
 
 # PHYs
 ble.SetSupportedPhysCmd.tx_phy max_count:4
 ble.SetSupportedPhysCmd.rx_phy max_count:4
+ble.SetExtAdvPdusCmd.pdus max_count:4

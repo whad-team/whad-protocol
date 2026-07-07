@@ -214,11 +214,46 @@ Type             Description
 ================ ================================================
 PUBLIC           Device BD address is public
 RANDOM           Device BD address is random
+RPA              Resolvable Private address
 ================ ================================================
 
 The address type information is part of the protocol, usually specified
 by the ``TxAdd``and ``RxAdd`` bits in the BLE header. It is critical to
 specify the correct address type for a device or a connection will fail.
+
+.. _BlePhy:
+
+BlePhy
+~~~~~~
+
+This enumeration specifies the Bluetooth PHY type.
+
+================ =================================================================================
+Type             Description
+================ =================================================================================
+UNDEFINED        PHY is undefined
+LE_1M            Uncoded 1Mbit/s, introduced in BLE 5
+LE_1M_Coded      Coded 1Mbit/s, introduced in BLE 5
+LE_2M            Uncoded 2Mbit/s, introduced in BLE 5
+LE_2M_2BT        Uncoded 2Mbit/s with BT=2.0 (instead of 0.5), introduced in BLE 6
+================ =================================================================================
+
+.. _BleCsa:
+
+BleCsa
+~~~~~~
+
+This enumeration specifies the Channel Selection algorithm to use.
+
+================ =================================================================================
+Type             Description
+================ =================================================================================
+CSA1             Default Channel Selection Algorithm
+CSA2             Channel Selection Algorithm introduced in BLE 5
+CSA3a            Channel Selection Algorithm introduced in BLE 6 (Vol 6, Part H, Section 4.1.3)
+CSA3b            Channel Selection Algorithm introduced in BLE 6 (Vol 6, Part H, Section 4.1.4.1)
+CSA3c            Channel Selection Algorithm introduced in BLE 6 (Vol 6, Part H, Section 4.1.4.2)
+================ =================================================================================
 
 Messages
 --------
@@ -255,7 +290,15 @@ rssi             int32                 Received signal strength indicator
 bd_address       bytes                 Advertiser BD address
 adv_data         bytes                 Advertising data
 addr_type        :ref:`BleAddrType`    Advertiser BD address type
+channel          int32                 Channel number
+phy              :ref:`BlePhy`         PHY type
 ================ ==================== ===========================================
+
+.. version-added:: 3
+   The ``phy`` field has been added in version 3 as BLE 5 introduced two new
+   PHYs and extended advertisements. Version 3 also introduced the ``channel``
+   field to specify the advertising channel (or data channel if extended
+   advertisements are used) the PDU has been received on.
 
 .. _BLEAdvModeCmd:
 
@@ -304,7 +347,12 @@ access_address   uint32             Connection access address
 conn_handle      uint32             Connection handle
 adv_addr_type    :ref:`BleAddrType` Advertiser BD address type
 init_addr_type   :ref:`BleAddrType` Initiator BD address type
+phy              :ref:`BlePhy`      PHY type
 ================ ================== ===========================================
+
+.. version-added:: 3
+   The ``phy`` parameter has been added in version 3 as BLE 5 introduced two new
+   PHYs.
 
 
 .. _BLEConnectToCmd:
@@ -506,9 +554,14 @@ This message sets the WHAD interface into connection jamming.
 **Field**        **Type**           **Description**
 ================ ================== ===========================================
 access_address   uint32             Target access address
+phy              :ref:`BlePhy`      PHY type to jam
 ================ ================== ===========================================
 
 ``access address`` specifies the Access Address of the connection to jam.
+
+.. version-added:: 3
+   The ``phy`` parameter has been added in version 3 as BLE 5 introduced two new
+   PHYs and extended advertisements.
 
 .. _BLEPduReceived:
 
@@ -521,13 +574,17 @@ received to the host.
 ================== ====================== ============================================
 **Field**          **Type**                **Description**
 ================== ====================== ============================================
-direction          :ref:`BleDirection`     Direction
-pdu                bytes                   PDU
-conn_handle        uint32                  Connection handle
-processed          bool                    ``true`` if already processed by firmware
-decrypted          bool                    ``true`` if already decrypted by firmware
+direction          :ref:`BleDirection`    Direction
+pdu                bytes                  PDU
+conn_handle        uint32                 Connection handle
+processed          bool                   ``true`` if already processed by firmware
+decrypted          bool                   ``true`` if already decrypted by firmware
+phy                :ref:`BlePhy`          PHY used
 ================== ====================== ============================================
 
+.. version-added:: 3
+   The ``phy`` parameter has been added in version 3 as BLE 5 introduced two new
+   PHYs and extended advertisements.
 
 .. _BLEPeripheralModeCmd:
 
@@ -590,7 +647,12 @@ crc                uint32                 PDU CRC
 conn_handle        uint32                 Connection handle
 processed          bool                   ``true`` if already processed by firmware
 decrypted          bool                   ``true`` if already decrypted by firmware
+phy                :ref:`BlePhy`          PHY type used
 ================== ====================== ==============================================
+
+.. version-added:: 3
+   The ``phy`` parameter has been added in version 3 as BLE 5 introduced two new
+   PHYs and extended advertisements.
 
 .. _BLEReceptionTrigger:
 
@@ -657,8 +719,12 @@ This message sets the WHAD interface into reactive jamming mode.
 channel          uint32             Target channel
 pattern          bytes              Pattern to trigger jamming
 position         uint32             Pattern position in payload
+phy              :ref:`BlePhy`      PHY type to use
 ================ ================== ===========================================
 
+.. version-added:: 3
+   The ``phy`` parameter has been added in version 3 as BLE 5 introduced two new
+   PHYs and extended advertisements.
 
 .. _BLEScanModeCmd:
 
@@ -671,11 +737,19 @@ This message sets the WHAD interface into scanning mode.
 **Field**        **Type**           **Description**
 ================ ================== ===========================================
 active_scan      bool               Enable active mode
+interval         uint32             Scanning interval (ms)
+use_ext_adv      bool               Enable extended advertisements support
 ================ ================== ===========================================
 
 If ``active_scan`` is set to True, the WHAD device sends a SCAN_REQ for each
 advertisement received. If set to False, only advertisements (ADV_IND, ...)
 will be reported to host.
+
+``interval`` defines the scanning interval, i.e. how long the scanner waits on
+each advertising channel.
+
+When ``use_ext_adv`` is set to True, scanner will process extended advertisements
+for all devices.
 
 .. _BLESendPduCmd:
 
@@ -692,7 +766,12 @@ direction        :ref:`BleDirection` PDU direction
 conn_handle      uint32              Connection handle
 pdu              bytes               Raw pdu to send
 encrypt          bool                Let hardware encrypt PDU if ``true``
+phy              :ref:`BlePhy`       PHY type to use when sending PDU
 ================ =================== ==========================================
+
+.. version-added:: 3
+   The ``phy`` parameter has been added in version 3 as BLE 5 introduced two new
+   PHYs and extended advertisements.
 
 .. _BLESendRawPduCmd:
 
@@ -705,13 +784,18 @@ BLE PDU header and its CRC.
 ================ ====================== ==========================================
 **Field**        **Type**                **Description**
 ================ ====================== ==========================================
-direction        :ref:`BleDirection`      PDU direction
-conn_handle      uint32                   Connection handle
-access_address   uint32                   Connection access address
-pdu              bytes                    Raw pdu to send
-crc              uint32                   PDU CRC
-encrypt          bool                     Let hardware encrypt PDU if ``true``
+direction        :ref:`BleDirection`    PDU direction
+conn_handle      uint32                 Connection handle
+access_address   uint32                 Connection access address
+pdu              bytes                  Raw pdu to send
+crc              uint32                 PDU CRC
+encrypt          bool                   Let hardware encrypt PDU if ``true``
+phy              :ref:`BlePhy`          PHY type to use when sending PDU
 ================ ====================== ==========================================
+
+.. version-added:: 3
+   The ``phy`` parameter has been added in version 3 as BLE 5 introduced two new
+   PHYs and extended advertisements.
 
 .. warning::
 
@@ -780,6 +864,7 @@ This message sets the WHAD interface into Access Address sniffing mode.
 **Field**          **Type**           **Description**
 ================== ================== =========================================
 monitored_channels bytes              Channel map 
+phy                :ref:`BlePhy`      PHY type
 ================== ================== =========================================
 
 The ``monitored_channels`` field specifies a BLE channel map which each bit
@@ -787,6 +872,12 @@ represent a channel (from 0 to 39). This channel map is stored in a 5-byte
 buffer. Usually, advertising channels (37, 38 and 39) are excluded as they
 are not used by BLE connections for data exchange.
 
+The ``phy`` field specifies the PHY type used for sniffing access addresses
+(introduced in version 3).
+
+.. version-added:: 3
+   The ``phy`` parameter has been added in version 3 as BLE 5 introduced two new
+   PHYs and extended advertisements.
 
 .. _BLESniffActiveConnCmd:
 
@@ -804,8 +895,11 @@ channel_map        bytes              Connection channel map
 hop_interval       uint32             Hop interval (CSA #1)
 hop_increment      uint32             Hop increment (CSA #1)
 monitored_channels bytes              Channel map used for sniffing
+phy                :ref:`BlePhy`      PHY type
 ================== ================== =========================================
 
+The ``phy`` field specifies the PHY type used for sniffing access addresses
+(introduced in version 3).
 
 
 .. _BLESniffAdvCmd:
@@ -819,7 +913,7 @@ target channel can be specified, as well as a target BD address.
 ================ ================== ===========================================
 **Field**        **Type**           **Description**
 ================ ================== ===========================================
-use_extended_adv bool               Enable Extended advertisements sniffing
+use_ext_adv      bool               Enable Extended advertisements sniffing
 channel          uint32             Target channel to sniff
 bd_address       bytes              Target BD address
 ================ ================== ===========================================
@@ -831,7 +925,7 @@ advertising channels (37, 38 or 39).
 advertisements and only keep those matching this address, except when set to
 ``FF:FF:FF:FF:FF:FF`` (a buffer of 6 bytes with value 0xFF).
 
-The ``use_extended_adv`` option can be used with BLE5 compatible WHAD
+The ``use_ext_adv`` option can be used with BLE5 compatible WHAD
 interfaces to follow extended advertisements that occur on data channels.
 
 .. _BLESniffConnReqCmd:
@@ -893,15 +987,20 @@ Synchronized
 This notification message is sent when the WHAD interface is successfully
 synchronized with an active connection.
 
-=================== ============ ===========================================
-**Field**           **Type**     **Description**
-=================== ============ ===========================================
-access_address      uint32       Connection access address
-crc_init            uint32       Connection CRCInit value
-hop_interval        uint32       Hop interval (CSA #1)
-hop_increment       uint32       Hop increment (CSA #1)
-channel_map         bytes        Connection channel map
-=================== ============ ===========================================
+=================== ============= ===========================================
+**Field**           **Type**      **Description**
+=================== ============= ===========================================
+access_address      uint32        Connection access address
+crc_init            uint32        Connection CRCInit value
+hop_interval        uint32        Hop interval (CSA #1)
+hop_increment       uint32        Hop increment (CSA #1)
+channel_map         bytes         Connection channel map
+phy                 :ref:`BlePhy` PHY type used by the connection
+=================== ============= ===========================================
+
+.. version-added:: 3
+   The ``phy`` parameter has been added in version 3 as BLE 5 introduced two new
+   PHYs and extended advertisements.
 
 
 .. _BLETriggered:
@@ -931,3 +1030,82 @@ This message manually triggers a prepared sequence identified by its id.
 id                  uint32       Prepared sequence ID
 =================== ============ ===========================================
 
+.. _BLESetPhyCmd:
+
+SetPhyCmd
+~~~~~~~~~
+
+This message sets the TX and RX PHY used by a Bluetooth Low Energy connection.
+
+=================== ============= ===========================================
+**Field**           **Type**      **Description**
+=================== ============= ===========================================
+tx_phy              :ref:`BlePhy` TX PHY type in use
+rx_phy              :ref:`BlePhy` RX PHY type in use
+=================== ============= ===========================================
+
+.. _BLESetSupportedPhysCmd:
+
+SetSupportedPhysCmd
+~~~~~~~~~~~~~~~~~~~
+
+This message tells the WHAD interface which PHY types are supported for TX and
+RX, for a given BLE connection.
+
+=================== =============== ===========================================
+**Field**           **Type**        **Description**
+=================== =============== ===========================================
+tx_phy              [:ref:`BlePhy`] TX PHY type in use
+rx_phy              [:ref:`BlePhy`] RX PHY type in use
+=================== =============== ===========================================
+
+
+
+.. _BLEPhyUpdated:
+
+PhyUpdated
+~~~~~~~~~~
+
+This notification message is sent by the WHAD interface when PHY has been
+updated. PHY update can have been initiated by the host or the remote end.
+
+=================== ============= ===========================================
+**Field**           **Type**      **Description**
+=================== ============= ===========================================
+tx_phy              :ref:`BlePhy` TX PHY type in use
+rx_phy              :ref:`BlePhy` RX PHY type in use
+timestamp           uint64        Optional timestamp, in micro-seconds
+=================== ============= ===========================================
+
+.. _BLESetTxPowerLevelCmd:
+
+SetTxPowerLevelCmd
+~~~~~~~~~~~~~~~~~~
+
+This message sets the WHAD interface TX power level.
+
+=================== ============= ===========================================
+**Field**           **Type**      **Description**
+=================== ============= ===========================================
+level               int32         Power level
+=================== ============= ===========================================
+
+.. _BLESetExtAdvPdusCmd:
+
+SetExtAdvPdusCmd
+~~~~~~~~~~~~~~~~
+
+This message sets the WHAD interface extended advertisement PDUs that will be
+sent on secondary channels.
+
+=================== ================== ===========================================
+**Field**           **Type**           **Description**
+=================== ================== ===========================================
+pdus                [:ref:`ExtAdvPdu`] List of extended advertisements PDUs
+=================== ================== ===========================================
+
+Each :ref:`ExtAdvPdu` has its own optional :ref:`AuxPtr` message that can be defined
+to allow the WHAD interface to jump onto another secondary advertising channel without
+parsing the extended advertising PDU. Extended advertising PDUs can therefore be
+invalid (for testing purposes) while the extended advertising chain is still sent
+by the WHAD interface thanks to this duplicated _AuxPtr_ information.
